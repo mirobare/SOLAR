@@ -21,7 +21,7 @@
         <p class="text-[10px] opacity-70 font-bold text-center" id="current-date"></p>
     </div>
 
-    <div class="max-w-md mx-auto p-4 space-y-4 text-center">
+    <div class="max-w-md mx-auto p-4 space-y-4">
         
         <!-- TAB 1: UNOS -->
         <div id="tab-input" class="space-y-4">
@@ -84,20 +84,20 @@
         <!-- TAB 3: STATISTIKA -->
         <div id="tab-stats" class="hidden space-y-6">
             <div id="stats-current" class="space-y-4"></div>
-            <div class="border-t pt-4">
-                <h2 class="text-[10px] font-black text-gray-400 uppercase italic mb-4">Povijest po mjesecima</h2>
-                <div id="stats-history" class="space-y-3"></div>
+            <div class="border-t border-dashed pt-4">
+                <h2 class="text-[10px] font-black text-gray-400 uppercase italic mb-4 text-center">Povijest po mjesecima</h2>
+                <div id="stats-history" class="space-y-4"></div>
             </div>
         </div>
 
         <!-- TAB 4: POSTAVKE -->
         <div id="tab-settings" class="hidden space-y-4">
-            <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm text-center text-center">
+            <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm text-center">
                 <h2 class="font-black text-gray-700 uppercase text-xs border-b pb-2 mb-6 italic">Cijene s PDV-om (€/kWh)</h2>
                 <div class="space-y-5 text-sm font-bold text-gray-600">
-                    <div class="flex justify-between border-b pb-2"><span>VT Kupnja (1.8.1)</span><input type="number" id="p-vt" step="0.001" class="w-20 text-right outline-none font-black text-blue-600 text-right" value="0.16"></div>
-                    <div class="flex justify-between border-b pb-2"><span>NT Kupnja (1.8.2)</span><input type="number" id="p-nt" step="0.001" class="w-20 text-right outline-none font-black text-blue-400 text-right" value="0.08"></div>
-                    <div class="flex justify-between border-b pb-2"><span>Otkup viška (2.8.x)</span><input type="number" id="p-out" step="0.001" class="w-20 text-right outline-none font-black text-green-600 text-right" value="0.07"></div>
+                    <div class="flex justify-between border-b pb-2"><span>VT Kupnja (1.8.1)</span><input type="number" id="p-vt" step="0.001" class="w-20 text-right outline-none font-black text-blue-600" value="0.16"></div>
+                    <div class="flex justify-between border-b pb-2"><span>NT Kupnja (1.8.2)</span><input type="number" id="p-nt" step="0.001" class="w-20 text-right outline-none font-black text-blue-400" value="0.08"></div>
+                    <div class="flex justify-between border-b pb-2"><span>Otkup viška (2.8.x)</span><input type="number" id="p-out" step="0.001" class="w-20 text-right outline-none font-black text-green-600" value="0.07"></div>
                 </div>
                 <button onclick="saveSettings()" class="w-full bg-gray-800 text-white py-4 rounded-2xl font-black mt-8 uppercase tracking-widest shadow-xl">Spremi</button>
             </div>
@@ -192,14 +192,14 @@
             const history = JSON.parse(localStorage.getItem('solar_history') || '[]');
             const list = document.getElementById('history-list');
             if(!history.length) {
-                list.innerHTML = '<p class="text-center text-gray-400 py-20 font-black italic uppercase text-xs">Nema zapisa...</p>';
+                list.innerHTML = '<p class="text-center text-gray-400 py-20 font-black italic uppercase text-xs text-center">Nema zapisa...</p>';
                 return;
             }
             list.innerHTML = history.map((h, index) => `
                 <div class="bg-white p-4 rounded-2xl shadow-sm flex justify-between items-center border-l-8 ${h.val > 0 ? 'border-red-500' : 'border-green-500'}">
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-4 text-left">
                         <input type="checkbox" class="del-check w-5 h-5 rounded-md border-gray-200" data-index="${index}" onchange="toggleDelBtn()">
-                        <div onclick="showDetails(${index})" class="cursor-pointer text-left">
+                        <div onclick="showDetails(${index})" class="cursor-pointer">
                             <p class="text-[10px] font-black text-gray-400 uppercase tracking-tighter">${h.date}</p>
                             <p class="text-[11px] font-bold text-gray-500 uppercase">Pojedinosti 🔍</p>
                         </div>
@@ -215,56 +215,68 @@
             const now = new Date();
             const monthNames = ["Siječanj", "Veljača", "Ožujak", "Travanj", "Svibanj", "Lipanj", "Srpanj", "Kolovoz", "Rujan", "Listopad", "Studeni", "Prosinac"];
             
-            const currentMonthTitle = `${monthNames[now.getMonth()]} ${now.getFullYear()}.`;
-            const currentYearTitle = `Godina ${now.getFullYear()}.`;
-
-            let stats = { month: { bal: 0, sol: 0 }, year: { bal: 0, sol: 0 }, all: { bal: 0, sol: 0 } };
-            let monthlyLog = {};
+            let logs = { month: { bal: 0, sol: 0, ivt: 0, int: 0, ovt: 0, ont: 0 }, 
+                         year: { bal: 0, sol: 0, ivt: 0, int: 0, ovt: 0, ont: 0 }, 
+                         all: { bal: 0, sol: 0, ivt: 0, int: 0, ovt: 0, ont: 0 } };
+            let mLog = {};
 
             history.forEach(h => {
-                const date = h.isoDate ? new Date(h.isoDate) : new Date();
+                const d = h.isoDate ? new Date(h.isoDate) : new Date();
                 const v = parseFloat(h.val);
-                const s = h.details ? h.details.sol : 0;
-                const mKey = `${monthNames[date.getMonth()]} ${date.getFullYear()}.`;
+                const det = h.details || { ivt:0, int:0, ovt:0, ont:0, sol:0 };
+                const mKey = `${monthNames[d.getMonth()]} ${d.getFullYear()}.`;
 
-                stats.all.bal += v; stats.all.sol += s;
-                if(date.getFullYear() === now.getFullYear()) {
-                    stats.year.bal += v; stats.year.sol += s;
-                    if(date.getMonth() === now.getMonth()) {
-                        stats.month.bal += v; stats.month.sol += s;
-                    }
+                const update = (obj) => {
+                    obj.bal += v; obj.sol += det.sol;
+                    obj.ivt += det.ivt; obj.int += det.int;
+                    obj.ovt += det.ovt; obj.ont += det.ont;
+                };
+
+                update(logs.all);
+                if(d.getFullYear() === now.getFullYear()) {
+                    update(logs.year);
+                    if(d.getMonth() === now.getMonth()) update(logs.month);
                 }
 
-                if(!monthlyLog[mKey]) monthlyLog[mKey] = { bal: 0, sol: 0 };
-                monthlyLog[mKey].bal += v;
-                monthlyLog[mKey].sol += s;
+                if(!mLog[mKey]) mLog[mKey] = { bal:0, sol:0, ivt:0, int:0, ovt:0, ont:0 };
+                update(mLog[mKey]);
             });
 
             const card = (title, data, isMain = true) => `
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
                     <h3 class="text-[10px] font-black text-gray-400 uppercase italic mb-3 underline text-left">${title}</h3>
-                    <div class="flex justify-between items-end">
+                    <div class="flex justify-between items-start mb-4">
                         <div class="text-left">
-                            <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Saldo</p>
-                            <p class="${isMain ? 'text-2xl' : 'text-lg'} font-black ${data.bal > 0 ? 'text-red-500' : 'text-green-500'}">${data.bal.toFixed(2)} €</p>
+                            <p class="text-[9px] font-bold text-gray-400 uppercase">Saldo</p>
+                            <p class="${isMain ? 'text-2xl' : 'text-xl'} font-black ${data.bal > 0 ? 'text-red-500' : 'text-green-500'}">${data.bal.toFixed(2)} €</p>
                         </div>
                         <div class="text-right">
-                            <p class="text-[9px] font-bold text-gray-400 uppercase italic text-orange-500 tracking-widest">Solar</p>
+                            <p class="text-[9px] font-bold text-gray-400 uppercase italic text-orange-500">Solar</p>
                             <p class="text-lg font-black text-orange-600">${data.sol.toFixed(1)} <span class="text-[10px]">kWh</span></p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-3 border-t border-gray-50 text-[10px] font-bold">
+                        <div class="text-left text-blue-600">
+                            <p>1.8.1: ${data.ivt.toFixed(1)} kWh</p>
+                            <p>1.8.2: ${data.int.toFixed(1)} kWh</p>
+                        </div>
+                        <div class="text-right text-green-600">
+                            <p>2.8.1: ${data.ovt.toFixed(1)} kWh</p>
+                            <p>2.8.2: ${data.ont.toFixed(1)} kWh</p>
                         </div>
                     </div>
                 </div>
             `;
 
             document.getElementById('stats-current').innerHTML = `
-                ${card(currentMonthTitle, stats.month)}
-                ${card(currentYearTitle, stats.year)}
-                ${card('Sveukupno razdoblje', stats.all)}
+                ${card(`${monthNames[now.getMonth()]} ${now.getFullYear()}.`, logs.month)}
+                ${card(`Godina ${now.getFullYear()}.`, logs.year)}
+                ${card('Sveukupno razdoblje', logs.all)}
             `;
 
-            document.getElementById('stats-history').innerHTML = Object.keys(monthlyLog)
-                .filter(m => m !== currentMonthTitle)
-                .map(m => card(m, monthlyLog[m], false)).join('');
+            document.getElementById('stats-history').innerHTML = Object.keys(mLog)
+                .filter(m => m !== `${monthNames[now.getMonth()]} ${now.getFullYear()}.`)
+                .map(m => card(m, mLog[m], false)).join('');
         }
 
         function showDetails(index) {
@@ -272,10 +284,10 @@
             if(!h.details) return alert("Zapis nema spremljene pojedinosti.");
             document.getElementById('modal-date').innerText = "ZAPIS: " + h.date;
             document.getElementById('modal-content').innerHTML = `
-                <div class="flex justify-between border-b border-gray-100 pb-2"><span>Mreža VT (1.8.1)</span><span class="text-blue-600">${h.details.ivt} kWh</span></div>
-                <div class="flex justify-between border-b border-gray-100 pb-2"><span>Mreža NT (1.8.2)</span><span class="text-blue-400">${h.details.int} kWh</span></div>
-                <div class="flex justify-between border-b border-gray-100 pb-2"><span>Izvoz VT (2.8.1)</span><span class="text-green-700">${h.details.ovt} kWh</span></div>
-                <div class="flex justify-between border-b border-gray-100 pb-2"><span>Izvoz NT (2.8.2)</span><span class="text-green-500">${h.details.ont} kWh</span></div>
+                <div class="flex justify-between border-b border-gray-100 pb-2"><span>Mreža VT (1.8.1)</span><span class="text-blue-600 font-black">${h.details.ivt} kWh</span></div>
+                <div class="flex justify-between border-b border-gray-100 pb-2"><span>Mreža NT (1.8.2)</span><span class="text-blue-400 font-black">${h.details.int} kWh</span></div>
+                <div class="flex justify-between border-b border-gray-100 pb-2"><span>Izvoz VT (2.8.1)</span><span class="text-green-700 font-black">${h.details.ovt} kWh</span></div>
+                <div class="flex justify-between border-b border-gray-100 pb-2"><span>Izvoz NT (2.8.2)</span><span class="text-green-500 font-black">${h.details.ont} kWh</span></div>
                 <div class="flex justify-between pt-2 font-black text-orange-600 uppercase"><span>SOLARNA PROIZVODNJA</span><span>${h.details.sol} kWh</span></div>
             `;
             document.getElementById('details-modal').classList.remove('hidden');
@@ -314,7 +326,7 @@
             localStorage.setItem('p_vt', document.getElementById('p-vt').value);
             localStorage.setItem('p_nt', document.getElementById('p-nt').value);
             localStorage.setItem('p_out', document.getElementById('p-out').value);
-            alert("Postavke spremljene! ✅");
+            alert("Spremljeno! ✅");
             showTab('input');
         }
     </script>
