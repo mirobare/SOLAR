@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solar Monitor Ultra</title>
+    <title>Solar Monitor Ultra Sync</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .active-tab { border-top: 4px solid #2563eb; color: #2563eb; font-weight: 900; }
         .hidden { display: none; }
-        .bar-fill { transition: height 0.8s ease-out; min-height: 4px; }
+        .bar-fill { transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1); min-height: 4px; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .modal-bg { background-color: rgba(0,0,0,0.5); }
+        .modal-bg { background-color: rgba(0,0,0,0.6); backdrop-filter: blur(3px); }
     </style>
 </head>
 <body class="bg-gray-50 pb-28 text-gray-800 antialiased">
@@ -56,13 +56,13 @@
             </div>
 
             <!-- GRAFIKON -->
-            <div id="chart-section" class="hidden bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+            <div id="chart-section" class="hidden bg-white p-6 rounded-3xl shadow-sm border border-gray-100 animate-in fade-in duration-500">
                 <div class="flex items-end justify-between h-40 px-2 border-b-2 border-gray-100 mb-4">
                     <div class="flex flex-col items-center w-[18%] h-full justify-end"><div id="bar-1" class="bar-fill w-full bg-blue-600 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-black mt-2">1.8.1</span></div>
                     <div class="flex flex-col items-center w-[18%] h-full justify-end"><div id="bar-2" class="bar-fill w-full bg-blue-400 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-black mt-2">1.8.2</span></div>
                     <div class="flex flex-col items-center w-[18%] h-full justify-end"><div id="bar-3" class="bar-fill w-full bg-green-600 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-black mt-2">2.8.1</span></div>
                     <div class="flex flex-col items-center w-[18%] h-full justify-end"><div id="bar-4" class="bar-fill w-full bg-green-400 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-black mt-2">2.8.2</span></div>
-                    <div class="flex flex-col items-center w-[18%] h-full justify-end"><div id="bar-5" class="bar-fill w-full bg-orange-500 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-black mt-2 italic text-orange-600 uppercase italic">SOL</span></div>
+                    <div class="flex flex-col items-center w-[18%] h-full justify-end"><div id="bar-5" class="bar-fill w-full bg-orange-500 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-black mt-2 italic text-orange-600 uppercase">SOL</span></div>
                 </div>
                 <div id="final-summary" class="text-center text-xl font-black italic"></div>
             </div>
@@ -70,14 +70,14 @@
 
         <!-- TAB 2: ARHIVA -->
         <div id="tab-archive" class="hidden space-y-3 pb-10">
-            <div class="flex justify-between items-center px-2 mb-2">
+            <div class="flex flex-wrap gap-2 justify-between items-center px-2 mb-2">
                 <div class="flex gap-2">
-                    <button onclick="exportToCloud()" class="bg-blue-100 text-blue-600 text-[9px] font-black px-3 py-2 rounded-full uppercase tracking-wider">☁️ Export</button>
-                    <label class="bg-gray-100 text-gray-600 text-[9px] font-black px-3 py-2 rounded-full uppercase tracking-wider cursor-pointer">
-                        📂 Import <input type="file" id="import-file" class="hidden" onchange="importFromCloud(event)">
+                    <button onclick="exportData()" class="bg-blue-100 text-blue-600 text-[10px] font-black px-3 py-2 rounded-full uppercase tracking-wider">☁️ Export</button>
+                    <label class="bg-gray-100 text-gray-600 text-[10px] font-black px-3 py-2 rounded-full uppercase tracking-wider cursor-pointer">
+                        📂 Import <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(event)">
                     </label>
                 </div>
-                <button onclick="deleteSelected()" id="del-btn" class="hidden bg-red-100 text-red-600 text-[9px] font-black px-3 py-2 rounded-full uppercase tracking-wider">Obriši</button>
+                <button onclick="deleteSelected()" id="del-btn" class="hidden bg-red-100 text-red-600 text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-wider">Obriši</button>
             </div>
             <div id="history-list" class="space-y-3"></div>
         </div>
@@ -85,29 +85,29 @@
         <!-- TAB 3: POSTAVKE -->
         <div id="tab-settings" class="hidden space-y-4">
             <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm">
-                <h2 class="font-black text-gray-700 uppercase text-xs border-b pb-2 mb-6 italic italic">Cijene s PDV-om (€/kWh)</h2>
+                <h2 class="font-black text-gray-700 uppercase text-xs border-b pb-2 mb-6 italic">Postavke Tarifa (€/kWh)</h2>
                 <div class="space-y-5 text-sm font-bold text-gray-600">
                     <div class="flex justify-between border-b pb-2"><span>VT Kupnja (1.8.1)</span><input type="number" id="p-vt" step="0.001" class="w-20 text-right outline-none font-black text-blue-600" value="0.16"></div>
                     <div class="flex justify-between border-b pb-2"><span>NT Kupnja (1.8.2)</span><input type="number" id="p-nt" step="0.001" class="w-20 text-right outline-none font-black text-blue-400" value="0.08"></div>
                     <div class="flex justify-between border-b pb-2"><span>Otkup viška (2.8.x)</span><input type="number" id="p-out" step="0.001" class="w-20 text-right outline-none font-black text-green-600" value="0.07"></div>
                 </div>
-                <button onclick="saveSettings()" class="w-full bg-gray-900 text-white py-4 rounded-2xl font-black mt-8 uppercase tracking-widest shadow-xl">Spremi</button>
+                <button onclick="saveSettings()" class="w-full bg-gray-900 text-white py-4 rounded-2xl font-black mt-8 uppercase tracking-widest shadow-xl">Spremi Cijene</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL (DETALJI) -->
-    <div id="details-modal" class="hidden fixed inset-0 z-[100] modal-bg flex items-center justify-center p-6">
-        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl relative">
+    <!-- MODAL ZA DETALJE -->
+    <div id="details-modal" class="hidden fixed inset-0 z-50 modal-bg flex items-center justify-center p-6" onclick="closeModal()">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-7 shadow-2xl relative" onclick="event.stopPropagation()">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 font-bold text-xl">✕</button>
-            <h2 id="modal-date" class="font-black text-gray-400 uppercase text-xs mb-4">DETALJI ZAPISA</h2>
-            <div id="modal-content" class="space-y-3 text-sm font-bold"></div>
-            <button onclick="closeModal()" class="w-full bg-blue-600 text-white font-black py-3 rounded-xl mt-6 uppercase text-xs">Zatvori</button>
+            <h2 id="modal-date" class="font-black text-gray-400 uppercase text-xs mb-5 tracking-widest italic">DETALJI ZAPISA</h2>
+            <div id="modal-content" class="space-y-4 text-sm font-bold text-gray-700"></div>
+            <button onclick="closeModal()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl mt-8 uppercase text-[10px] tracking-widest">Zatvori</button>
         </div>
     </div>
 
     <!-- NAVBAR -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around text-[10px] font-black text-gray-400 z-50">
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t flex justify-around text-[10px] font-black text-gray-400 z-50">
         <button onclick="showTab('input')" id="btn-input" class="flex-1 py-5 active-tab uppercase text-blue-600">Unos</button>
         <button onclick="showTab('archive')" id="btn-archive" class="flex-1 py-5 uppercase">Arhiva</button>
         <button onclick="showTab('settings')" id="btn-settings" class="flex-1 py-5 uppercase">Postavke</button>
@@ -132,6 +132,8 @@
             });
             document.getElementById('tab-'+tab).classList.remove('hidden');
             document.getElementById('btn-'+tab).classList.add('active-tab', 'text-blue-600');
+            const titles = { 'input': 'UNOS PODATAKA 📝', 'archive': 'ARHIVA UNOSA 📁', 'settings': 'POSTAVKE CIJENA ⚙️' };
+            document.getElementById('header-title').innerText = titles[tab];
             if(tab === 'archive') renderArchive();
         }
 
@@ -161,7 +163,7 @@
             setTimeout(() => {
                 vals.forEach((val, i) => document.getElementById(`bar-${i+1}`).style.height = (val / max * 100) + "%");
                 const summ = document.getElementById('final-summary');
-                summ.innerText = "Danas: " + balance.toFixed(2) + " €";
+                summ.innerText = "Dnevni saldo: " + balance.toFixed(2) + " €";
                 summ.className = "text-center text-xl font-black italic mt-4 " + (balance > 0 ? "text-red-500" : "text-green-500");
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             }, 100);
@@ -172,23 +174,23 @@
                 val: balance.toFixed(2), 
                 details: v 
             });
-            localStorage.setItem('solar_history', JSON.stringify(history.slice(0, 100)));
+            localStorage.setItem('solar_history', JSON.stringify(history.slice(0, 500)));
         }
 
         function renderArchive() {
             const history = JSON.parse(localStorage.getItem('solar_history') || '[]');
             const list = document.getElementById('history-list');
             if(!history.length) {
-                list.innerHTML = '<p class="text-center text-gray-400 py-20 font-black italic italic">Nema zapisa...</p>';
+                list.innerHTML = '<p class="text-center text-gray-400 py-20 font-black italic uppercase text-xs">Nema zapisa...</p>';
                 return;
             }
             list.innerHTML = history.map((h, index) => `
                 <div class="bg-white p-4 rounded-2xl shadow-sm flex justify-between items-center border-l-8 ${h.val > 0 ? 'border-red-500' : 'border-green-500'}">
-                    <div class="flex items-center gap-3">
-                        <input type="checkbox" class="del-check w-5 h-5 rounded" data-index="${index}" onchange="toggleDelBtn()">
+                    <div class="flex items-center gap-4">
+                        <input type="checkbox" class="del-check w-5 h-5 rounded-md border-gray-200" data-index="${index}" onchange="toggleDelBtn()">
                         <div onclick="showDetails(${index})" class="cursor-pointer">
-                            <p class="text-[10px] font-black text-gray-400 uppercase">${h.date}</p>
-                            <p class="text-xs font-bold text-gray-600">Klikni za detalje 🔍</p>
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-tighter">${h.date}</p>
+                            <p class="text-[11px] font-bold text-gray-500">Detalji 🔍</p>
                         </div>
                     </div>
                     <span class="font-black text-lg ${h.val > 0 ? 'text-red-500' : 'text-green-500'}">${h.val} €</span>
@@ -199,14 +201,14 @@
 
         function showDetails(index) {
             const h = JSON.parse(localStorage.getItem('solar_history'))[index];
-            if(!h.details) return alert("Ovaj zapis nema detaljne podatke.");
-            document.getElementById('modal-date').innerText = "DETALJI ZA " + h.date;
+            if(!h.details) return alert("Zapis nema spremljene pojedinosti.");
+            document.getElementById('modal-date').innerText = "ZAPIS: " + h.date;
             document.getElementById('modal-content').innerHTML = `
-                <div class="flex justify-between border-b pb-1"><span>1.8.1 (VT Mreža)</span><span class="text-blue-600">${h.details.ivt} kWh</span></div>
-                <div class="flex justify-between border-b pb-1"><span>1.8.2 (NT Mreža)</span><span class="text-blue-400">${h.details.int} kWh</span></div>
-                <div class="flex justify-between border-b pb-1"><span>2.8.1 (VT Izvoz)</span><span class="text-green-700">${h.details.ovt} kWh</span></div>
-                <div class="flex justify-between border-b pb-1"><span>2.8.2 (NT Izvoz)</span><span class="text-green-500">${h.details.ont} kWh</span></div>
-                <div class="flex justify-between pt-1 font-black text-orange-600"><span>SOLARNA PROIZVODNJA</span><span>${h.details.sol} kWh</span></div>
+                <div class="flex justify-between border-b border-gray-100 pb-2"><span>Mreža VT (1.8.1)</span><span class="text-blue-600">${h.details.ivt} kWh</span></div>
+                <div class="flex justify-between border-b border-gray-100 pb-2"><span>Mreža NT (1.8.2)</span><span class="text-blue-400">${h.details.int} kWh</span></div>
+                <div class="flex justify-between border-b border-gray-100 pb-2"><span>Izvoz VT (2.8.1)</span><span class="text-green-700">${h.details.ovt} kWh</span></div>
+                <div class="flex justify-between border-b border-gray-100 pb-2"><span>Izvoz NT (2.8.2)</span><span class="text-green-500">${h.details.ont} kWh</span></div>
+                <div class="flex justify-between pt-2 font-black text-orange-600"><span>SOLARNA PROIZVODNJA</span><span>${h.details.sol} kWh</span></div>
             `;
             document.getElementById('details-modal').classList.remove('hidden');
         }
@@ -215,35 +217,45 @@
         function toggleDelBtn() { document.getElementById('del-btn').classList.toggle('hidden', !document.querySelectorAll('.del-check:checked').length); }
         
         function deleteSelected() {
-            if(!confirm("Obriši označeno?")) return;
+            if(!confirm("Obriši označene stavke?")) return;
             let history = JSON.parse(localStorage.getItem('solar_history'));
             Array.from(document.querySelectorAll('.del-check:checked')).map(cb => parseInt(cb.dataset.index)).sort((a,b)=>b-a).forEach(i => history.splice(i,1));
             localStorage.setItem('solar_history', JSON.stringify(history));
             renderArchive();
         }
 
-        function exportToCloud() {
-            const blob = new Blob([localStorage.getItem('solar_history')], { type: 'application/json' });
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-            a.download = `Solar_Export_${new Date().toISOString().slice(0,10)}.json`; a.click();
+        function exportData() {
+            const history = localStorage.getItem('solar_history');
+            if (!history || history === "[]") return alert("Arhiva je prazna.");
+            const blob = new Blob([history], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `Solar_Backup_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
         }
 
-        function importFromCloud(e) {
+        function importData(e) {
+            const file = e.target.files[0];
+            if (!file) return;
             const reader = new FileReader();
             reader.onload = (ev) => {
-                if(confirm("Učitati podatke? Briše trenutnu povijest!")) {
-                    localStorage.setItem('solar_history', ev.target.result);
-                    renderArchive();
-                }
+                try {
+                    const imported = JSON.parse(ev.target.result);
+                    if (confirm(`Učitati ${imported.length} zapisa? Ovo briše trenutnu povijest na ovom uređaju.`)) {
+                        localStorage.setItem('solar_history', JSON.stringify(imported));
+                        renderArchive();
+                        alert("Podaci uspješno uvezeni! ✅");
+                    }
+                } catch (err) { alert("Pogrešna datoteka."); }
             };
-            reader.readAsText(e.target.files[0]);
+            reader.readAsText(file);
         }
 
         function saveSettings() {
             localStorage.setItem('p_vt', document.getElementById('p-vt').value);
             localStorage.setItem('p_nt', document.getElementById('p-nt').value);
             localStorage.setItem('p_out', document.getElementById('p-out').value);
-            alert("Spremljeno! ✅");
+            alert("Postavke spremljene! ✅");
             showTab('input');
         }
     </script>
