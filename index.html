@@ -201,7 +201,7 @@
         }
     }
 
-    // --- STATISTIKA LOGIKA ---
+    // --- STATISTIKA LOGIKA S PODJELOM VT/NT ---
     function rStat(filter, btn) {
         document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -222,34 +222,45 @@
             return acc;
         }, { ivt:0, int:0, evt:0, ent:0, prod:0, hep:0 });
 
-        const maxVal = Math.max(sum.ivt + sum.int, sum.evt + sum.ent, sum.prod, 1);
+        const maxVal = Math.max(sum.ivt, sum.int, sum.evt, sum.ent, sum.prod, 1);
         const out = document.getElementById('statOutput');
         
         out.innerHTML = `
             <div class="stat-card">
-                <h4 style="margin:0 0 15px 0; color:var(--accent); text-transform:uppercase;">${filter} - Pregled kWh</h4>
-                ${genHBar("UKUPNI UVOZ (VT+NT)", sum.ivt + sum.int, maxVal, "var(--red)")}
-                ${genHBar("UKUPNI IZVOZ (VT+NT)", sum.evt + sum.ent, maxVal, "var(--green)")}
-                ${genHBar("PROIZVODNJA SOLARA", sum.prod, maxVal, "var(--solar)")}
+                <h4 style="margin:0 0 15px 0; color:var(--red); text-transform:uppercase;">UVOZ (Plaćate)</h4>
+                ${genHBar("UVOZ VT", sum.ivt, maxVal, "var(--red)", sum.ivt * cfg.vt)}
+                ${genHBar("UVOZ NT", sum.int, maxVal, "var(--red)", sum.int * cfg.nt, 0.6)}
+                
+                <h4 style="margin:20px 0 15px 0; color:var(--green); text-transform:uppercase;">IZVOZ (Dobivate)</h4>
+                ${genHBar("IZVOZ VT", sum.evt, maxVal, "var(--green)", sum.evt * cfg.sell)}
+                ${genHBar("IZVOZ NT", sum.ent, maxVal, "var(--green)", sum.ent * cfg.sell, 0.6)}
+                
+                <h4 style="margin:20px 0 15px 0; color:var(--solar); text-transform:uppercase;">SOLAR</h4>
+                ${genHBar("PROIZVODNJA", sum.prod, maxVal, "var(--solar)", sum.prod * cfg.vt)}
             </div>
             <div class="stat-card">
-                <h4 style="margin:0 0 15px 0; color:var(--accent); text-transform:uppercase;">Financije</h4>
+                <h4 style="margin:0 0 15px 0; color:var(--accent); text-transform:uppercase;">Ukupne Vrijednosti</h4>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <div class="input-box" style="border-color:var(--red)"><label>Uvoz Trošak</label><strong>${(sum.ivt*cfg.vt + sum.int*cfg.nt).toFixed(2)} €</strong></div>
-                    <div class="input-box" style="border-color:var(--green)"><label>Izvoz Zarada</label><strong>${(sum.evt*cfg.sell + sum.ent*cfg.sell).toFixed(2)} €</strong></div>
-                    <div class="input-box" style="border-color:var(--solar)"><label>Ušteda Solara</label><strong>${(sum.prod*cfg.vt).toFixed(2)} €</strong></div>
-                    <div class="input-box" style="border-color:#fff"><label>HEP Plaćeno</label><strong>${sum.hep.toFixed(2)} €</strong></div>
+                    <div class="input-box" style="border-color:var(--red)"><label>Ukupni Uvoz</label><strong>${(sum.ivt*cfg.vt + sum.int*cfg.nt).toFixed(2)} €</strong></div>
+                    <div class="input-box" style="border-color:var(--green)"><label>Ukupni Izvoz</label><strong>${(sum.evt*cfg.sell + sum.ent*cfg.sell).toFixed(2)} €</strong></div>
+                    <div class="input-box" style="border-color:var(--solar)"><label>Ušteda</label><strong>${(sum.prod*cfg.vt).toFixed(2)} €</strong></div>
+                    <div class="input-box" style="border-color:#fff"><label>HEP Račun</label><strong>${sum.hep.toFixed(2)} €</strong></div>
                 </div>
             </div>
         `;
     }
 
-    function genHBar(label, val, max, col) {
+    function genHBar(label, val, max, col, eur, op = 1) {
         const postotak = (val / max * 100).toFixed(1);
         return `
             <div class="h-row">
-                <div class="h-label-row"><span>${label}</span><span>${val.toFixed(1)} kWh</span></div>
-                <div class="h-bar-bg"><div class="h-bar-fill" style="width:${postotak}%; background:${col}"></div></div>
+                <div class="h-label-row">
+                    <span>${label}</span>
+                    <span>${val.toFixed(1)} kWh <span style="color:var(--gray)">(${eur.toFixed(2)} €)</span></span>
+                </div>
+                <div class="h-bar-bg">
+                    <div class="h-bar-fill" style="width:${postotak}%; background:${col}; opacity:${op}"></div>
+                </div>
             </div>
         `;
     }
