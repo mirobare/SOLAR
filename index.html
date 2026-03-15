@@ -7,12 +7,15 @@
     <style>
         :root { --bg: #000; --card: #1c1c1e; --accent: #0A84FF; --solar: #FF9F0A; --green: #32D74B; --red: #FF453A; --text: #fff; --gray: #8e8e93; }
         body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 70px; }
+        
+        /* Navigacija */
         .nav-tabs { display: flex; background: #1c1c1e; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #333; }
         .nav-btn { flex: 1; padding: 15px 5px; border: none; background: none; color: var(--gray); font-size: 0.7rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
         .nav-btn.active { color: var(--accent); border-bottom: 3px solid var(--accent); }
         .tab-content { display: none; padding: 15px; max-width: 800px; margin: auto; }
         .tab-content.active { display: block; }
 
+        /* Unos Kartice */
         .weather-box { background: #1c1c1e; border: 1px solid var(--solar); padding: 12px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
         .card { background: var(--card); border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid #2c2c2e; }
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
@@ -21,14 +24,22 @@
         input { background: transparent; border: none; color: #fff; font-size: 1.1rem; width: 100%; outline: none; font-weight: bold; }
         .euro-hint { font-size: 0.7rem; color: var(--gray); border-top: 1px solid #333; margin-top: 5px; padding-top: 3px; display: block; }
         
-        /* Arhiva stilovi */
-        .archive-line { display: flex; align-items: center; background: #1c1c1e; padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid var(--solar); border-bottom: 1px solid #333; }
-        .archive-data { display: flex; flex-wrap: wrap; gap: 10px; margin-left: 10px; font-size: 0.75rem; flex: 1; color: #ccc; }
-        .del-btn { background: var(--red); color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 0.7rem; cursor: pointer; font-weight: bold; }
-        
+        /* Grafika */
         .live-graph { display: flex; align-items: flex-end; gap: 8px; height: 100px; background: #111; padding: 15px 10px; border-radius: 12px; border: 1px solid #333; margin-top: 15px; }
         .v-bar { flex: 1; border-radius: 4px 4px 0 0; min-height: 2px; position: relative; transition: height 0.3s; }
         .v-label { position: absolute; bottom: -18px; width: 100%; text-align: center; font-size: 0.5rem; color: var(--gray); font-weight: bold; }
+
+        /* Arhiva - Novi Grid Dizajn */
+        .archive-card { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 12px; border-left: 5px solid var(--solar); }
+        .arch-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 10px; }
+        .arch-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .arch-item { display: flex; flex-direction: column; }
+        .arch-label { color: var(--gray); font-size: 0.55rem; text-transform: uppercase; font-weight: bold; }
+        .arch-val { font-size: 0.9rem; font-weight: bold; color: #fff; }
+        .arch-eur { font-size: 0.65rem; color: var(--gray); font-weight: normal; margin-left: 2px; }
+        .del-btn { background: var(--red); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.65rem; font-weight: bold; cursor: pointer; }
+        
+        button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1rem; }
     </style>
 </head>
 <body>
@@ -57,7 +68,7 @@
                 <div class="input-box" style="border-color:var(--solar)"><label>Solari (kWh)</label><input type="number" id="prod" oninput="lUpd()"><span class="euro-hint" id="prod_e">0.00 €</span></div>
                 <div class="input-box" style="border-color:#fff"><label>HEP (€)</label><input type="number" id="hep"></div>
             </div>
-            <button class="main-btn" style="background:var(--accent); color:white; border:none; padding:18px; border-radius:14px; width:100%; font-weight:bold; cursor:pointer;" onclick="sData()">SPREMI UNOS</button>
+            <button class="main-btn" onclick="sData()">SPREMI UNOS</button>
         </div>
         <div class="live-graph">
             <div class="v-bar" id="b-ivt" style="background:var(--red)"><span class="v-label">U-VT</span></div>
@@ -70,20 +81,19 @@
 
     <!-- ARHIVA -->
     <div id="arhiva" class="tab-content">
-        <h3 style="margin-top:0">Povijest unosa</h3>
+        <h3 style="margin-top:0">Arhiva podataka</h3>
         <div id="archiveList"></div>
     </div>
 
     <!-- OSTALO -->
-    <div id="stat" class="tab-content"><h3>Statistika dolazi uskoro...</h3></div>
-    <div id="postavke" class="tab-content"><h3>Postavke dolaze uskoro...</h3></div>
+    <div id="stat" class="tab-content"><h3>Statistika (Slijedi...)</h3></div>
+    <div id="postavke" class="tab-content"><h3>Postavke (Slijedi...)</h3></div>
 
 <script>
     const K = 'SOLAR_DB_V29';
     let db = JSON.parse(localStorage.getItem(K)) || [];
-    let cfg = { vt: 0.14, nt: 0.07, sell: 0.04 }; // Privremeno dok ne riješimo tab postavke
+    let cfg = { vt: 0.148, nt: 0.077, sell: 0.045 }; // Default cijene
 
-    // Postavi današnji datum pri učitavanju
     document.getElementById('date').valueAsDate = new Date();
 
     function swTab(id, btn) {
@@ -91,8 +101,7 @@
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         btn.classList.add('active');
-        
-        if(id === 'arhiva') rArch(); 
+        if(id === 'arhiva') rArch();
     }
 
     function lUpd() {
@@ -103,7 +112,6 @@
             ent: parseFloat(document.getElementById('ent').value) || 0,
             prod: parseFloat(document.getElementById('prod').value) || 0
         };
-        
         document.getElementById('ivt_e').innerText = (v.ivt * cfg.vt).toFixed(2) + " €";
         document.getElementById('int_e').innerText = (v.int * cfg.nt).toFixed(2) + " €";
         document.getElementById('evt_e').innerText = (v.evt * cfg.sell).toFixed(2) + " €";
@@ -129,46 +137,64 @@
             prod: parseFloat(document.getElementById('prod').value) || 0,
             hep: parseFloat(document.getElementById('hep').value) || 0
         };
-
-        if(!entry.date) { alert("Odaberi datum!"); return; }
-
+        if(!entry.date) return alert("Unesi datum!");
         db.unshift(entry);
         localStorage.setItem(K, JSON.stringify(db));
-        alert("Podaci spremljeni!");
-        
-        // Reset unosa
+        alert("Spremljeno u Arhivu!");
         ["ivt","int","evt","ent","prod","hep"].forEach(id => document.getElementById(id).value = "");
         lUpd();
     }
 
     function rArch() {
         const list = document.getElementById('archiveList');
-        list.innerHTML = ""; // Očisti trenutni prikaz
+        list.innerHTML = ""; 
 
         if (db.length === 0) {
-            list.innerHTML = "<p style='color:gray; text-align:center;'>Nema spremljenih unosa.</p>";
+            list.innerHTML = "<p style='color:gray; text-align:center;'>Arhiva je prazna.</p>";
             return;
         }
 
         db.forEach(item => {
             const div = document.createElement('div');
-            div.className = 'archive-line';
+            div.className = 'archive-card';
             div.innerHTML = `
-                <div style="min-width:70px"><strong>${item.date.split('-').reverse().join('.')}</strong></div>
-                <div class="archive-data">
-                    <span style="color:var(--red)">U:${(item.ivt + item.int).toFixed(1)}</span>
-                    <span style="color:var(--green)">X:${(item.evt + item.ent).toFixed(1)}</span>
-                    <span style="color:var(--solar)">S:${item.prod.toFixed(1)}</span>
-                    <span style="color:#fff">${item.hep}€</span>
+                <div class="arch-header">
+                    <strong style="color:var(--accent)">📅 ${item.date.split('-').reverse().join('.')}</strong>
+                    <button class="del-btn" onclick="obrisiUnos(${item.id})">OBRIŠI</button>
                 </div>
-                <button class="del-btn" onclick="obrisiUnos(${item.id})">X</button>
+                <div class="arch-grid">
+                    <div class="arch-item">
+                        <span class="arch-label">Uvoz VT</span>
+                        <span class="arch-val" style="color:var(--red)">${item.ivt}<span class="arch-eur">${(item.ivt * cfg.vt).toFixed(2)}€</span></span>
+                    </div>
+                    <div class="arch-item">
+                        <span class="arch-label">Uvoz NT</span>
+                        <span class="arch-val" style="color:var(--red)">${item.int}<span class="arch-eur">${(item.int * cfg.nt).toFixed(2)}€</span></span>
+                    </div>
+                    <div class="arch-item">
+                        <span class="arch-label">HEP</span>
+                        <span class="arch-val" style="white-space:nowrap">${item.hep.toFixed(2)} €</span>
+                    </div>
+                    <div class="arch-item">
+                        <span class="arch-label">Izvoz VT</span>
+                        <span class="arch-val" style="color:var(--green)">${item.evt}<span class="arch-eur">${(item.evt * cfg.sell).toFixed(2)}€</span></span>
+                    </div>
+                    <div class="arch-item">
+                        <span class="arch-label">Izvoz NT</span>
+                        <span class="arch-val" style="color:var(--green)">${item.ent}<span class="arch-eur">${(item.ent * cfg.sell).toFixed(2)}€</span></span>
+                    </div>
+                    <div class="arch-item">
+                        <span class="arch-label">Solari</span>
+                        <span class="arch-val" style="color:var(--solar)">${item.prod}<span class="arch-eur">${(item.prod * cfg.vt).toFixed(2)}€</span></span>
+                    </div>
+                </div>
             `;
             list.appendChild(div);
         });
     }
 
     function obrisiUnos(id) {
-        if(confirm("Obriši ovaj unos?")) {
+        if(confirm("Trajno obrisati ovaj dan iz arhive?")) {
             db = db.filter(i => i.id !== id);
             localStorage.setItem(K, JSON.stringify(db));
             rArch();
