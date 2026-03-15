@@ -32,7 +32,6 @@
         .archive-line { display: flex; align-items: center; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 3px solid var(--solar); overflow: hidden; }
         .arch-date { font-size: 0.75rem; font-weight: bold; min-width: 65px; color: var(--accent); }
         .arch-scroll-area { display: flex; gap: 12px; overflow-x: auto; flex: 1; padding: 0 10px; scrollbar-width: none; }
-        .arch-scroll-area::-webkit-scrollbar { display: none; }
         .arch-data-block { display: flex; flex-direction: column; white-space: nowrap; }
         .arch-lbl { font-size: 0.55rem; color: var(--gray); text-transform: uppercase; }
         .arch-num { font-size: 0.75rem; font-weight: bold; }
@@ -42,11 +41,11 @@
         .stat-filter { display: flex; gap: 5px; margin-bottom: 15px; }
         .f-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; background: #1c1c1e; color: #fff; font-size: 0.6rem; font-weight: bold; cursor: pointer; }
         .f-btn.active { background: var(--accent); border-color: var(--accent); }
-        .h-row { margin-bottom: 12px; }
-        .h-label-row { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px; font-weight: bold; }
-        .h-bar-bg { background: #111; height: 14px; border-radius: 7px; overflow: hidden; border: 1px solid #222; }
+        .h-row { margin-bottom: 10px; }
+        .h-label-row { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 3px; font-weight: bold; }
+        .h-bar-bg { background: #111; height: 10px; border-radius: 5px; overflow: hidden; border: 1px solid #222; }
         .h-bar-fill { height: 100%; transition: width 0.6s ease-out; }
-        .entry-title { font-size: 0.7rem; color: var(--accent); margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .entry-title { font-size: 0.75rem; color: var(--accent); margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 5px; font-weight: bold; }
 
         button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1rem; }
         .exp-btn { background: #2c2c2e; color: var(--green); border: 1px solid var(--green); padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
@@ -61,7 +60,7 @@
         <button class="nav-btn" onclick="swTab('postavke', this)">Postavke</button>
     </nav>
 
-    <!-- UNOS -->
+    <!-- UNOS (Nedirnut) -->
     <div id="unos" class="tab-content active">
         <div class="weather-box">☀️ <div class="w-text" style="color:var(--solar); font-weight:bold; margin-left:10px;">PETRINJA: SUNČANO</div></div>
         <div class="card">
@@ -89,12 +88,13 @@
         </div>
     </div>
 
+    <!-- ARHIVA (Nedirnut) -->
     <div id="arhiva" class="tab-content"><div id="archiveList"></div></div>
 
-    <!-- STATISTIKA -->
+    <!-- STATISTIKA (Razrađen detaljni prikaz) -->
     <div id="stat" class="tab-content">
         <div class="stat-filter">
-            <button class="f-btn active" onclick="rStat('dan', this)">DAN</button>
+            <button class="f-btn active" onclick="rStat('dan', this)">DANAS</button>
             <button class="f-btn" onclick="rStat('mjesec', this)">MJESEC</button>
             <button class="f-btn" onclick="rStat('godina', this)">GODINA</button>
             <button class="f-btn" onclick="rStat('ukupno', this)">UKUPNO</button>
@@ -110,6 +110,10 @@
     <script>
         let db = JSON.parse(localStorage.getItem('solarDB')) || [];
         document.getElementById('date').valueAsDate = new Date();
+
+        // CIJENE ZA IZRAČUN
+        const priceU = 0.16; 
+        const priceX = 0.04;
 
         function swTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -128,10 +132,10 @@
                 ent: parseFloat(document.getElementById('ent').value) || 0,
                 prod: parseFloat(document.getElementById('prod').value) || 0
             };
-            document.getElementById('ivt_e').innerText = (v.ivt * 0.16).toFixed(2) + " €";
-            document.getElementById('int_e').innerText = (v.int * 0.16).toFixed(2) + " €";
-            document.getElementById('evt_e').innerText = (v.evt * 0.04).toFixed(2) + " €";
-            document.getElementById('ent_e').innerText = (v.ent * 0.04).toFixed(2) + " €";
+            document.getElementById('ivt_e').innerText = (v.ivt * priceU).toFixed(2) + " €";
+            document.getElementById('int_e').innerText = (v.int * priceU).toFixed(2) + " €";
+            document.getElementById('evt_e').innerText = (v.evt * priceX).toFixed(2) + " €";
+            document.getElementById('ent_e').innerText = (v.ent * priceX).toFixed(2) + " €";
             document.getElementById('prod_e').innerText = (v.prod * 0.12).toFixed(2) + " €";
             const max = Math.max(v.ivt, v.int, v.evt, v.ent, v.prod, 1);
             ['ivt','int','evt','ent','prod'].forEach(k => {
@@ -162,8 +166,8 @@
                 <div class="archive-line">
                     <div class="arch-date">${i.date.split('-').reverse().slice(0,2).join('.')}</div>
                     <div class="arch-scroll-area">
-                        <div class="arch-data-block"><span class="arch-lbl" style="color:var(--red)">Uvoz</span><span class="arch-num">${(i.ivt+i.int).toFixed(1)}kWh</span><span class="arch-lbl">${((i.ivt+i.int)*0.16).toFixed(2)}€</span></div>
-                        <div class="arch-data-block"><span class="arch-lbl" style="color:var(--green)">Izvoz</span><span class="arch-num">${(i.evt+i.ent).toFixed(1)}kWh</span><span class="arch-lbl">${((i.evt+i.ent)*0.04).toFixed(2)}€</span></div>
+                        <div class="arch-data-block"><span class="arch-lbl" style="color:var(--red)">Uvoz</span><span class="arch-num">${(i.ivt+i.int).toFixed(1)}kWh</span><span class="arch-lbl">${((i.ivt+i.int)*priceU).toFixed(2)}€</span></div>
+                        <div class="arch-data-block"><span class="arch-lbl" style="color:var(--green)">Izvoz</span><span class="arch-num">${(i.evt+i.ent).toFixed(1)}kWh</span><span class="arch-lbl">${((i.evt+i.ent)*priceX).toFixed(2)}€</span></div>
                         <div class="arch-data-block"><span class="arch-lbl" style="color:var(--solar)">Solar</span><span class="arch-num">${i.prod}kWh</span><span class="arch-lbl">HEP: ${i.hep}€</span></div>
                     </div>
                     <button class="del-btn-mini" onclick="delItem(${i.id})">X</button>
@@ -186,52 +190,61 @@
                 return true;
             });
 
-            if (filter === 'dan') {
-                // Individualni prikaz za svaki unos u danu
+            // Obrada podataka (zbirno ili pojedinačno)
+            if (filter === 'dan' && filtered.length > 0) {
                 filtered.forEach(entry => {
-                    const entryCard = document.createElement('div');
-                    entryCard.className = 'card';
-                    const maxVal = Math.max(entry.ivt+entry.int, entry.evt+entry.ent, entry.prod, 1);
-                    entryCard.innerHTML = `
-                        <div class="entry-title">Unos u ${entry.time || 'nepoznato vrijeme'}</div>
-                        ${statRow('UVOZ', entry.ivt + entry.int, maxVal, 'var(--red)')}
-                        ${statRow('IZVOZ', entry.evt + entry.ent, maxVal, 'var(--green)')}
-                        ${statRow('SOLAR', entry.prod, maxVal, 'var(--solar)')}
-                    `;
-                    output.appendChild(entryCard);
+                    output.innerHTML += renderStatCard(`Unos u ${entry.time}`, entry);
                 });
             } else {
-                // Zbirni prikaz za ostale filtere
                 const sum = filtered.reduce((a, c) => {
-                    a.u += (c.ivt+c.int); a.x += (c.evt+c.ent); a.s += c.prod; a.h += c.hep;
+                    a.ivt += c.ivt; a.int += c.int; a.evt += c.evt; a.ent += c.ent; a.prod += c.prod; a.hep += c.hep;
                     return a;
-                }, {u:0, x:0, s:0, h:0});
-                const max = Math.max(sum.u, sum.x, sum.s, 1);
-                output.innerHTML = `
-                    <div class="card">
-                        ${statRow('UKUPNI UVOZ', sum.u, max, 'var(--red)')}
-                        ${statRow('UKUPNI IZVOZ', sum.x, max, 'var(--green)')}
-                        ${statRow('PROIZVODNJA', sum.s, max, 'var(--solar)')}
-                        <div style="text-align:center; margin-top:15px; border-top:1px solid #333; padding-top:10px;">
-                            <label>TROŠAK HEP</label>
-                            <div style="font-size:1.4rem; font-weight:bold; color:var(--accent)">${sum.h.toFixed(2)} €</div>
-                        </div>
-                    </div>
-                `;
+                }, {ivt:0, int:0, evt:0, ent:0, prod:0, hep:0});
+                
+                let title = filter.toUpperCase();
+                if(filter === 'mjesec') title = now.toLocaleString('hr-HR', { month: 'long' }).toUpperCase();
+                output.innerHTML = renderStatCard(title, sum);
             }
         }
 
-        function statRow(l, v, m, c) {
-            return `<div class="h-row"><div class="h-label-row"><span>${l}</span><span>${v.toFixed(1)} kWh</span></div><div class="h-bar-bg"><div class="h-bar-fill" style="width:${(v/m*100)}%; background:${c}"></div></div></div>`;
+        function renderStatCard(title, data) {
+            const maxVal = Math.max(data.ivt, data.int, data.evt, data.ent, data.prod, 1);
+            return `
+                <div class="card">
+                    <div class="entry-title">${title}</div>
+                    ${statRow('UVOZ VT', data.ivt, maxVal, 'var(--red)', priceU)}
+                    ${statRow('UVOZ NT', data.int, maxVal, 'var(--red)', priceU, 0.6)}
+                    ${statRow('IZVOZ VT', data.evt, maxVal, 'var(--green)', priceX)}
+                    ${statRow('IZVOZ NT', data.ent, maxVal, 'var(--green)', priceX, 0.6)}
+                    ${statRow('SOLARI', data.prod, maxVal, 'var(--solar)', 0.12)}
+                    <div style="text-align:center; margin-top:10px; padding-top:10px; border-top:1px solid #333;">
+                        <span style="font-size:0.6rem; color:var(--gray)">UKUPNO HEP:</span>
+                        <span style="font-size:1.1rem; font-weight:bold; color:var(--accent); margin-left:10px;">${data.hep.toFixed(2)} €</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function statRow(l, v, m, c, price, op = 1) {
+            return `
+                <div class="h-row">
+                    <div class="h-label-row">
+                        <span>${l}</span>
+                        <span>${v.toFixed(1)} kWh | ${(v * price).toFixed(2)}€</span>
+                    </div>
+                    <div class="h-bar-bg">
+                        <div class="h-bar-fill" style="width:${(v/m*100)}%; background:${c}; opacity:${op}"></div>
+                    </div>
+                </div>`;
         }
 
         function delItem(id) { if(confirm("Obriši?")) { db = db.filter(i => i.id !== id); localStorage.setItem('solarDB', JSON.stringify(db)); rArchive(); } }
-        function clearDB() { if(confirm("Obristi SVE?")) { localStorage.clear(); db=[]; rArchive(); } }
+        function clearDB() { if(confirm("Obrisati sve?")) { localStorage.clear(); db=[]; rArchive(); } }
         function exportCSV() {
             let csv = "Datum,Uvoz VT,Uvoz NT,Izvoz VT,Izvoz NT,Solar,HEP\n";
             db.forEach(i => { csv += `${i.date},${i.ivt},${i.int},${i.evt},${i.ent},${i.prod},${i.hep}\n`; });
             const blob = new Blob([csv], {type:'text/csv'});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'solar.csv'; a.click();
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'solar_izvoz.csv'; a.click();
         }
     </script>
 </body>
