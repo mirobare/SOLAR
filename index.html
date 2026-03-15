@@ -16,35 +16,44 @@
 
         /* Unos */
         .weather-box { background: #1c1c1e; border: 1px solid var(--solar); padding: 12px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .card { background: var(--card); border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid #2c2c2e; }
+        .card { background: var(--card); border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid #2c2c2e; position: relative; }
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .input-box { background: #2c2c2e; padding: 10px; border-radius: 12px; border-bottom: 3px solid #444; }
-        label { font-size: 0.65rem; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 4px; color: var(--gray); }
+        label { font-size: 0.65rem; font-weight: bold; text-transform: uppercase; display: block; }
         input { background: transparent; border: none; color: #fff; font-size: 1.1rem; width: 100%; outline: none; font-weight: bold; }
         .euro-hint { font-size: 0.7rem; color: var(--gray); border-top: 1px solid #333; margin-top: 5px; padding-top: 3px; display: block; }
         
         /* Grafika Unos */
-        .live-graph { display: flex; align-items: flex-end; gap: 8px; height: 100px; background: #111; padding: 25px 10px 20px 10px; border-radius: 12px; border: 1px solid #333; margin-top: 15px; }
-        .v-bar { flex: 1; border-radius: 4px 4px 0 0; min-height: 2px; position: relative; transition: height 0.3s ease; }
-        .v-label { position: absolute; bottom: -18px; width: 100%; text-align: center; font-size: 0.55rem; color: var(--gray); font-weight: bold; }
+        .live-graph { display: flex; align-items: flex-end; gap: 8px; height: 100px; background: #111; padding: 15px 10px; border-radius: 12px; border: 1px solid #333; margin-top: 15px; }
+        .v-bar { flex: 1; border-radius: 4px 4px 0 0; min-height: 2px; position: relative; transition: height 0.3s; }
+        .v-label { position: absolute; bottom: -18px; width: 100%; text-align: center; font-size: 0.5rem; color: var(--gray); font-weight: bold; }
 
         /* Arhiva */
-        .archive-line { display: flex; align-items: center; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 3px solid var(--solar); }
-        .arch-date { font-size: 0.75rem; font-weight: bold; min-width: 80px; color: var(--accent); }
-        .arch-scroll-area { display: flex; gap: 12px; overflow-x: auto; flex: 1; padding: 0 10px; }
+        .archive-line { display: flex; align-items: center; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 3px solid var(--solar); overflow: hidden; }
+        .arch-date { font-size: 0.75rem; font-weight: bold; min-width: 65px; color: var(--accent); }
+        .arch-scroll-area { display: flex; gap: 12px; overflow-x: auto; flex: 1; padding: 0 10px; scrollbar-width: none; }
         .arch-data-block { display: flex; flex-direction: column; white-space: nowrap; }
         .arch-lbl { font-size: 0.55rem; color: var(--gray); text-transform: uppercase; }
         .arch-num { font-size: 0.75rem; font-weight: bold; }
-        .del-btn-mini { background: #333; color: var(--red); border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; }
+        .del-btn-mini { background: #333; color: var(--red); border: none; padding: 5px 8px; border-radius: 4px; font-size: 0.6rem; font-weight: bold; cursor: pointer; }
 
-        /* Statistika */
-        .h-row { margin-bottom: 15px; }
-        .h-label-row { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 5px; }
-        .h-bar-bg { background: #2c2c2e; height: 14px; border-radius: 7px; overflow: hidden; }
-        .h-bar-fill { height: 100%; transition: width 0.8s ease-out; }
+        /* Statistika - TVOJ ORIGINALNI IZGLED */
+        .stat-filter { display: flex; gap: 5px; margin-bottom: 15px; }
+        .f-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; background: #1c1c1e; color: #fff; font-size: 0.65rem; cursor: pointer; }
+        .f-btn.active { background: var(--accent); border-color: var(--accent); }
+        
+        .h-row { margin-bottom: 10px; }
+        .h-label-row { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 3px; font-weight: bold; }
+        .h-bar-bg { background: #111; height: 12px; border-radius: 6px; overflow: hidden; }
+        .h-bar-fill { height: 100%; transition: width 0.5s; width: 0%; }
 
-        button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1rem; margin-top: 10px; }
-        button.exp-btn { background: transparent; color: var(--green); border: 1px solid var(--green); padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        .stat-details { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid #333; font-size: 0.65rem; color: var(--gray); }
+        .stat-details.active { display: block; }
+        .detail-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #222; }
+
+        button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .exp-btn { background: #2c2c2e; color: var(--green); border: 1px solid var(--green); padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .det-btn { background: none; border: 1px solid var(--accent); color: var(--accent); padding: 4px 8px; border-radius: 6px; font-size: 0.6rem; cursor: pointer; float: right; }
     </style>
 </head>
 <body>
@@ -62,44 +71,47 @@
         <div class="card">
             <div class="input-row" style="grid-template-columns: 1fr;"><div class="input-box" style="border-color:var(--accent)"><label>Datum</label><input type="date" id="date"></div></div>
             <div class="input-row">
-                <div class="input-box" style="border-color:var(--red)"><label>Uvoz VT</label><input type="number" id="ivt" placeholder="0" oninput="lUpd()"><span class="euro-hint" id="ivt_e">0.00 €</span></div>
-                <div class="input-box" style="border-color:var(--red)"><label>Uvoz NT</label><input type="number" id="int" placeholder="0" oninput="lUpd()"><span class="euro-hint" id="int_e">0.00 €</span></div>
+                <div class="input-box" style="border-color:var(--red)"><label>Uvoz VT</label><input type="number" id="ivt" oninput="lUpd()"><span class="euro-hint" id="ivt_e">0.00 €</span></div>
+                <div class="input-box" style="border-color:var(--red)"><label>Uvoz NT</label><input type="number" id="int" oninput="lUpd()"><span class="euro-hint" id="int_e">0.00 €</span></div>
             </div>
             <div class="input-row">
-                <div class="input-box" style="border-color:var(--green)"><label>Izvoz VT</label><input type="number" id="evt" placeholder="0" oninput="lUpd()"><span class="euro-hint" id="evt_e">0.00 €</span></div>
-                <div class="input-box" style="border-color:var(--green)"><label>Izvoz NT</label><input type="number" id="ent" placeholder="0" oninput="lUpd()"><span class="euro-hint" id="ent_e">0.00 €</span></div>
+                <div class="input-box" style="border-color:var(--green)"><label>Izvoz VT</label><input type="number" id="evt" oninput="lUpd()"><span class="euro-hint" id="evt_e">0.00 €</span></div>
+                <div class="input-box" style="border-color:var(--green)"><label>Izvoz NT</label><input type="number" id="ent" oninput="lUpd()"><span class="euro-hint" id="ent_e">0.00 €</span></div>
             </div>
             <div class="input-row">
-                <div class="input-box" style="border-color:var(--solar)"><label>Solari (kWh)</label><input type="number" id="prod" placeholder="0" oninput="lUpd()"><span class="euro-hint" id="prod_e">0.00 €</span></div>
-                <div class="input-box" style="border-color:#fff"><label>HEP (€)</label><input type="number" id="hep" placeholder="0"></div>
+                <div class="input-box" style="border-color:var(--solar)"><label>Solari (kWh)</label><input type="number" id="prod" oninput="lUpd()"><span class="euro-hint" id="prod_e">0.00 €</span></div>
+                <div class="input-box" style="border-color:#fff"><label>HEP (€)</label><input type="number" id="hep"></div>
             </div>
             <button class="main-btn" onclick="sData()">SPREMI UNOS</button>
         </div>
         <div class="live-graph">
             <div class="v-bar" id="b-ivt" style="background:var(--red)"><span class="v-label">U-VT</span></div>
-            <div class="v-bar" id="b-int" style="background:var(--red); opacity:0.6"><span class="v-label">U-NT</span></div>
+            <div class="v-bar" id="b-int" style="background:var(--red); opacity:0.7"><span class="v-label">U-NT</span></div>
             <div class="v-bar" id="b-evt" style="background:var(--green)"><span class="v-label">X-VT</span></div>
-            <div class="v-bar" id="b-ent" style="background:var(--green); opacity:0.6"><span class="v-label">X-NT</span></div>
+            <div class="v-bar" id="b-ent" style="background:var(--green); opacity:0.7"><span class="v-label">X-NT</span></div>
             <div class="v-bar" id="b-prod" style="background:var(--solar)"><span class="v-label">SOLAR</span></div>
         </div>
     </div>
 
     <!-- ARHIVA -->
-    <div id="arhiva" class="tab-content">
-        <h3 style="color:var(--accent)">Povijest unosa</h3>
-        <div id="archiveList"></div>
-    </div>
+    <div id="arhiva" class="tab-content"><div id="archiveList"></div></div>
 
-    <!-- STATISTIKA -->
+    <!-- STATISTIKA (Dorađen izgled) -->
     <div id="stat" class="tab-content">
-        <h3 style="color:var(--solar)">Ukupna proizvodnja vs Potrošnja</h3>
-        <div id="statBars"></div>
+        <div class="stat-filter">
+            <button class="f-btn active" id="f-dan">UKUPNO</button>
+            <button class="f-btn">MJESECI</button>
+        </div>
+        
+        <div id="statContainer">
+            <!-- Dinamički se puni iz JS-a -->
+        </div>
     </div>
 
     <!-- POSTAVKE -->
     <div id="postavke" class="tab-content">
         <button class="exp-btn" onclick="exportCSV()">IZVEZI PODATKE (CSV)</button>
-        <p style="font-size: 0.7rem; color: var(--gray); margin-top: 20px;">Podaci se spremaju lokalno u preglednik.</p>
+        <button class="exp-btn" style="color:var(--red); border-color:var(--red); margin-top:20px;" onclick="obrisiSve()">OBRIŠI CIJELU BAZU</button>
     </div>
 
     <script>
@@ -116,15 +128,16 @@
         }
 
         function lUpd() {
-            const getV = (id) => parseFloat(document.getElementById(id).value) || 0;
-            const v = { ivt: getV('ivt'), int: getV('int'), evt: getV('evt'), ent: getV('ent'), prod: getV('prod') };
-            
-            // Cijene (prilagodi po potrebi)
+            const v = {
+                ivt: parseFloat(document.getElementById('ivt').value) || 0,
+                int: parseFloat(document.getElementById('int').value) || 0,
+                evt: parseFloat(document.getElementById('evt').value) || 0,
+                ent: parseFloat(document.getElementById('ent').value) || 0,
+                prod: parseFloat(document.getElementById('prod').value) || 0
+            };
             document.getElementById('ivt_e').innerText = (v.ivt * 0.16).toFixed(2) + " €";
             document.getElementById('evt_e').innerText = (v.evt * 0.04).toFixed(2) + " €";
-            document.getElementById('prod_e').innerText = "Vrijednost: " + (v.prod * 0.12).toFixed(2) + " €";
-
-            const max = Math.max(v.ivt, v.int, v.evt, v.ent, v.prod, 10);
+            const max = Math.max(v.ivt, v.int, v.evt, v.ent, v.prod, 1);
             ['ivt','int','evt','ent','prod'].forEach(k => {
                 document.getElementById('b-'+k).style.height = (v[k]/max * 100) + "px";
             });
@@ -143,20 +156,19 @@
             };
             db.push(entry);
             localStorage.setItem('solarDB', JSON.stringify(db));
-            alert("Podaci spremljeni!");
-            document.querySelectorAll('input[type="number"]').forEach(i => i.value = "");
-            lUpd();
+            alert("Spremljeno!");
+            rArchive();
         }
 
         function rArchive() {
             const list = document.getElementById('archiveList');
             list.innerHTML = db.slice().reverse().map(item => `
                 <div class="archive-line">
-                    <div class="arch-date">${item.date.split('-').reverse().slice(0,2).join('.')}</div>
+                    <div class="arch-date">${item.date}</div>
                     <div class="arch-scroll-area">
                         <div class="arch-data-block"><span class="arch-lbl">Uvoz</span><span class="arch-num">${item.ivt}/${item.int}</span></div>
                         <div class="arch-data-block"><span class="arch-lbl">Izvoz</span><span class="arch-num">${item.evt}/${item.ent}</span></div>
-                        <div class="arch-data-block"><span class="arch-lbl">Solar</span><span class="arch-num" style="color:var(--solar)">${item.prod}</span></div>
+                        <div class="arch-data-block"><span class="arch-lbl">Solar</span><span class="arch-num">${item.prod}</span></div>
                     </div>
                     <button class="del-btn-mini" onclick="delItem(${item.id})">X</button>
                 </div>
@@ -164,45 +176,55 @@
         }
 
         function rStat() {
-            const totals = db.reduce((acc, curr) => {
-                acc.u += (curr.ivt + curr.int);
-                acc.x += (curr.evt + curr.ent);
-                acc.s += curr.prod;
+            const totals = db.reduce((acc, c) => {
+                acc.u += (c.ivt + c.int);
+                acc.x += (c.evt + c.ent);
+                acc.s += c.prod;
                 return acc;
             }, {u:0, x:0, s:0});
 
             const max = Math.max(totals.u, totals.x, totals.s, 1);
-            document.getElementById('statBars').innerHTML = `
-                ${statRow('UKUPAN UVOZ', totals.u, max, 'var(--red)')}
-                ${statRow('UKUPAN IZVOZ', totals.x, max, 'var(--green)')}
-                ${statRow('PROIZVODNJA', totals.s, max, 'var(--solar)')}
+            const container = document.getElementById('statContainer');
+            
+            container.innerHTML = `
+                ${statBar('UVOZ MREŽA', totals.u, max, 'var(--red)')}
+                ${statBar('IZVOZ MREŽA', totals.x, max, 'var(--green)')}
+                ${statBar('PROIZVODNJA', totals.s, max, 'var(--solar)')}
             `;
         }
 
-        function statRow(lbl, val, max, col) {
-            return `<div class="h-row">
-                <div class="h-label-row"><span>${lbl}</span><b>${val.toFixed(1)} kWh</b></div>
-                <div class="h-bar-bg"><div class="h-bar-fill" style="width:${val/max*100}%; background:${col}"></div></div>
-            </div>`;
+        function statBar(label, val, max, col) {
+            let perc = (val/max * 100).toFixed(0);
+            return `
+                <div class="h-row">
+                    <div class="h-label-row"><span>${label}</span><span>${val.toFixed(1)} kWh</span></div>
+                    <div class="h-bar-bg"><div class="h-bar-fill" style="width:${perc}%; background:${col}"></div></div>
+                </div>`;
         }
 
         function delItem(id) {
-            if(confirm('Obrisati ovaj unos?')) {
-                db = db.filter(i => i.id !== id);
-                localStorage.setItem('solarDB', JSON.stringify(db));
-                rArchive();
-            }
+            db = db.filter(i => i.id !== id);
+            localStorage.setItem('solarDB', JSON.stringify(db));
+            rArchive();
         }
 
         function exportCSV() {
-            let csv = "Datum,Uvoz VT,Uvoz NT,Izvoz VT,Izvoz NT,Solar,HEP Euro\n";
-            db.forEach(i => { csv += `${i.date},${i.ivt},${i.int},${i.evt},${i.ent},${i.prod},${i.hep}\n`; });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
+            let csv = "Datum,Uvoz VT,Uvoz NT,Izvoz VT,Izvoz NT,Solar\n";
+            db.forEach(i => { csv += `${i.date},${i.ivt},${i.int},${i.evt},${i.ent},${i.prod}\n`; });
+            const blob = new Blob([csv], {type:'text/csv'});
             const a = document.createElement('a');
-            a.setAttribute('href', url);
-            a.setAttribute('download', 'solar_podaci.csv');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'solar_izvoz.csv';
             a.click();
+        }
+
+        function obrisiSve() {
+            if(confirm("Jeste li sigurni da želite obrisati CIJELU bazu?")) {
+                localStorage.removeItem('solarDB');
+                db = [];
+                rArchive();
+                rStat();
+            }
         }
     </script>
 </body>
