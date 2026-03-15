@@ -29,15 +29,34 @@
         .v-bar { flex: 1; border-radius: 4px 4px 0 0; min-height: 2px; position: relative; transition: height 0.3s; }
         .v-label { position: absolute; bottom: -18px; width: 100%; text-align: center; font-size: 0.5rem; color: var(--gray); font-weight: bold; }
 
-        /* Arhiva - Novi Grid Dizajn */
-        .archive-card { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 12px; border-left: 5px solid var(--solar); }
-        .arch-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 10px; }
-        .arch-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .arch-item { display: flex; flex-direction: column; }
-        .arch-label { color: var(--gray); font-size: 0.55rem; text-transform: uppercase; font-weight: bold; }
-        .arch-val { font-size: 0.9rem; font-weight: bold; color: #fff; }
-        .arch-eur { font-size: 0.65rem; color: var(--gray); font-weight: normal; margin-left: 2px; }
-        .del-btn { background: var(--red); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.65rem; font-weight: bold; cursor: pointer; }
+        /* Arhiva - Jednoredni Dizajn */
+        .archive-line { 
+            display: flex; 
+            align-items: center; 
+            background: var(--card); 
+            padding: 10px; 
+            border-radius: 8px; 
+            margin-bottom: 6px; 
+            border-left: 3px solid var(--solar);
+            overflow: hidden;
+        }
+        .arch-date { font-size: 0.75rem; font-weight: bold; min-width: 65px; color: var(--accent); }
+        .arch-scroll-area { 
+            display: flex; 
+            gap: 12px; 
+            overflow-x: auto; 
+            flex: 1; 
+            padding: 0 10px;
+            scrollbar-width: none; /* Skriva scrollbar na Firefoxu */
+        }
+        .arch-scroll-area::-webkit-scrollbar { display: none; } /* Skriva scrollbar na Chrome/Safari */
+        
+        .arch-data-block { display: flex; flex-direction: column; white-space: nowrap; }
+        .arch-lbl { font-size: 0.55rem; color: var(--gray); text-transform: uppercase; }
+        .arch-num { font-size: 0.75rem; font-weight: bold; }
+        .arch-eur-small { font-size: 0.6rem; color: var(--gray); font-weight: normal; }
+
+        .del-btn-mini { background: #333; color: var(--red); border: none; padding: 5px 8px; border-radius: 4px; font-size: 0.6rem; font-weight: bold; cursor: pointer; margin-left: 5px; }
         
         button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1rem; }
     </style>
@@ -81,7 +100,7 @@
 
     <!-- ARHIVA -->
     <div id="arhiva" class="tab-content">
-        <h3 style="margin-top:0">Arhiva podataka</h3>
+        <h3 style="margin-top:0">Arhiva unosa</h3>
         <div id="archiveList"></div>
     </div>
 
@@ -92,7 +111,7 @@
 <script>
     const K = 'SOLAR_DB_V29';
     let db = JSON.parse(localStorage.getItem(K)) || [];
-    let cfg = { vt: 0.148, nt: 0.077, sell: 0.045 }; // Default cijene
+    let cfg = { vt: 0.148, nt: 0.077, sell: 0.045 }; 
 
     document.getElementById('date').valueAsDate = new Date();
 
@@ -140,7 +159,7 @@
         if(!entry.date) return alert("Unesi datum!");
         db.unshift(entry);
         localStorage.setItem(K, JSON.stringify(db));
-        alert("Spremljeno u Arhivu!");
+        alert("Spremljeno!");
         ["ivt","int","evt","ent","prod","hep"].forEach(id => document.getElementById(id).value = "");
         lUpd();
     }
@@ -150,51 +169,49 @@
         list.innerHTML = ""; 
 
         if (db.length === 0) {
-            list.innerHTML = "<p style='color:gray; text-align:center;'>Arhiva je prazna.</p>";
+            list.innerHTML = "<p style='color:gray; text-align:center;'>Nema podataka.</p>";
             return;
         }
 
         db.forEach(item => {
             const div = document.createElement('div');
-            div.className = 'archive-card';
+            div.className = 'archive-line';
             div.innerHTML = `
-                <div class="arch-header">
-                    <strong style="color:var(--accent)">📅 ${item.date.split('-').reverse().join('.')}</strong>
-                    <button class="del-btn" onclick="obrisiUnos(${item.id})">OBRIŠI</button>
-                </div>
-                <div class="arch-grid">
-                    <div class="arch-item">
-                        <span class="arch-label">Uvoz VT</span>
-                        <span class="arch-val" style="color:var(--red)">${item.ivt}<span class="arch-eur">${(item.ivt * cfg.vt).toFixed(2)}€</span></span>
+                <div class="arch-date">${item.date.split('-').reverse().slice(0,2).join('.')}</div>
+                <div class="arch-scroll-area">
+                    <div class="arch-data-block">
+                        <span class="arch-lbl">U-VT</span>
+                        <span class="arch-num" style="color:var(--red)">${item.ivt}<span class="arch-eur-small"> ${(item.ivt*cfg.vt).toFixed(1)}€</span></span>
                     </div>
-                    <div class="arch-item">
-                        <span class="arch-label">Uvoz NT</span>
-                        <span class="arch-val" style="color:var(--red)">${item.int}<span class="arch-eur">${(item.int * cfg.nt).toFixed(2)}€</span></span>
+                    <div class="arch-data-block">
+                        <span class="arch-lbl">U-NT</span>
+                        <span class="arch-num" style="color:var(--red)">${item.int}<span class="arch-eur-small"> ${(item.int*cfg.nt).toFixed(1)}€</span></span>
                     </div>
-                    <div class="arch-item">
-                        <span class="arch-label">HEP</span>
-                        <span class="arch-val" style="white-space:nowrap">${item.hep.toFixed(2)} €</span>
+                    <div class="arch-data-block">
+                        <span class="arch-lbl">X-VT</span>
+                        <span class="arch-num" style="color:var(--green)">${item.evt}<span class="arch-eur-small"> ${(item.evt*cfg.sell).toFixed(1)}€</span></span>
                     </div>
-                    <div class="arch-item">
-                        <span class="arch-label">Izvoz VT</span>
-                        <span class="arch-val" style="color:var(--green)">${item.evt}<span class="arch-eur">${(item.evt * cfg.sell).toFixed(2)}€</span></span>
+                    <div class="arch-data-block">
+                        <span class="arch-lbl">X-NT</span>
+                        <span class="arch-num" style="color:var(--green)">${item.ent}<span class="arch-eur-small"> ${(item.ent*cfg.sell).toFixed(1)}€</span></span>
                     </div>
-                    <div class="arch-item">
-                        <span class="arch-label">Izvoz NT</span>
-                        <span class="arch-val" style="color:var(--green)">${item.ent}<span class="arch-eur">${(item.ent * cfg.sell).toFixed(2)}€</span></span>
+                    <div class="arch-data-block">
+                        <span class="arch-lbl">SOLAR</span>
+                        <span class="arch-num" style="color:var(--solar)">${item.prod}<span class="arch-eur-small"> ${(item.prod*cfg.vt).toFixed(1)}€</span></span>
                     </div>
-                    <div class="arch-item">
-                        <span class="arch-label">Solari</span>
-                        <span class="arch-val" style="color:var(--solar)">${item.prod}<span class="arch-eur">${(item.prod * cfg.vt).toFixed(2)}€</span></span>
+                    <div class="arch-data-block">
+                        <span class="arch-lbl">HEP</span>
+                        <span class="arch-num">${item.hep}€</span>
                     </div>
                 </div>
+                <button class="del-btn-mini" onclick="obrisiUnos(${item.id})">X</button>
             `;
             list.appendChild(div);
         });
     }
 
     function obrisiUnos(id) {
-        if(confirm("Trajno obrisati ovaj dan iz arhive?")) {
+        if(confirm("Obriši?")) {
             db = db.filter(i => i.id !== id);
             localStorage.setItem(K, JSON.stringify(db));
             rArch();
