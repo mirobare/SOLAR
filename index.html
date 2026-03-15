@@ -3,59 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solar Pro Petrinja</title>
+    <title>Solar Pro Petrinja v8</title>
+    <!-- Provjeri imaš li internet vezu za ovu skriptu -->
     <script src="https://cdn.jsdelivr.net"></script>
     <style>
         :root { --bg: #000; --card: #1c1c1e; --accent: #0A84FF; --solar: #FF9F0A; --green: #32D74B; --red: #FF453A; --text: #fff; --gray: #8e8e93; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; padding-bottom: 20px; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 50px; }
         
         .nav-tabs { display: flex; background: #1c1c1e; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #333; }
-        .nav-btn { flex: 1; padding: 15px 5px; border: none; background: none; color: var(--gray); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
+        .nav-btn { flex: 1; padding: 15px 5px; border: none; background: none; color: var(--gray); font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
         .nav-btn.active { color: var(--accent); border-bottom: 3px solid var(--accent); }
 
         .tab-content { display: none; padding: 15px; max-width: 800px; margin: auto; }
         .tab-content.active { display: block; }
 
-        /* Weather Section */
-        .weather-box { background: #1c1c1e; border: 1px solid var(--solar); padding: 15px; border-radius: 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; }
-        .weather-icon { font-size: 2.5rem; }
-        .weather-rec { font-weight: bold; color: var(--solar); font-size: 0.9rem; }
+        /* ROI */
+        .card-roi { background: #1c1c1e; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid #333; text-align: center; }
+        .roi-bar { background: #333; height: 12px; border-radius: 6px; margin: 12px 0; overflow: hidden; position: relative; }
+        .roi-fill { background: var(--solar); height: 100%; width: 0%; transition: 1.5s ease-in-out; }
 
-        /* ROI Card */
-        .card-roi { background: linear-gradient(145deg, #1c1c1e, #2c2c2e); padding: 20px; border-radius: 16px; margin-bottom: 20px; text-align: center; border: 1px solid #333; }
-        .roi-bar { background: #333; height: 10px; border-radius: 5px; margin: 15px 0; overflow: hidden; }
-        .roi-fill { background: var(--solar); height: 100%; width: 0%; transition: 1.5s ease-out; }
-
-        /* Input Styling with requested colors */
-        .card { background: var(--card); border-radius: 16px; padding: 16px; margin-bottom: 15px; border: 1px solid #2c2c2e; }
-        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
-        .input-box { background: #2c2c2e; padding: 12px; border-radius: 12px; border-bottom: 3px solid transparent; }
+        /* Inputs */
+        .card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid #2c2c2e; }
+        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .input-box { background: #2c2c2e; padding: 10px; border-radius: 12px; border-bottom: 3px solid #444; }
+        .box-import { border-color: var(--red); color: var(--red); }
+        .box-export { border-color: var(--green); color: var(--green); }
+        .box-solar { border-color: var(--solar); color: var(--solar); }
         
-        /* Specific Colors */
-        .box-import { border-color: var(--red); }
-        .box-import label, .box-import .code { color: var(--red); }
-        .box-export { border-color: var(--green); }
-        .box-export label, .box-export .code { color: var(--green); }
-        .box-solar { border-color: var(--solar); }
-        .box-solar label, .box-solar .code { color: var(--solar); }
-        .box-hep { border-color: #fff; }
-        .box-hep label, .box-hep .code { color: #fff; }
-
-        .code { font-size: 0.6rem; font-weight: bold; opacity: 0.8; }
-        label { font-size: 0.8rem; display: block; margin: 4px 0; font-weight: 600; }
         input { background: transparent; border: none; color: #fff; font-size: 1.2rem; width: 100%; outline: none; font-weight: bold; }
+        label { font-size: 0.7rem; color: inherit; font-weight: bold; text-transform: uppercase; }
         
-        button.main-btn { background: var(--accent); color: white; border: none; padding: 20px; border-radius: 16px; width: 100%; font-weight: bold; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(10, 132, 255, 0.3); }
-        
-        /* Archive */
-        .archive-item { display: flex; align-items: center; background: var(--card); padding: 12px; border-radius: 12px; margin-bottom: 8px; border-left: 5px solid var(--solar); }
-        .archive-info { flex: 1; margin-left: 12px; }
-        .checkbox { width: 24px; height: 24px; accent-color: var(--red); }
+        button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; font-size: 1rem; cursor: pointer; }
 
-        /* Stats */
-        .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .stat-card { background: #1c1c1e; padding: 15px; border-radius: 14px; text-align: center; border: 1px solid #333; }
-        .stat-val { font-size: 1.4rem; font-weight: bold; color: var(--solar); display: block; }
+        /* Arhiva Card */
+        .archive-card { background: var(--card); padding: 15px; border-radius: 14px; margin-bottom: 12px; border: 1px solid #333; }
+        .archive-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 0.8rem; margin-top: 10px; }
+        
+        /* Stats Table */
+        .stat-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
+        .stat-table td { padding: 8px; border-bottom: 1px solid #333; }
+        .stat-table .label { color: var(--gray); }
+        .stat-table .val { text-align: right; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -69,100 +57,93 @@
 
     <!-- UNOS -->
     <div id="unos" class="tab-content active">
-        <!-- Vrijeme -->
-        <div class="weather-box">
-            <div class="weather-icon">☀️</div>
-            <div>
-                <div style="font-weight:bold; font-size: 1.1rem;">Petrinja: Sunčano</div>
-                <div class="weather-rec" id="weatherRec">IDEALNO: Uključi velike potrošače odmah!</div>
-            </div>
-        </div>
-
-        <!-- ROI -->
         <div class="card-roi">
-            <small style="color:var(--gray); text-transform: uppercase;">Povrat investicije (10.700 €)</small>
-            <div id="roiText" style="font-size: 2.2rem; font-weight: 900; color: var(--solar); margin: 5px 0;">0.00 €</div>
+            <small style="color:var(--gray)">POVRAT INVESTICIJE</small>
+            <div id="roiText" style="font-size: 2rem; font-weight: 900; color: var(--solar); margin: 5px 0;">0.00 €</div>
             <div class="roi-bar"><div id="roiBar" class="roi-fill"></div></div>
             <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--gray)">
-                <span id="roiPerc">0% isplaćeno</span>
-                <span id="roiLeft">Preostalo: 10.700 €</span>
+                <span id="roiPerc">0%</span><span id="roiLeft">Preostalo: 10.700 €</span>
             </div>
         </div>
 
         <div class="card">
             <div class="input-row" style="grid-template-columns: 1fr;"><div class="input-box" style="border-color:var(--accent)"><label>Datum</label><input type="date" id="date"></div></div>
-            
             <div class="input-row">
-                <div class="input-box box-import"><span class="code">1.8.1</span><label>Uvoz VT</label><input type="number" id="iVT" placeholder="0"></div>
-                <div class="input-box box-import"><span class="code">1.8.2</span><label>Uvoz NT</label><input type="number" id="iNT" placeholder="0"></div>
+                <div class="input-box box-import"><label>Uvoz VT (1.8.1)</label><input type="number" id="iVT"></div>
+                <div class="input-box box-import"><label>Uvoz NT (1.8.2)</label><input type="number" id="iNT"></div>
             </div>
-            
             <div class="input-row">
-                <div class="input-box box-export"><span class="code">2.8.1</span><label>Izvoz VT</label><input type="number" id="eVT" placeholder="0"></div>
-                <div class="input-box box-export"><span class="code">2.8.2</span><label>Izvoz NT</label><input type="number" id="eNT" placeholder="0"></div>
+                <div class="input-box box-export"><label>Izvoz VT (2.8.1)</label><input type="number" id="eVT"></div>
+                <div class="input-box box-export"><label>Izvoz NT (2.8.2)</label><input type="number" id="eNT"></div>
             </div>
-            
             <div class="input-row">
-                <div class="input-box box-solar"><span class="code">APSYSTEMS</span><label>Solari</label><input type="number" id="prod" placeholder="0"></div>
-                <div class="input-box box-hep"><span class="code">RAČUN</span><label>HEP €</label><input type="number" id="hep" placeholder="0"></div>
+                <div class="input-box box-solar"><label>Solari (kWh)</label><input type="number" id="prod"></div>
+                <div class="input-box" style="border-color:#fff"><label>HEP Račun (€)</label><input type="number" id="hep"></div>
             </div>
-            
             <button class="main-btn" onclick="saveData()">SPREMI DNEVNI UNOS</button>
         </div>
+        <div id="quickInfo" style="text-align:center; color:var(--green); font-size:0.8rem;"></div>
     </div>
 
     <!-- ARHIVA -->
     <div id="arhiva" class="tab-content">
-        <div style="display:flex; justify-content: space-between; margin-bottom: 20px; align-items:center;">
-            <h2 style="margin:0">Povijest</h2>
-            <button onclick="deleteSelected()" style="background:var(--red); color:white; border:none; padding:10px 15px; border-radius:10px; font-weight:bold;">OBRIŠI</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3>Svi unosi</h3>
+            <button onclick="deleteSelected()" style="background:var(--red); color:white; border:none; padding:8px 15px; border-radius:10px; font-weight:bold;">OBRIŠI</button>
         </div>
         <div id="archiveList"></div>
     </div>
 
     <!-- STATISTIKA -->
     <div id="stat" class="tab-content">
-        <h2>Statistika Proizvodnje</h2>
-        <div class="stat-grid">
-            <div class="stat-card"><small>DANAS</small><span id="sD" class="stat-val">0</span><small>kWh</small></div>
-            <div class="stat-card"><small>MJESEC</small><span id="sM" class="stat-val">0</span><small>kWh</small></div>
-            <div class="stat-card"><small>GODINA</small><span id="sY" class="stat-val">0</span><small>kWh</small></div>
-            <div class="stat-card"><small>UKUPNO</small><span id="sT" class="stat-val">0</span><small>kWh</small></div>
+        <h3>Pregled po razdobljima</h3>
+        <div class="card">
+            <table class="stat-table">
+                <tr><td class="label">Danas Proizvedeno:</td><td class="val" id="sD" style="color:var(--solar)">0 kWh</td></tr>
+                <tr><td class="label">Ovaj mjesec:</td><td class="val" id="sM">0 kWh</td></tr>
+                <tr><td class="label">Ova godina:</td><td class="val"> <span id="sY">0</span> kWh</td></tr>
+                <tr style="border-top:2px solid #444"><td class="label" style="color:var(--solar)">UKUPNO SVE:</td><td class="val" id="sT" style="color:var(--solar)">0 kWh</td></tr>
+            </table>
         </div>
-        <div class="card" style="margin-top:20px; height: 300px;">
+        
+        <div class="card" style="height:300px; padding:10px;">
             <canvas id="statChart"></canvas>
         </div>
     </div>
 
     <!-- POSTAVKE -->
     <div id="postavke" class="tab-content">
-        <h2>Postavke</h2>
+        <h3>Postavke sustava</h3>
         <div class="card">
-            <label>Cijena Visoka Tarifa (€/kWh)</label>
-            <input type="number" id="cfgVT" step="0.001" style="border-bottom: 1px solid #444; margin-bottom: 20px;">
-            <label>Cijena Niska Tarifa (€/kWh)</label>
-            <input type="number" id="cfgNT" step="0.001" style="border-bottom: 1px solid #444; margin-bottom: 20px;">
+            <label>Ukupna Investicija (€)</label><input type="number" id="cfgInv" style="border-bottom:1px solid #444; margin-bottom:15px;">
+            <label>Cijena Kupnje VT (€/kWh)</label><input type="number" id="cfgVT" step="0.001" style="border-bottom:1px solid #444; margin-bottom:15px;">
+            <label>Cijena Kupnje NT (€/kWh)</label><input type="number" id="cfgNT" step="0.001" style="border-bottom:1px solid #444; margin-bottom:15px;">
+            <label style="color:var(--green)">Cijena Prodaje (Otkup) (€/kWh)</label><input type="number" id="cfgSell" step="0.001" style="border-bottom:1px solid var(--green); margin-bottom:15px;">
             <button class="main-btn" onclick="saveSettings()">SPREMI POSTAVKE</button>
         </div>
-        <button onclick="exportJSON()" style="background:#333; color:white; border:none; padding:15px; border-radius:12px; width:100%; margin-top:20px;">BACKUP PODATAKA (JSON)</button>
     </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('solarV6')) || [];
-    let cfg = JSON.parse(localStorage.getItem('solarCfgV6')) || { vt: 0.14, nt: 0.07 };
-    let chartObj = null;
+    let db = JSON.parse(localStorage.getItem('solar_db_v8')) || [];
+    let cfg = JSON.parse(localStorage.getItem('solar_cfg_v8')) || { inv: 10700, vt: 0.14, nt: 0.07, sell: 0.04 };
+    let myChart = null;
 
     document.getElementById('date').valueAsDate = new Date();
+    document.getElementById('cfgInv').value = cfg.inv;
     document.getElementById('cfgVT').value = cfg.vt;
     document.getElementById('cfgNT').value = cfg.nt;
+    document.getElementById('cfgSell').value = cfg.sell;
 
     function switchTab(evt, id) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         evt.currentTarget.classList.add('active');
+        
+        if(id === 'stat') {
+            setTimeout(renderStats, 100); // Mala odgoda da se canvas učita
+        }
         if(id === 'arhiva') renderArchive();
-        if(id === 'stat') renderStats();
         updateROI();
     }
 
@@ -178,86 +159,109 @@
             h: parseFloat(document.getElementById('hep').value) || 0
         };
         db.push(entry);
-        localStorage.setItem('solarV6', JSON.stringify(db));
-        alert("Podaci su uspješno spremljeni! ✅");
+        localStorage.setItem('solar_db_v8', JSON.stringify(db));
+        document.getElementById('quickInfo').innerText = "Unos spremljen! ✅";
+        setTimeout(() => document.getElementById('quickInfo').innerText = "", 2000);
         updateROI();
     }
 
     function updateROI() {
-        const totalSavings = db.reduce((acc, r) => acc + (r.p * cfg.vt), 0);
-        const perc = (totalSavings / 10700 * 100).toFixed(1);
-        document.getElementById('roiText').innerText = totalSavings.toFixed(2) + " €";
+        const totalkWh = db.reduce((acc, r) => acc + r.p, 0);
+        const savedEur = totalkWh * cfg.vt;
+        const perc = (savedEur / cfg.inv * 100).toFixed(1);
+        
+        document.getElementById('roiText').innerText = savedEur.toFixed(2) + " €";
         document.getElementById('roiBar').style.width = Math.min(perc, 100) + "%";
-        document.getElementById('roiPerc').innerText = perc + "% isplaćeno";
-        document.getElementById('roiLeft').innerText = "Preostalo: " + (10700 - totalSavings).toFixed(2) + " €";
+        document.getElementById('roiPerc').innerText = perc + "%";
+        document.getElementById('roiLeft').innerText = "Preostalo: " + (cfg.inv - savedEur).toFixed(2) + " €";
     }
 
     function renderArchive() {
         const container = document.getElementById('archiveList');
         container.innerHTML = '';
-        db.sort((a,b) => new Date(b.d) - new Date(a.d)).forEach(r => {
+        db.slice().sort((a,b) => new Date(b.d) - new Date(a.d)).forEach(r => {
             container.innerHTML += `
-                <div class="archive-item">
-                    <input type="checkbox" class="checkbox" data-id="${r.id}">
-                    <div class="archive-info">
-                        <div style="font-weight:bold; font-size:1rem; margin-bottom:4px;">${r.d}</div>
-                        <span style="color:var(--solar)">☀️ ${r.p} kWh</span> | 
-                        <span style="color:var(--red)">📥 ${r.ivt+r.int}</span> | 
-                        <span style="color:var(--green)">📤 ${r.evt+r.ent}</span>
+                <div class="archive-card">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <input type="checkbox" class="checkbox" data-id="${r.id}" style="width:20px;height:20px;">
+                        <strong style="color:var(--accent)">${r.d}</strong>
+                        <span style="color:var(--solar); font-weight:bold;">${r.p} kWh</span>
+                    </div>
+                    <div class="archive-grid">
+                        <div style="color:var(--red)">U-VT: ${r.ivt}</div><div style="color:var(--red)">U-NT: ${r.int}</div><div style="color:#fff">HEP: ${r.h}€</div>
+                        <div style="color:var(--green)">X-VT: ${r.evt}</div><div style="color:var(--green)">X-NT: ${r.ent}</div>
                     </div>
                 </div>`;
         });
     }
 
     function renderStats() {
-        const now = new Date().toISOString().split('T')[0];
+        const now = new Date();
+        const todayStr = now.toISOString().split('T')[0];
+        const monthStr = todayStr.substring(0, 7);
+        const yearStr = todayStr.substring(0, 4);
+
         let d=0, m=0, y=0, t=0;
         db.forEach(r => {
-            if(r.d === now) d += r.p;
-            if(r.d.substring(0,7) === now.substring(0,7)) m += r.p;
-            if(r.d.substring(0,4) === now.substring(0,4)) y += r.p;
+            if(r.d === todayStr) d += r.p;
+            if(r.d.startsWith(monthStr)) m += r.p;
+            if(r.d.startsWith(yearStr)) y += r.p;
             t += r.p;
         });
-        document.getElementById('sD').innerText = d.toFixed(1);
-        document.getElementById('sM').innerText = m.toFixed(1);
-        document.getElementById('sY').innerText = y.toFixed(1);
-        document.getElementById('sT').innerText = t.toFixed(0);
 
-        const ctx = document.getElementById('statChart').getContext('2d');
-        if(chartObj) chartObj.destroy();
+        document.getElementById('sD').innerText = d.toFixed(1) + " kWh";
+        document.getElementById('sM').innerText = m.toFixed(1) + " kWh";
+        document.getElementById('sY').innerText = y.toFixed(1);
+        document.getElementById('sT').innerText = t.toFixed(0) + " kWh";
+
+        // GRAFIKON FIX
+        const ctx = document.getElementById('statChart');
+        if (myChart) myChart.destroy();
+        
         const last7 = db.slice(-7);
-        chartObj = new Chart(ctx, {
+        myChart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: last7.map(x => x.d.substring(5)),
-                datasets: [{ label: 'kWh', data: last7.map(x => x.p), backgroundColor: '#FF9F0A', borderRadius: 5 }]
+                datasets: [{
+                    label: 'Proizvodnja (kWh)',
+                    data: last7.map(x => x.p),
+                    backgroundColor: '#FF9F0A',
+                    borderRadius: 5
+                }]
             },
-            options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#333' } } } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#333' }, ticks: { color: '#fff' } },
+                    x: { grid: { display: false }, ticks: { color: '#fff' } }
+                },
+                plugins: { legend: { display: false } }
+            }
         });
     }
 
     function deleteSelected() {
-        if(!confirm("Sigurno brisanje?")) return;
         const ids = Array.from(document.querySelectorAll('.checkbox:checked')).map(c => parseInt(c.dataset.id));
+        if(ids.length === 0) return;
+        if(!confirm("Obrisati odabrane unose?")) return;
         db = db.filter(r => !ids.includes(r.id));
-        localStorage.setItem('solarV6', JSON.stringify(db));
+        localStorage.setItem('solar_db_v8', JSON.stringify(db));
         renderArchive();
     }
 
     function saveSettings() {
+        cfg.inv = parseFloat(document.getElementById('cfgInv').value);
         cfg.vt = parseFloat(document.getElementById('cfgVT').value);
         cfg.nt = parseFloat(document.getElementById('cfgNT').value);
-        localStorage.setItem('solarCfgV6', JSON.stringify(cfg));
-        alert("Cijene ažurirane!");
+        cfg.sell = parseFloat(document.getElementById('cfgSell').value);
+        localStorage.setItem('solar_cfg_v8', JSON.stringify(cfg));
+        alert("Postavke spremljene!");
+        updateROI();
     }
 
-    function exportJSON() {
-        const blob = new Blob([JSON.stringify(db)], {type: "application/json"});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = "solar_backup.json"; a.click();
-    }
-
+    // Pokretanje
     updateROI();
 </script>
 </body>
