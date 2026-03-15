@@ -15,7 +15,7 @@
         .tab-content.active { display: block; }
 
         .weather-box { background: #1c1c1e; border: 1px solid var(--solar); padding: 12px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .card { background: var(--card); border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid #2c2c2e; }
+        .card { background: var(--card); border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid #2c2c2e; position: relative; }
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .input-box { background: #2c2c2e; padding: 10px; border-radius: 12px; border-bottom: 3px solid #444; }
         label { font-size: 0.65rem; font-weight: bold; text-transform: uppercase; display: block; }
@@ -46,11 +46,11 @@
 
         .stat-details { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid #333; font-size: 0.65rem; color: var(--gray); }
         .stat-details.active { display: block; }
-        .detail-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid #222; }
+        .detail-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #222; }
 
         button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1rem; }
         .exp-btn { background: #2c2c2e; color: var(--green); border: 1px solid var(--green); padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .det-btn { background: none; border: 1px solid var(--accent); color: var(--accent); padding: 4px 8px; border-radius: 6px; font-size: 0.6rem; cursor: pointer; float: right; }
+        .det-btn { background: none; border: 1px solid var(--accent); color: var(--accent); padding: 4px 8px; border-radius: 6px; font-size: 0.6rem; cursor: pointer; float: right; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -199,7 +199,7 @@
 
         let groups = {};
         if (filter === 'ukupno') {
-            groups['SVEUKUPNO'] = db.reduce((a, c) => ({ ivt:a.ivt+c.ivt, int:a.int+c.int, evt:a.evt+c.evt, ent:a.ent+c.ent, prod:a.prod+c.prod, days:db }), {ivt:0,int:0,evt:0,ent:0,prod:0,days:[]});
+            groups['SVEUKUPNO'] = db.reduce((a, c) => ({ ivt:a.ivt+c.ivt, int:a.int+c.int, evt:a.evt+c.evt, ent:a.ent+c.ent, prod:a.prod+c.prod, days:[...a.days, c] }), {ivt:0,int:0,evt:0,ent:0,prod:0,days:[]});
         } else {
             db.forEach(d => {
                 let key = d.date;
@@ -223,14 +223,14 @@
 
             const card = document.createElement('div');
             card.className = 'card';
-            const detId = 'det-' + key.replace('-','');
+            const detId = 'det-' + key.toString().replace(/[^a-zA-Z0-9]/g, "");
             card.innerHTML = `
                 ${filter !== 'dan' ? `<button class="det-btn" onclick="document.getElementById('${detId}').classList.toggle('active')">DETALJI</button>` : ''}
                 <h4 style="margin:0 0 10px 0; color:var(--accent); font-size:0.8rem;">${displayTitle}</h4>
-                ${genHBar("U-VT", s.ivt, max, "var(--red)", s.ivt*(cfg.vt||0))}
-                ${genHBar("U-NT", s.int, max, "var(--red)", s.int*(cfg.nt||0), 0.6)}
-                ${genHBar("X-VT", s.evt, max, "var(--green)", s.evt*(cfg.xvt||0))}
-                ${genHBar("X-NT", s.ent, max, "var(--green)", s.ent*(cfg.xnt||0), 0.6)}
+                ${genHBar("UVOZ VT", s.ivt, max, "var(--red)", s.ivt*(cfg.vt||0))}
+                ${genHBar("UVOZ NT", s.int, max, "var(--red)", s.int*(cfg.nt||0), 0.6)}
+                ${genHBar("IZVOZ VT", s.evt, max, "var(--green)", s.evt*(cfg.xvt||0))}
+                ${genHBar("IZVOZ NT", s.ent, max, "var(--green)", s.ent*(cfg.xnt||0), 0.6)}
                 ${genHBar("SOLAR", s.prod, max, "var(--solar)", s.prod*(cfg.vt||0))}
                 <div id="${detId}" class="stat-details">
                     <div style="font-weight:bold; margin-bottom:5px; color:#fff">Dani unutar razdoblja:</div>
@@ -241,7 +241,7 @@
     }
 
     function genHBar(lbl, val, max, col, eur, op=1) {
-        return `<div class="h-row"><div class="h-label-row"><span>${lbl}</span><span style="color:${col}">${val.toFixed(1)} <span style="font-size:0.6rem">(${eur.toFixed(1)}€)</span></span></div>
+        return `<div class="h-row"><div class="h-label-row"><span>${lbl}</span><span style="color:${col}">${val.toFixed(1)} kWh <span style="font-size:0.6rem">(${eur.toFixed(1)}€)</span></span></div>
             <div class="h-bar-bg"><div class="h-bar-fill" style="width:${(val/max*100)}%; background:${col}; opacity:${op}"></div></div></div>`;
     }
 
