@@ -36,11 +36,11 @@
         .del-btn-mini { background: #333; color: var(--red); border: none; padding: 5px 8px; border-radius: 4px; font-size: 0.6rem; font-weight: bold; cursor: pointer; }
 
         .stat-filter { display: flex; gap: 5px; margin-bottom: 15px; }
-        .f-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; background: #1c1c1e; color: #fff; font-size: 0.6rem; cursor: pointer; }
+        .f-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; background: #1c1c1e; color: #fff; font-size: 0.65rem; cursor: pointer; }
         .f-btn.active { background: var(--accent); border-color: var(--accent); }
         
         .h-row { margin-bottom: 10px; }
-        .h-label-row { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 3px; font-weight: bold; }
+        .h-label-row { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 3px; font-weight: bold; }
         .h-bar-bg { background: #111; height: 12px; border-radius: 6px; overflow: hidden; }
         .h-bar-fill { height: 100%; transition: width 0.5s; }
 
@@ -152,7 +152,10 @@
         document.getElementById('ent_e').innerText = (v.ent*(cfg.xnt||0)).toFixed(2)+" €";
         document.getElementById('prod_e').innerText = (v.prod*(cfg.vt||0)).toFixed(2)+" €";
         const max = Math.max(v.ivt, v.int, v.evt, v.ent, v.prod, 1);
-        ['ivt','int','evt','ent','prod'].forEach(id => document.getElementById('b-'+id).style.height = (v[id]/max*100) + "px");
+        ['ivt','int','evt','ent','prod'].forEach(id => {
+            const bar = document.getElementById('b-'+id);
+            if(bar) bar.style.height = (v[id]/max*100) + "px";
+        });
     }
 
     function sData() {
@@ -197,7 +200,7 @@
     function rStat(filter, btn) {
         document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
         const out = document.getElementById('statOutput'); out.innerHTML = "";
-        if (db.length === 0) { out.innerHTML = "<p style='text-align:center;color:gray;padding:20px;'>Nema unosa u bazi.</p>"; return; }
+        if (db.length === 0) return;
 
         let groups = {};
         if (filter === 'ukupno') {
@@ -213,31 +216,28 @@
             });
         }
 
-        const mjeseciImena = ["Sij", "Velj", "Ožu", "Tra", "Svi", "Lip", "Srp", "Kol", "Ruj", "Lis", "Stu", "Pro"];
+        const mImena = ["Sij", "Velj", "Ožu", "Tra", "Svi", "Lip", "Srp", "Kol", "Ruj", "Lis", "Stu", "Pro"];
 
         Object.keys(groups).sort().reverse().forEach(key => {
             const s = groups[key];
             const max = Math.max(s.ivt, s.int, s.evt, s.ent, s.prod, 1);
-            let displayTitle = key;
-            
+            let naslov = key;
             if(filter === 'mjesec' && key !== 'SVEUKUPNO') {
-                const p = key.split('-');
-                const mIdx = parseInt(p[1]) - 1;
-                displayTitle = mjeseciImena[mIdx] + " " + p[0];
-            }
+                const parts = key.split('-');
+                naslov = mImena[parseInt(parts[1]) - 1] + " " + parts[0];
+            } else if(filter === 'dan') naslov = key.split('-').reverse().join('.');
 
             const card = document.createElement('div'); card.className = 'card';
             const detId = 'det-' + key.toString().replace(/[^a-zA-Z0-9]/g, "");
             card.innerHTML = `
                 ${filter !== 'dan' ? `<button class="det-btn" onclick="document.getElementById('${detId}').classList.toggle('active')">DETALJI</button>` : ''}
-                <h4 style="margin:0 0 10px 0; color:var(--accent); font-size:0.8rem;">${displayTitle}</h4>
+                <h4 style="margin:0 0 15px 0; color:var(--accent); font-size:0.8rem;">${naslov}</h4>
                 ${genHBar("UVOZ VT", s.ivt, max, "var(--red)", s.ivt*(cfg.vt||0))}
                 ${genHBar("UVOZ NT", s.int, max, "var(--red)", s.int*(cfg.nt||0), 0.6)}
                 ${genHBar("IZVOZ VT", s.evt, max, "var(--green)", s.evt*(cfg.xvt||0))}
                 ${genHBar("IZVOZ NT", s.ent, max, "var(--green)", s.ent*(cfg.xnt||0), 0.6)}
                 ${genHBar("SOLAR", s.prod, max, "var(--solar)", s.prod*(cfg.vt||0))}
                 <div id="${detId}" class="stat-details">
-                    <div style="font-weight:bold; margin-bottom:5px; color:#fff">Dani unutar razdoblja:</div>
                     ${s.days.map(d => `<div class="detail-row"><span>${d.date.split('-').reverse().slice(0,2).join('.')}</span><span style="color:var(--red)">U:${(d.ivt+d.int).toFixed(1)}</span><span style="color:var(--green)">X:${(d.evt+d.ent).toFixed(1)}</span><span style="color:var(--solar)">S:${d.prod.toFixed(1)}</span></div>`).join('')}
                 </div>`;
             out.appendChild(card);
@@ -245,20 +245,20 @@
     }
 
     function genHBar(lbl, val, max, col, eur, op=1) {
-        return `<div class="h-row"><div class="h-label-row"><span>${lbl}</span><span style="color:${col}">${val.toFixed(1)} kWh <span style="font-size:0.6rem">(${eur.toFixed(2)} €)</span></span></div>
+        return `<div class="h-row"><div class="h-label-row"><span>${lbl}</span><span style="color:${col}">${val.toFixed(1)} kWh <span style="font-size:0.7rem">(${eur.toFixed(2)} €)</span></span></div>
             <div class="h-bar-bg"><div class="h-bar-fill" style="width:${(val/max*100)}%; background:${col}; opacity:${op}"></div></div></div>`;
     }
 
     function obrisiUnos(id) { if(confirm("Obriši?")) { db = db.filter(i => i.id !== id); localStorage.setItem(K, JSON.stringify(db)); rArch(); uROI(); rStat('dan', document.querySelector('.f-btn')); } }
 
     function exportToExcel() {
-        if(db.length === 0) return alert("Nema podataka za izvoz.");
+        if(db.length === 0) return alert("Nema podataka.");
         let csv = "Datum,Uvoz VT,Uvoz NT,Izvoz VT,Izvoz NT,Solar kWh,HEP Euro\n";
-        db.forEach(d => { csv += `${d.date},${d.ivt},${d.int},${d.evt},${d.ent},${d.prod},${d.hep}\n`; });
+        db.forEach(d => csv += `${d.date},${d.ivt},${d.int},${d.evt},${d.ent},${d.prod},${d.hep}\n`);
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `solar_pro_export_${new Date().toISOString().slice(0,10)}.csv`;
+        link.download = `solar_export_${new Date().toISOString().slice(0,10)}.csv`;
         link.click();
     }
 </script>
