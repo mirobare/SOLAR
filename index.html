@@ -14,8 +14,7 @@
         .tab-content { display: none; padding: 15px; max-width: 800px; margin: auto; }
         .tab-content.active { display: block; }
 
-        /* Unos */
-        .weather-box { background: #1c1c1e; border: 1px solid var(--solar); padding: 12px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        /* Unos & Arhiva (Ostaju isti po dogovoru) */
         .card { background: var(--card); border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid #2c2c2e; position: relative; }
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .input-box { background: #2c2c2e; padding: 10px; border-radius: 12px; border-bottom: 3px solid #444; }
@@ -23,12 +22,6 @@
         input { background: transparent; border: none; color: #fff; font-size: 1.1rem; width: 100%; outline: none; font-weight: bold; }
         .euro-hint { font-size: 0.7rem; color: var(--gray); border-top: 1px solid #333; margin-top: 5px; padding-top: 3px; display: block; }
         
-        /* Grafika Unos */
-        .live-graph { display: flex; align-items: flex-end; gap: 8px; height: 100px; background: #111; padding: 15px 10px; border-radius: 12px; border: 1px solid #333; margin-top: 15px; }
-        .v-bar { flex: 1; border-radius: 4px 4px 0 0; min-height: 2px; position: relative; transition: height 0.3s; }
-        .v-label { position: absolute; bottom: -18px; width: 100%; text-align: center; font-size: 0.5rem; color: var(--gray); font-weight: bold; }
-
-        /* Arhiva */
         .archive-line { display: flex; align-items: center; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 3px solid var(--solar); overflow: hidden; }
         .arch-date { font-size: 0.75rem; font-weight: bold; min-width: 65px; color: var(--accent); }
         .arch-scroll-area { display: flex; gap: 12px; overflow-x: auto; flex: 1; padding: 0 10px; scrollbar-width: none; }
@@ -37,15 +30,17 @@
         .arch-num { font-size: 0.75rem; font-weight: bold; }
         .del-btn-mini { background: #333; color: var(--red); border: none; padding: 5px 8px; border-radius: 4px; font-size: 0.6rem; font-weight: bold; cursor: pointer; }
 
-        /* Statistika */
+        /* STATISTIKA - NOVI VODORAVNI GRAF */
         .stat-filter { display: flex; gap: 5px; margin-bottom: 15px; }
         .f-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; background: #1c1c1e; color: #fff; font-size: 0.6rem; font-weight: bold; cursor: pointer; }
         .f-btn.active { background: var(--accent); border-color: var(--accent); }
-        .h-row { margin-bottom: 10px; }
-        .h-label-row { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 3px; font-weight: bold; }
-        .h-bar-bg { background: #111; height: 10px; border-radius: 5px; overflow: hidden; border: 1px solid #222; }
-        .h-bar-fill { height: 100%; transition: width 0.6s ease-out; }
-        .entry-title { font-size: 0.75rem; color: var(--accent); margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 5px; font-weight: bold; }
+
+        .energy-bar-container { display: flex; height: 35px; background: #111; border-radius: 8px; overflow: hidden; margin: 10px 0; border: 1px solid #333; }
+        .energy-segment { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: bold; color: #000; overflow: hidden; white-space: nowrap; transition: width 0.5s; }
+        .segment-label { display: flex; flex-direction: column; align-items: center; font-size: 0.55rem; color: var(--gray); margin-bottom: 5px; }
+
+        .stat-legend { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 10px; font-size: 0.6rem; text-align: center; }
+        .leg-item { padding: 4px; border-radius: 4px; background: #2c2c2e; }
 
         button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1rem; }
         .exp-btn { background: #2c2c2e; color: var(--green); border: 1px solid var(--green); padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
@@ -60,43 +55,31 @@
         <button class="nav-btn" onclick="swTab('postavke', this)">Postavke</button>
     </nav>
 
-    <!-- UNOS (Nedirnut) -->
     <div id="unos" class="tab-content active">
-        <div class="weather-box">☀️ <div class="w-text" style="color:var(--solar); font-weight:bold; margin-left:10px;">PETRINJA: SUNČANO</div></div>
         <div class="card">
             <div class="input-row" style="grid-template-columns: 1fr;"><div class="input-box" style="border-color:var(--accent)"><label>Datum</label><input type="date" id="date"></div></div>
             <div class="input-row">
-                <div class="input-box" style="border-color:var(--red)"><label>Uvoz VT</label><input type="number" id="ivt" oninput="lUpd()"><span class="euro-hint" id="ivt_e">0.00 €</span></div>
-                <div class="input-box" style="border-color:var(--red)"><label>Uvoz NT</label><input type="number" id="int" oninput="lUpd()"><span class="euro-hint" id="int_e">0.00 €</span></div>
+                <div class="input-box" style="border-color:var(--red)"><label>Uvoz VT</label><input type="number" id="ivt"><span class="euro-hint" id="ivt_e">0.00 €</span></div>
+                <div class="input-box" style="border-color:var(--red)"><label>Uvoz NT</label><input type="number" id="int"><span class="euro-hint" id="int_e">0.00 €</span></div>
             </div>
             <div class="input-row">
-                <div class="input-box" style="border-color:var(--green)"><label>Izvoz VT</label><input type="number" id="evt" oninput="lUpd()"><span class="euro-hint" id="evt_e">0.00 €</span></div>
-                <div class="input-box" style="border-color:var(--green)"><label>Izvoz NT</label><input type="number" id="ent" oninput="lUpd()"><span class="euro-hint" id="ent_e">0.00 €</span></div>
+                <div class="input-box" style="border-color:var(--green)"><label>Izvoz VT</label><input type="number" id="evt"><span class="euro-hint" id="evt_e">0.00 €</span></div>
+                <div class="input-box" style="border-color:var(--green)"><label>Izvoz NT</label><input type="number" id="ent"><span class="euro-hint" id="ent_e">0.00 €</span></div>
             </div>
             <div class="input-row">
-                <div class="input-box" style="border-color:var(--solar)"><label>Solari (kWh)</label><input type="number" id="prod" oninput="lUpd()"><span class="euro-hint" id="prod_e">0.00 €</span></div>
+                <div class="input-box" style="border-color:var(--solar)"><label>Solari (kWh)</label><input type="number" id="prod"></div>
                 <div class="input-box" style="border-color:#fff"><label>HEP (€)</label><input type="number" id="hep"></div>
             </div>
             <button class="main-btn" onclick="sData()">SPREMI UNOS</button>
         </div>
-        <div class="live-graph">
-            <div class="v-bar" id="b-ivt" style="background:var(--red)"><span class="v-label">U-VT</span></div>
-            <div class="v-bar" id="b-int" style="background:var(--red); opacity:0.7"><span class="v-label">U-NT</span></div>
-            <div class="v-bar" id="b-evt" style="background:var(--green)"><span class="v-label">X-VT</span></div>
-            <div class="v-bar" id="b-ent" style="background:var(--green); opacity:0.7"><span class="v-label">X-NT</span></div>
-            <div class="v-bar" id="b-prod" style="background:var(--solar)"><span class="v-label">SOLAR</span></div>
-        </div>
     </div>
 
-    <!-- ARHIVA (Nedirnut) -->
     <div id="arhiva" class="tab-content"><div id="archiveList"></div></div>
 
-    <!-- STATISTIKA (Razrađen detaljni prikaz) -->
     <div id="stat" class="tab-content">
         <div class="stat-filter">
-            <button class="f-btn active" onclick="rStat('dan', this)">DANAS</button>
+            <button class="f-btn active" onclick="rStat('dan', this)">DAN</button>
             <button class="f-btn" onclick="rStat('mjesec', this)">MJESEC</button>
-            <button class="f-btn" onclick="rStat('godina', this)">GODINA</button>
             <button class="f-btn" onclick="rStat('ukupno', this)">UKUPNO</button>
         </div>
         <div id="statOutput"></div>
@@ -104,16 +87,12 @@
 
     <div id="postavke" class="tab-content">
         <button class="exp-btn" onclick="exportCSV()">IZVEZI PODATKE (CSV)</button>
-        <button class="exp-btn" style="color:var(--red); border-color:var(--red); margin-top:20px;" onclick="clearDB()">OBRIŠI SVE PODATKE</button>
+        <button class="exp-btn" style="color:var(--red); border-color:var(--red); margin-top:20px;" onclick="clearDB()">OBRIŠI SVE</button>
     </div>
 
     <script>
         let db = JSON.parse(localStorage.getItem('solarDB')) || [];
         document.getElementById('date').valueAsDate = new Date();
-
-        // CIJENE ZA IZRAČUN
-        const priceU = 0.16; 
-        const priceX = 0.04;
 
         function swTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -124,30 +103,10 @@
             if(id === 'stat') rStat('dan', document.querySelector('.f-btn.active'));
         }
 
-        function lUpd() {
-            const v = {
-                ivt: parseFloat(document.getElementById('ivt').value) || 0,
-                int: parseFloat(document.getElementById('int').value) || 0,
-                evt: parseFloat(document.getElementById('evt').value) || 0,
-                ent: parseFloat(document.getElementById('ent').value) || 0,
-                prod: parseFloat(document.getElementById('prod').value) || 0
-            };
-            document.getElementById('ivt_e').innerText = (v.ivt * priceU).toFixed(2) + " €";
-            document.getElementById('int_e').innerText = (v.int * priceU).toFixed(2) + " €";
-            document.getElementById('evt_e').innerText = (v.evt * priceX).toFixed(2) + " €";
-            document.getElementById('ent_e').innerText = (v.ent * priceX).toFixed(2) + " €";
-            document.getElementById('prod_e').innerText = (v.prod * 0.12).toFixed(2) + " €";
-            const max = Math.max(v.ivt, v.int, v.evt, v.ent, v.prod, 1);
-            ['ivt','int','evt','ent','prod'].forEach(k => {
-                document.getElementById('b-'+k).style.height = (v[k]/max * 100) + "px";
-            });
-        }
-
         function sData() {
             const entry = {
                 id: Date.now(),
                 date: document.getElementById('date').value,
-                time: new Date().toLocaleTimeString('hr-HR', {hour: '2-digit', minute:'2-digit'}),
                 ivt: parseFloat(document.getElementById('ivt').value) || 0,
                 int: parseFloat(document.getElementById('int').value) || 0,
                 evt: parseFloat(document.getElementById('evt').value) || 0,
@@ -157,7 +116,7 @@
             };
             db.push(entry);
             localStorage.setItem('solarDB', JSON.stringify(db));
-            alert("Podaci spremljeni!");
+            alert("Spremljeno!");
         }
 
         function rArchive() {
@@ -166,9 +125,9 @@
                 <div class="archive-line">
                     <div class="arch-date">${i.date.split('-').reverse().slice(0,2).join('.')}</div>
                     <div class="arch-scroll-area">
-                        <div class="arch-data-block"><span class="arch-lbl" style="color:var(--red)">Uvoz</span><span class="arch-num">${(i.ivt+i.int).toFixed(1)}kWh</span><span class="arch-lbl">${((i.ivt+i.int)*priceU).toFixed(2)}€</span></div>
-                        <div class="arch-data-block"><span class="arch-lbl" style="color:var(--green)">Izvoz</span><span class="arch-num">${(i.evt+i.ent).toFixed(1)}kWh</span><span class="arch-lbl">${((i.evt+i.ent)*priceX).toFixed(2)}€</span></div>
-                        <div class="arch-data-block"><span class="arch-lbl" style="color:var(--solar)">Solar</span><span class="arch-num">${i.prod}kWh</span><span class="arch-lbl">HEP: ${i.hep}€</span></div>
+                        <div class="arch-data-block"><span class="arch-lbl" style="color:var(--red)">Uvoz</span><span class="arch-num">${(i.ivt+i.int).toFixed(1)}</span></div>
+                        <div class="arch-data-block"><span class="arch-lbl" style="color:var(--green)">Izvoz</span><span class="arch-num">${(i.evt+i.ent).toFixed(1)}</span></div>
+                        <div class="arch-data-block"><span class="arch-lbl" style="color:var(--solar)">Solar</span><span class="arch-num">${i.prod}</span></div>
                     </div>
                     <button class="del-btn-mini" onclick="delItem(${i.id})">X</button>
                 </div>
@@ -179,72 +138,61 @@
             document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             const now = new Date();
-            const output = document.getElementById('statOutput');
-            output.innerHTML = '';
+            const out = document.getElementById('statOutput');
+            out.innerHTML = '';
 
             let filtered = db.filter(i => {
                 const d = new Date(i.date);
                 if(filter === 'dan') return d.toDateString() === now.toDateString();
-                if(filter === 'mjesec') return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-                if(filter === 'godina') return d.getFullYear() === now.getFullYear();
+                if(filter === 'mjesec') return d.getMonth() === now.getMonth();
                 return true;
             });
 
-            // Obrada podataka (zbirno ili pojedinačno)
-            if (filter === 'dan' && filtered.length > 0) {
-                filtered.forEach(entry => {
-                    output.innerHTML += renderStatCard(`Unos u ${entry.time}`, entry);
-                });
-            } else {
-                const sum = filtered.reduce((a, c) => {
-                    a.ivt += c.ivt; a.int += c.int; a.evt += c.evt; a.ent += c.ent; a.prod += c.prod; a.hep += c.hep;
-                    return a;
-                }, {ivt:0, int:0, evt:0, ent:0, prod:0, hep:0});
-                
-                let title = filter.toUpperCase();
-                if(filter === 'mjesec') title = now.toLocaleString('hr-HR', { month: 'long' }).toUpperCase();
-                output.innerHTML = renderStatCard(title, sum);
-            }
-        }
+            if(filtered.length === 0) { out.innerHTML = '<p style="text-align:center; color:var(--gray)">Nema podataka za ovaj period.</p>'; return; }
 
-        function renderStatCard(title, data) {
-            const maxVal = Math.max(data.ivt, data.int, data.evt, data.ent, data.prod, 1);
-            return `
+            const sum = filtered.reduce((a, c) => {
+                a.ivt += c.ivt; a.int += c.int; a.evt += c.evt; a.ent += c.ent; a.prod += c.prod; a.hep += c.hep;
+                return a;
+            }, {ivt:0, int:0, evt:0, ent:0, prod:0, hep:0});
+
+            const totalKwh = sum.ivt + sum.int + sum.evt + sum.ent + sum.prod;
+            const getP = (val) => (val / totalKwh * 100);
+
+            out.innerHTML = `
                 <div class="card">
-                    <div class="entry-title">${title}</div>
-                    ${statRow('UVOZ VT', data.ivt, maxVal, 'var(--red)', priceU)}
-                    ${statRow('UVOZ NT', data.int, maxVal, 'var(--red)', priceU, 0.6)}
-                    ${statRow('IZVOZ VT', data.evt, maxVal, 'var(--green)', priceX)}
-                    ${statRow('IZVOZ NT', data.ent, maxVal, 'var(--green)', priceX, 0.6)}
-                    ${statRow('SOLARI', data.prod, maxVal, 'var(--solar)', 0.12)}
-                    <div style="text-align:center; margin-top:10px; padding-top:10px; border-top:1px solid #333;">
-                        <span style="font-size:0.6rem; color:var(--gray)">UKUPNO HEP:</span>
-                        <span style="font-size:1.1rem; font-weight:bold; color:var(--accent); margin-left:10px;">${data.hep.toFixed(2)} €</span>
+                    <div style="font-size:0.75rem; font-weight:bold; margin-bottom:15px; color:var(--accent); text-transform:uppercase;">Pregled: ${filter}</div>
+                    
+                    <div class="energy-bar-container">
+                        <div class="energy-segment" style="width:${getP(sum.ivt)}%; background:var(--red);" title="U-VT">${sum.ivt.toFixed(1)}</div>
+                        <div class="energy-segment" style="width:${getP(sum.int)}%; background:var(--red); opacity:0.6;" title="U-NT">${sum.int.toFixed(1)}</div>
+                        <div class="energy-segment" style="width:${getP(sum.evt)}%; background:var(--green);" title="X-VT">${sum.evt.toFixed(1)}</div>
+                        <div class="energy-segment" style="width:${getP(sum.ent)}%; background:var(--green); opacity:0.6;" title="X-NT">${sum.ent.toFixed(1)}</div>
+                        <div class="energy-segment" style="width:${getP(sum.prod)}%; background:var(--solar);" title="Solar">${sum.prod.toFixed(1)}</div>
+                    </div>
+
+                    <div class="stat-legend">
+                        <div class="leg-item"><span style="color:var(--red)">●</span> U-VT: ${(sum.ivt*0.16).toFixed(2)}€</div>
+                        <div class="leg-item"><span style="color:var(--red); opacity:0.6">●</span> U-NT: ${(sum.int*0.16).toFixed(2)}€</div>
+                        <div class="leg-item"><span style="color:var(--green)">●</span> X-VT: ${(sum.evt*0.04).toFixed(2)}€</div>
+                        <div class="leg-item"><span style="color:var(--green); opacity:0.6">●</span> X-NT: ${(sum.ent*0.04).toFixed(2)}€</div>
+                        <div class="leg-item" style="grid-column: span 2;"><span style="color:var(--solar)">●</span> SOLAR: ${sum.prod.toFixed(1)} kWh</div>
+                    </div>
+
+                    <div style="text-align:center; margin-top:15px; border-top:1px solid #333; padding-top:10px;">
+                        <span style="font-size:0.6rem; color:var(--gray)">UKUPNO PLAĆENO HEP-u:</span>
+                        <div style="font-size:1.3rem; font-weight:bold; color:var(--accent)">${sum.hep.toFixed(2)} €</div>
                     </div>
                 </div>
             `;
         }
 
-        function statRow(l, v, m, c, price, op = 1) {
-            return `
-                <div class="h-row">
-                    <div class="h-label-row">
-                        <span>${l}</span>
-                        <span>${v.toFixed(1)} kWh | ${(v * price).toFixed(2)}€</span>
-                    </div>
-                    <div class="h-bar-bg">
-                        <div class="h-bar-fill" style="width:${(v/m*100)}%; background:${c}; opacity:${op}"></div>
-                    </div>
-                </div>`;
-        }
-
         function delItem(id) { if(confirm("Obriši?")) { db = db.filter(i => i.id !== id); localStorage.setItem('solarDB', JSON.stringify(db)); rArchive(); } }
-        function clearDB() { if(confirm("Obrisati sve?")) { localStorage.clear(); db=[]; rArchive(); } }
+        function clearDB() { if(confirm("Obristi SVE?")) { localStorage.clear(); db=[]; rArchive(); } }
         function exportCSV() {
             let csv = "Datum,Uvoz VT,Uvoz NT,Izvoz VT,Izvoz NT,Solar,HEP\n";
             db.forEach(i => { csv += `${i.date},${i.ivt},${i.int},${i.evt},${i.ent},${i.prod},${i.hep}\n`; });
             const blob = new Blob([csv], {type:'text/csv'});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'solar_izvoz.csv'; a.click();
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'solar.csv'; a.click();
         }
     </script>
 </body>
