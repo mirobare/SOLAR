@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solar Pro v11</title>
+    <title>Solar Pro v12 - Fixed</title>
     <script src="https://cdnjs.cloudflare.com"></script>
     <style>
         :root { --bg: #000; --card: #1c1c1e; --accent: #0A84FF; --solar: #FF9F0A; --green: #32D74B; --red: #FF453A; --text: #fff; --gray: #8e8e93; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 60px; }
         
         .nav-tabs { display: flex; background: #1c1c1e; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #333; }
-        .nav-btn { flex: 1; padding: 15px 5px; border: none; background: none; color: var(--gray); font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        .nav-btn { flex: 1; padding: 15px 5px; border: none; background: none; color: var(--gray); font-size: 0.7rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
         .nav-btn.active { color: var(--accent); border-bottom: 3px solid var(--accent); }
 
         .tab-content { display: none; padding: 15px; max-width: 800px; margin: auto; }
         .tab-content.active { display: block; }
 
-        /* Card styles */
         .card { background: var(--card); border-radius: 12px; padding: 12px; margin-bottom: 10px; border: 1px solid #2c2c2e; }
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
         .input-box { background: #2c2c2e; padding: 8px; border-radius: 10px; border-bottom: 2px solid #444; }
@@ -30,12 +29,9 @@
         
         button.main-btn { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; }
 
-        /* Stats table */
         .stat-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
         .stat-table td { padding: 10px 5px; border-bottom: 1px solid #2c2c2e; }
-        .val-unit { font-size: 0.7rem; color: var(--gray); margin-left: 3px; }
 
-        /* Archive Compact */
         .archive-line { display: flex; align-items: center; justify-content: space-between; background: var(--card); padding: 8px; border-radius: 8px; margin-bottom: 5px; font-size: 0.75rem; border-left: 3px solid var(--solar); }
         .archive-data { display: flex; gap: 8px; overflow-x: auto; white-space: nowrap; flex: 1; margin-left: 10px; }
 
@@ -46,10 +42,10 @@
 <body>
 
     <nav class="nav-tabs">
-        <button class="nav-btn active" onclick="switchTab(event, 'unos')">Unos</button>
-        <button class="nav-btn" onclick="switchTab(event, 'arhiva')">Arhiva</button>
-        <button class="nav-btn" onclick="switchTab(event, 'stat')">Statistika</button>
-        <button class="nav-btn" onclick="switchTab(event, 'postavke')">Postavke</button>
+        <button id="btn-unos" class="nav-btn active" onclick="switchTab('unos')">Unos</button>
+        <button id="btn-arhiva" class="nav-btn" onclick="switchTab('arhiva')">Arhiva</button>
+        <button id="btn-stat" class="nav-btn" onclick="switchTab('stat')">Statistika</button>
+        <button id="btn-postavke" class="nav-btn" onclick="switchTab('postavke')">Postavke</button>
     </nav>
 
     <!-- UNOS -->
@@ -62,16 +58,16 @@
         <div class="card">
             <div class="input-row" style="grid-template-columns: 1fr;"><div class="input-box" style="border-color:var(--accent)"><label>Datum</label><input type="date" id="date"></div></div>
             <div class="input-row">
-                <div class="input-box box-import"><label>Uvoz VT</label><input type="number" id="iVT" oninput="liveUpdate()"></div>
-                <div class="input-box box-import"><label>Uvoz NT</label><input type="number" id="iNT" oninput="liveUpdate()"></div>
+                <div class="input-box box-import"><label>Uvoz VT</label><input type="number" id="iVT" step="any"></div>
+                <div class="input-box box-import"><label>Uvoz NT</label><input type="number" id="iNT" step="any"></div>
             </div>
             <div class="input-row">
-                <div class="input-box box-export"><label>Izvoz VT</label><input type="number" id="eVT" oninput="liveUpdate()"></div>
-                <div class="input-box box-export"><label>Izvoz NT</label><input type="number" id="eNT" oninput="liveUpdate()"></div>
+                <div class="input-box box-export"><label>Izvoz VT</label><input type="number" id="eVT" step="any"></div>
+                <div class="input-box box-export"><label>Izvoz NT</label><input type="number" id="eNT" step="any"></div>
             </div>
             <div class="input-row">
-                <div class="input-box box-solar"><label>Solari (kWh)</label><input type="number" id="prod" oninput="liveUpdate()"></div>
-                <div class="input-box" style="border-color:#fff"><label>HEP (€)</label><input type="number" id="hep"></div>
+                <div class="input-box box-solar"><label>Solari (kWh)</label><input type="number" id="prod" step="any"></div>
+                <div class="input-box" style="border-color:#fff"><label>HEP (€)</label><input type="number" id="hep" step="any"></div>
             </div>
             <button class="main-btn" onclick="saveData()">SPREMI UNOS</button>
         </div>
@@ -83,7 +79,7 @@
     <div id="arhiva" class="tab-content">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
             <h3 style="margin:0">Povijest</h3>
-            <button onclick="deleteSelected()" style="background:var(--red); color:#fff; border:none; padding:5px 10px; border-radius:5px; font-weight:bold;">X</button>
+            <button onclick="deleteSelected()" style="background:var(--red); color:#fff; border:none; padding:5px 10px; border-radius:5px; font-weight:bold;">OBRIŠI OZNAČENO</button>
         </div>
         <div id="archiveList"></div>
     </div>
@@ -98,7 +94,6 @@
                 <tr style="color:#fff; font-weight:bold; border-top:2px solid #333;"><td>UKUPNO SVE:</td><td id="sT_k" align="right">0</td><td id="sT_e" align="right">0 €</td></tr>
             </table>
         </div>
-        
         <div id="yearlyLists"></div>
         <div class="card" style="height: 250px; margin-top:15px;"><canvas id="statChartFull"></canvas></div>
     </div>
@@ -118,49 +113,47 @@
             <label>Cijena VT (€)</label><input type="number" id="cfgVT" step="0.001">
             <label>Cijena NT (€)</label><input type="number" id="cfgNT" step="0.001">
             <label>Otkup HEP (€)</label><input type="number" id="cfgSell" step="0.001">
-            <button class="main-btn" style="margin-top:10px" onclick="saveSettings()">SPREMI</button>
+            <button class="main-btn" style="margin-top:10px" onclick="saveSettings()">SPREMI POSTAVKE</button>
         </div>
     </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('solar_v11')) || [];
-    let cfg = JSON.parse(localStorage.getItem('solar_cfg_v11')) || { inv: 10700, vt: 0.14, nt: 0.07, sell: 0.04 };
+    let db = JSON.parse(localStorage.getItem('solar_v12')) || [];
+    let cfg = JSON.parse(localStorage.getItem('solar_cfg_v12')) || { inv: 10700, vt: 0.14, nt: 0.07, sell: 0.04 };
     let c1=null, c2=null;
 
-    document.getElementById('date').valueAsDate = new Date();
-    document.getElementById('cfgInv').value = cfg.inv;
-    document.getElementById('cfgVT').value = cfg.vt;
-    document.getElementById('cfgNT').value = cfg.nt;
-    document.getElementById('cfgSell').value = cfg.sell;
+    window.onload = () => {
+        document.getElementById('date').valueAsDate = new Date();
+        loadSettings();
+        switchTab('unos');
+    };
 
-    function switchTab(evt, id) {
+    function loadSettings() {
+        document.getElementById('cfgInv').value = cfg.inv;
+        document.getElementById('cfgVT').value = cfg.vt;
+        document.getElementById('cfgNT').value = cfg.nt;
+        document.getElementById('cfgSell').value = cfg.sell;
+    }
+
+    function switchTab(id) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        evt.currentTarget.classList.add('active');
+        document.getElementById('btn-' + id).classList.add('active');
+        
+        if(id === 'unos') renderLiveChart();
         if(id === 'stat') renderStats();
         if(id === 'arhiva') renderArchive();
         if(id === 'postavke') updateROI();
-        if(id === 'unos') liveUpdate();
-    }
-
-    function liveUpdate() {
-        const ctx = document.getElementById('liveChart').getContext('2d');
-        if(c1) c1.destroy();
-        const last5 = db.slice(-5);
-        c1 = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: last5.map(x => x.d.slice(8)),
-                datasets: [{ label: 'kWh', data: last5.map(x => x.p), borderColor: '#FF9F0A', tension: 0.3, fill: true, backgroundColor: 'rgba(255, 159, 10, 0.1)' }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#333' } }, x: { grid: { display: false } } } }
-        });
     }
 
     function saveData() {
+        const dateInput = document.getElementById('date').value;
+        if(!dateInput) return alert("Odaberi datum!");
+
         const entry = {
-            id: Date.now(), d: document.getElementById('date').value,
+            id: Date.now(),
+            d: dateInput,
             ivt: parseFloat(document.getElementById('iVT').value) || 0,
             int: parseFloat(document.getElementById('iNT').value) || 0,
             evt: parseFloat(document.getElementById('eVT').value) || 0,
@@ -168,22 +161,44 @@
             p: parseFloat(document.getElementById('prod').value) || 0,
             h: parseFloat(document.getElementById('hep').value) || 0
         };
+
         db.push(entry);
-        localStorage.setItem('solar_v11', JSON.stringify(db));
-        alert("Spremljeno!");
-        liveUpdate();
+        db.sort((a,b) => new Date(a.d) - new Date(b.d));
+        localStorage.setItem('solar_v12', JSON.stringify(db));
+        
+        alert("Spremljeno u arhivu!");
+        switchTab('unos');
+    }
+
+    function renderArchive() {
+        const cont = document.getElementById('archiveList');
+        cont.innerHTML = '';
+        const sorted = [...db].sort((a,b) => new Date(b.d) - new Date(a.d));
+        sorted.forEach(r => {
+            cont.innerHTML += `
+                <div class="archive-line">
+                    <input type="checkbox" class="checkbox" data-id="${r.id}">
+                    <strong style="margin:0 5px">${r.d}</strong>
+                    <div class="archive-data">
+                        <span style="color:var(--solar)">P:${r.p}</span>
+                        <span style="color:var(--red)">U:${(r.ivt+r.int).toFixed(1)}</span>
+                        <span style="color:var(--green)">I:${(r.evt+r.ent).toFixed(1)}</span>
+                        <span style="color:#fff">H:${r.h}€</span>
+                    </div>
+                </div>`;
+        });
     }
 
     function renderStats() {
         const today = new Date().toISOString().split('T')[0];
-        const month = today.slice(0, 7);
-        const year = today.slice(0, 4);
+        const month = today.substring(0, 7);
+        const year = today.substring(0, 4);
 
         let d_k=0, m_k=0, y_k=0, t_k=0;
         let years = {};
 
         db.forEach(r => {
-            const y = r.d.slice(0,4);
+            const y = r.d.substring(0,4);
             if(r.d === today) d_k += r.p;
             if(r.d.startsWith(month)) m_k += r.p;
             if(r.d.startsWith(year)) y_k += r.p;
@@ -194,7 +209,7 @@
         });
 
         const set = (id, k) => {
-            document.getElementById(id+'_k').innerHTML = k.toFixed(1) + '<span class="val-unit">kWh</span>';
+            document.getElementById(id+'_k').innerHTML = k.toFixed(1) + ' <small>kWh</small>';
             document.getElementById(id+'_e').innerText = (k * cfg.vt).toFixed(2) + ' €';
         };
 
@@ -205,39 +220,37 @@
         Object.keys(years).sort().reverse().forEach(y => {
             yCont.innerHTML += `
                 <div class="card" style="font-size:0.8rem;">
-                    <div style="color:var(--accent); font-weight:bold; margin-bottom:5px;">Godina ${y}</div>
-                    <div style="display:flex; justify-content:space-between;">
-                        <span style="color:var(--solar)">Solari: ${years[y].p.toFixed(1)} (${(years[y].p*cfg.vt).toFixed(1)}€)</span>
-                        <span style="color:var(--red)">Uvoz: ${years[y].i.toFixed(1)}</span>
-                        <span style="color:var(--green)">Izvoz: ${years[y].e.toFixed(1)}</span>
+                    <div style="color:var(--accent); font-weight:bold;">Godina ${y}</div>
+                    <div style="display:flex; justify-content:space-between; margin-top:5px;">
+                        <span style="color:var(--solar)">P: ${years[y].p.toFixed(0)}</span>
+                        <span style="color:var(--red)">U: ${years[y].i.toFixed(0)}</span>
+                        <span style="color:var(--green)">I: ${years[y].e.toFixed(0)}</span>
+                        <span>€: ${(years[y].p*cfg.vt).toFixed(0)}</span>
                     </div>
                 </div>`;
         });
 
         const ctx = document.getElementById('statChartFull').getContext('2d');
         if(c2) c2.destroy();
+        const last10 = db.slice(-10);
         c2 = new Chart(ctx, {
             type: 'bar',
-            data: { labels: db.slice(-10).map(x => x.d.slice(5)), datasets: [{ label: 'kWh', data: db.slice(-10).map(x => x.p), backgroundColor: '#FF9F0A' }] },
+            data: { labels: last10.map(x => x.d.slice(5)), datasets: [{ data: last10.map(x => x.p), backgroundColor: '#FF9F0A' }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
     }
 
-    function renderArchive() {
-        const cont = document.getElementById('archiveList');
-        cont.innerHTML = '';
-        db.slice().sort((a,b) => new Date(b.d) - new Date(a.d)).forEach(r => {
-            cont.innerHTML += `
-                <div class="archive-line">
-                    <input type="checkbox" class="checkbox" data-id="${r.id}">
-                    <strong style="margin:0 5px">${r.d.slice(5)}</strong>
-                    <div class="archive-data">
-                        <span style="color:var(--solar)">P:${r.p}</span>
-                        <span style="color:var(--red)">U:${r.ivt+r.int}</span>
-                        <span style="color:var(--green)">I:${r.evt+r.ent}</span>
-                        <span style="color:#fff">H:${r.h}€</span>
-                    </div>
-                </div>`;
+    function renderLiveChart() {
+        const ctx = document.getElementById('liveChart').getContext('2d');
+        if(c1) c1.destroy();
+        const last5 = db.slice(-5);
+        c1 = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: last5.map(x => x.d.slice(8)),
+                datasets: [{ data: last5.map(x => x.p), borderColor: '#FF9F0A', tension: 0.3, fill: true, backgroundColor: 'rgba(255, 159, 10, 0.1)' }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
     }
 
@@ -252,20 +265,23 @@
 
     function deleteSelected() {
         const ids = Array.from(document.querySelectorAll('.checkbox:checked')).map(c => parseInt(c.dataset.id));
-        if(ids.length && confirm("Obrisati?")) {
+        if(ids.length && confirm("Obrisati odabrano?")) {
             db = db.filter(r => !ids.includes(r.id));
-            localStorage.setItem('solar_v11', JSON.stringify(db));
+            localStorage.setItem('solar_v12', JSON.stringify(db));
             renderArchive();
         }
     }
 
     function saveSettings() {
-        cfg = { inv: parseFloat(document.getElementById('cfgInv').value), vt: parseFloat(document.getElementById('cfgVT').value), nt: parseFloat(document.getElementById('cfgNT').value), sell: parseFloat(document.getElementById('cfgSell').value) };
-        localStorage.setItem('solar_cfg_v11', JSON.stringify(cfg));
-        alert("Spremljeno!");
+        cfg = { 
+            inv: parseFloat(document.getElementById('cfgInv').value) || 10700, 
+            vt: parseFloat(document.getElementById('cfgVT').value) || 0.14, 
+            nt: parseFloat(document.getElementById('cfgNT').value) || 0.07, 
+            sell: parseFloat(document.getElementById('cfgSell').value) || 0.04 
+        };
+        localStorage.setItem('solar_cfg_v12', JSON.stringify(cfg));
+        alert("Postavke spremljene!");
     }
-
-    window.onload = () => { liveUpdate(); updateROI(); };
 </script>
 </body>
 </html>
