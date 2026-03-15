@@ -3,19 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solar Pro v22 ARHIVA FIX</title>
+    <title>Solar Pro v25 - GitHub Edition</title>
     <style>
         :root { --bg: #000; --card: #1c1c1e; --accent: #0A84FF; --solar: #FF9F0A; --green: #32D74B; --red: #FF453A; --text: #fff; --gray: #8e8e93; }
         body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 70px; }
-        
         .nav-tabs { display: flex; background: #1c1c1e; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #333; }
-        .nav-btn { flex: 1; padding: 15px 5px; border: none; background: none; color: var(--gray); font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        .nav-btn { flex: 1; padding: 15px 5px; border: none; background: none; color: var(--gray); font-size: 0.7rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
         .nav-btn.active { color: var(--accent); border-bottom: 3px solid var(--accent); }
-
         .tab-content { display: none; padding: 15px; max-width: 600px; margin: auto; }
         .tab-content.active { display: block; }
-
-        /* UNOS (NE DIRATI) */
         .card { background: var(--card); border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid #2c2c2e; }
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .input-box { background: #2c2c2e; padding: 10px; border-radius: 12px; border-bottom: 3px solid #444; }
@@ -25,23 +21,22 @@
         .live-graph { display: flex; align-items: flex-end; gap: 8px; height: 100px; background: #111; padding: 15px 10px; border-radius: 12px; border: 1px solid #333; margin-top: 15px; }
         .v-bar { flex: 1; border-radius: 4px 4px 0 0; min-height: 2px; position: relative; transition: height 0.3s; }
         .v-label { position: absolute; bottom: -18px; width: 100%; text-align: center; font-size: 0.5rem; color: var(--gray); font-weight: bold; }
-        button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
-
-        /* ARHIVA - POPRAVLJENO */
+        button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; cursor: pointer; }
+        /* Arhiva */
         .archive-line { display: flex; align-items: center; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 5px; border-left: 4px solid var(--solar); font-size: 0.75rem; text-align: left; }
         .archive-data { display: flex; gap: 10px; margin-left: 10px; flex: 1; overflow-x: auto; white-space: nowrap; }
-        .val-s { color: var(--solar); font-weight: bold; }
-        .val-u { color: var(--red); }
-        .val-x { color: var(--green); }
+        /* Statistika Grafovi */
+        .stat-graph-box { background: #111; height: 120px; display: flex; align-items: flex-end; gap: 5px; padding: 10px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333; }
+        .s-bar { flex: 1; border-radius: 3px 3px 0 0; min-height: 2px; position: relative; }
+        .s-lbl { position: absolute; top: -15px; width: 100%; text-align: center; font-size: 0.55rem; color: #fff; }
     </style>
 </head>
 <body>
-
     <nav class="nav-tabs">
-        <button id="btn-unos" class="nav-btn active" onclick="showTab('unos')">Unos</button>
-        <button id="btn-arhiva" class="nav-btn" onclick="showTab('arhiva')">Arhiva</button>
-        <button id="btn-stat" class="nav-btn" onclick="showTab('stat')">Statistika</button>
-        <button id="btn-postavke" class="nav-btn" onclick="showTab('postavke')">Postavke</button>
+        <button id="btn-unos" class="nav-btn active" onclick="swTab('unos')">Unos</button>
+        <button id="btn-arhiva" class="nav-btn" onclick="swTab('arhiva')">Arhiva</button>
+        <button id="btn-stat" class="nav-btn" onclick="swTab('stat')">Statistika</button>
+        <button id="btn-postavke" class="nav-btn" onclick="swTab('postavke')">Postavke</button>
     </nav>
 
     <!-- UNOS -->
@@ -49,18 +44,18 @@
         <div class="card">
             <div class="input-row" style="grid-template-columns: 1fr;"><div class="input-box" style="border-color:var(--accent)"><label>Datum</label><input type="date" id="date"></div></div>
             <div class="input-row">
-                <div class="input-box" style="border-color:var(--red)"><label>Uvoz VT</label><input type="number" id="iVT" oninput="liveUpdate()"><span class="euro-hint" id="iVT_e">0.00 €</span></div>
-                <div class="input-box" style="border-color:var(--red)"><label>Uvoz NT</label><input type="number" id="iNT" oninput="liveUpdate()"><span class="euro-hint" id="iNT_e">0.00 €</span></div>
+                <div class="input-box" style="border-color:var(--red)"><label>Uvoz VT</label><input type="number" id="ivt" oninput="lUpd()"><span class="euro-hint" id="ivt_e">0.00 €</span></div>
+                <div class="input-box" style="border-color:var(--red)"><label>Uvoz NT</label><input type="number" id="int" oninput="lUpd()"><span class="euro-hint" id="int_e">0.00 €</span></div>
             </div>
             <div class="input-row">
-                <div class="input-box" style="border-color:var(--green)"><label>Izvoz VT</label><input type="number" id="eVT" oninput="liveUpdate()"><span class="euro-hint" id="eVT_e">0.00 €</span></div>
-                <div class="input-box" style="border-color:var(--green)"><label>Izvoz NT</label><input type="number" id="eNT" oninput="liveUpdate()"><span class="euro-hint" id="eNT_e">0.00 €</span></div>
+                <div class="input-box" style="border-color:var(--green)"><label>Izvoz VT</label><input type="number" id="evt" oninput="lUpd()"><span class="euro-hint" id="evt_e">0.00 €</span></div>
+                <div class="input-box" style="border-color:var(--green)"><label>Izvoz NT</label><input type="number" id="ent" oninput="lUpd()"><span class="euro-hint" id="ent_e">0.00 €</span></div>
             </div>
             <div class="input-row">
-                <div class="input-box" style="border-color:var(--solar)"><label>Solari (kWh)</label><input type="number" id="prod" oninput="liveUpdate()"><span class="euro-hint" id="prod_e">0.00 €</span></div>
+                <div class="input-box" style="border-color:var(--solar)"><label>Solari (kWh)</label><input type="number" id="prod" oninput="lUpd()"><span class="euro-hint" id="prod_e">0.00 €</span></div>
                 <div class="input-box" style="border-color:#fff"><label>HEP (€)</label><input type="number" id="hep"></div>
             </div>
-            <button class="main-btn" onclick="saveData()">SPREMI UNOS</button>
+            <button class="main-btn" onclick="sData()">SPREMI UNOS</button>
         </div>
         <div class="live-graph">
             <div class="v-bar" id="b-ivt" style="background:var(--red)"><span class="v-label">U-VT</span></div>
@@ -74,116 +69,105 @@
     <!-- ARHIVA -->
     <div id="arhiva" class="tab-content">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <h3 style="margin:0">Povijest</h3>
-            <button onclick="deleteSelected()" style="background:var(--red); color:white; border:none; padding:5px 10px; border-radius:5px;">OBRIŠI</button>
+            <h3 style="margin:0">Povijest</h3><button onclick="delSel()" style="background:var(--red); border:none; color:white; padding:5px 10px; border-radius:5px;">OBRIŠI</button>
         </div>
         <div id="archiveList"></div>
     </div>
 
-    <!-- STATISTIKA (IDUĆI KORAK) -->
+    <!-- STATISTIKA -->
     <div id="stat" class="tab-content">
-        <div class="card" style="text-align:center">Podaci se zbrajaju u Arhivi. Statistika slijedi.</div>
+        <div class="card" id="statSummary"></div>
+        <small>SOLAR PROIZVODNJA (10d)</small>
+        <div id="gs" class="stat-graph-box"></div>
+        <small style="color:var(--red)">UVOZ MREŽA (10d)</small>
+        <div id="gi" class="stat-graph-box"></div>
+        <small style="color:var(--green)">IZVOZ VIŠAK (10d)</small>
+        <div id="ge" class="stat-graph-box"></div>
+        <div id="yearlyStats"></div>
     </div>
 
     <!-- POSTAVKE -->
     <div id="postavke" class="tab-content">
         <div class="card">
-            <label>Investicija (€)</label><input type="number" id="cfgInv">
-            <label>Cijena VT (€)</label><input type="number" id="cfgVT" step="0.001">
-            <label>Cijena NT (€)</label><input type="number" id="cfgNT" step="0.001">
-            <label>Otkup HEP (€)</label><input type="number" id="cfgSell" step="0.001">
-            <button class="main-btn" onclick="saveCfg()">SPREMI</button>
+            <label>Investicija (€)</label><input type="number" id="cfgInv" value="10700">
+            <label>Cijena VT (€)</label><input type="number" id="cfgVT" step="0.001" value="0.14">
+            <label>Cijena NT (€)</label><input type="number" id="cfgNT" step="0.001" value="0.07">
+            <label>Otkup HEP (€)</label><input type="number" id="cfgSell" step="0.001" value="0.04">
+            <button class="main-btn" onclick="sCfg()">SPREMI CIJENE</button>
         </div>
     </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('solar_v22')) || [];
-    let cfg = JSON.parse(localStorage.getItem('solar_cfg_v22')) || { inv: 10700, vt: 0.14, nt: 0.07, sell: 0.04 };
+    let db = JSON.parse(localStorage.getItem('solar_gh_v25')) || [];
+    let cfg = JSON.parse(localStorage.getItem('solar_cfg_gh')) || { inv: 10700, vt: 0.14, nt: 0.07, sell: 0.04 };
 
-    function showTab(id) {
+    function swTab(id) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.getElementById('btn-' + id).classList.add('active');
-        if(id === 'arhiva') renderArchive();
+        if(id === 'arhiva') rArch();
+        if(id === 'stat') rStat();
     }
 
-    function liveUpdate() {
-        const v = {
-            ivt: parseFloat(document.getElementById('iVT').value) || 0,
-            int: parseFloat(document.getElementById('iNT').value) || 0,
-            evt: parseFloat(document.getElementById('eVT').value) || 0,
-            ent: parseFloat(document.getElementById('eNT').value) || 0,
-            p: parseFloat(document.getElementById('prod').value) || 0
-        };
-        document.getElementById('iVT_e').innerText = (v.ivt * cfg.vt).toFixed(2) + " €";
-        document.getElementById('iNT_e').innerText = (v.int * cfg.nt).toFixed(2) + " €";
-        document.getElementById('eVT_e').innerText = (v.evt * cfg.sell).toFixed(2) + " €";
-        document.getElementById('eNT_e').innerText = (v.ent * cfg.sell).toFixed(2) + " €";
-        document.getElementById('prod_e').innerText = (v.p * cfg.vt).toFixed(2) + " €";
-
-        const max = Math.max(v.ivt, v.int, v.evt, v.ent, v.p, 1);
+    function lUpd() {
+        const v = { ivt: parseFloat(document.getElementById('ivt').value) || 0, int: parseFloat(document.getElementById('int').value) || 0, evt: parseFloat(document.getElementById('evt').value) || 0, ent: parseFloat(document.getElementById('ent').value) || 0, prod: parseFloat(document.getElementById('prod').value) || 0 };
+        document.getElementById('ivt_e').innerText = (v.ivt * cfg.vt).toFixed(2) + " €";
+        document.getElementById('int_e').innerText = (v.int * cfg.nt).toFixed(2) + " €";
+        document.getElementById('prod_e').innerText = (v.prod * cfg.vt).toFixed(2) + " €";
+        const max = Math.max(v.ivt, v.int, v.evt, v.ent, v.prod, 1);
         document.getElementById('b-ivt').style.height = (v.ivt / max * 100) + "%";
         document.getElementById('b-int').style.height = (v.int / max * 100) + "%";
         document.getElementById('b-evt').style.height = (v.evt / max * 100) + "%";
         document.getElementById('b-ent').style.height = (v.ent / max * 100) + "%";
-        document.getElementById('b-prod').style.height = (v.p / max * 100) + "%";
+        document.getElementById('b-prod').style.height = (v.prod / max * 100) + "%";
     }
 
-    function saveData() {
+    function sData() {
         const d = document.getElementById('date').value;
-        if(!d) return alert("Odaberi datum!");
-        db.push({
-            id: Date.now(), d: d,
-            ivt: parseFloat(document.getElementById('iVT').value) || 0,
-            int: parseFloat(document.getElementById('iNT').value) || 0,
-            evt: parseFloat(document.getElementById('eVT').value) || 0,
-            ent: parseFloat(document.getElementById('eNT').value) || 0,
-            p: parseFloat(document.getElementById('prod').value) || 0,
-            h: parseFloat(document.getElementById('hep').value) || 0
-        });
-        localStorage.setItem('solar_v22', JSON.stringify(db));
-        ['prod','iVT','iNT','eVT','eNT','hep'].forEach(id => document.getElementById(id).value = '');
-        liveUpdate(); alert("Spremljeno!");
+        if(!d) return alert("Datum!");
+        const entry = { id: Date.now(), d: d, ivt: document.getElementById('ivt').value, int: document.getElementById('int').value, evt: document.getElementById('evt').value, ent: document.getElementById('ent').value, p: document.getElementById('prod').value, h: document.getElementById('hep').value };
+        db.push(entry);
+        localStorage.setItem('solar_gh_v25', JSON.stringify(db));
+        ['prod','ivt','int','evt','ent','hep'].forEach(id => document.getElementById(id).value = '');
+        lUpd(); alert("Spremljeno!");
     }
 
-    function renderArchive() {
-        const list = document.getElementById('archiveList');
-        list.innerHTML = '';
+    function rArch() {
+        const list = document.getElementById('archiveList'); list.innerHTML = '';
         [...db].reverse().forEach(r => {
-            list.innerHTML += `
-                <div class="archive-line">
-                    <input type="checkbox" class="cb" data-id="${r.id}">
-                    <strong style="margin: 0 5px;">${r.d.slice(5)}</strong>
-                    <div class="archive-data">
-                        <span class="val-s">S:${r.p}</span>
-                        <span class="val-u">U:${r.ivt}|${r.int}</span>
-                        <span class="val-x">X:${r.evt}|${r.ent}</span>
-                        <span style="color:#fff">H:${r.h}€</span>
-                    </div>
-                </div>`;
+            list.innerHTML += `<div class="archive-line"><input type="checkbox" class="cb" data-id="${r.id}"><strong style="margin:0 5px">${r.d.slice(5)}</strong><div class="archive-data"><span style="color:var(--solar)">P:${r.p||0}</span><span style="color:var(--red)">U:${r.ivt||0}|${r.int||0}</span><span style="color:var(--green)">X:${r.evt||0}|${r.ent||0}</span><span>H:${r.h||0}€</span></div></div>`;
         });
     }
 
-    function deleteSelected() {
-        const ids = Array.from(document.querySelectorAll('.cb:checked')).map(c => parseInt(c.dataset.id));
-        if(ids.length && confirm("Obrisati?")) {
-            db = db.filter(r => !ids.includes(r.id));
-            localStorage.setItem('solar_v22', JSON.stringify(db));
-            renderArchive();
-        }
+    function rStat() {
+        let tP=0, tI=0, tE=0, tH=0;
+        db.forEach(r => { tP += parseFloat(r.p)||0; tI += (parseFloat(r.ivt)||0 + parseFloat(r.int)||0); tE += (parseFloat(r.evt)||0 + parseFloat(r.ent)||0); tH += parseFloat(r.h)||0; });
+        document.getElementById('statSummary').innerHTML = `<div style="display:flex; justify-content:space-around; text-align:center;"><div><small>SOLAR</small><br><b>${tP.toFixed(1)}</b></div><div><small>UVOZ</small><br><b>${tI.toFixed(1)}</b></div><div><small>IZVOZ</small><br><b>${tE.toFixed(1)}</b></div></div>`;
+        
+        const draw = (id, key, color) => {
+            const cont = document.getElementById(id); cont.innerHTML = '';
+            const last = db.slice(-10);
+            const max = Math.max(...last.map(x => {
+                if(key==='i') return (parseFloat(x.ivt)||0 + parseFloat(x.int)||0);
+                if(key==='e') return (parseFloat(x.evt)||0 + parseFloat(x.ent)||0);
+                return parseFloat(x.p)||0;
+            }), 1);
+            last.forEach(x => {
+                let v = key==='i' ? (parseFloat(x.ivt)||0 + parseFloat(x.int)||0) : (key==='e' ? (parseFloat(x.evt)||0 + parseFloat(x.ent)||0) : parseFloat(x.p)||0);
+                cont.innerHTML += `<div class="s-bar" style="height:${(v/max*100)}%; background:${color}"><span class="s-lbl">${v}</span></div>`;
+            });
+        };
+        draw('gs','p','var(--solar)'); draw('gi','i','var(--red)'); draw('ge','e','var(--green)');
     }
 
-    function saveCfg() {
+    function sCfg() {
         cfg = { inv: parseFloat(document.getElementById('cfgInv').value), vt: parseFloat(document.getElementById('cfgVT').value), nt: parseFloat(document.getElementById('cfgNT').value), sell: parseFloat(document.getElementById('cfgSell').value) };
-        localStorage.setItem('solar_cfg_v22', JSON.stringify(cfg)); alert("Spremljeno!");
+        localStorage.setItem('solar_cfg_gh', JSON.stringify(cfg)); alert("Spremljeno!");
     }
 
     document.getElementById('date').valueAsDate = new Date();
-    document.getElementById('cfgInv').value = cfg.inv; 
-    document.getElementById('cfgVT').value = cfg.vt;
-    document.getElementById('cfgNT').value = cfg.nt; 
-    document.getElementById('cfgSell').value = cfg.sell;
+    document.getElementById('cfgInv').value = cfg.inv; document.getElementById('cfgVT').value = cfg.vt; document.getElementById('cfgNT').value = cfg.nt; document.getElementById('cfgSell').value = cfg.sell;
 </script>
 </body>
 </html>
