@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solar Pro Petrinja v9</title>
+    <title>Solar Pro Petrinja v10</title>
     <script src="https://cdn.jsdelivr.net"></script>
     <style>
         :root { --bg: #000; --card: #1c1c1e; --accent: #0A84FF; --solar: #FF9F0A; --green: #32D74B; --red: #FF453A; --text: #fff; --gray: #8e8e93; }
@@ -16,17 +16,9 @@
         .tab-content { display: none; padding: 15px; max-width: 800px; margin: auto; }
         .tab-content.active { display: block; }
 
-        /* Weather Box (New top of Unos) */
         .weather-card { background: #1c1c1e; border: 1px solid var(--solar); padding: 15px; border-radius: 16px; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; }
-        .w-icon { font-size: 2.5rem; }
         .w-text { font-weight: bold; color: var(--solar); font-size: 0.9rem; line-height: 1.3; }
 
-        /* ROI Card (Now in Settings) */
-        .card-roi { background: #1c1c1e; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid #333; text-align: center; }
-        .roi-bar { background: #333; height: 12px; border-radius: 6px; margin: 12px 0; overflow: hidden; }
-        .roi-fill { background: var(--solar); height: 100%; width: 0%; transition: 1.5s ease-in-out; }
-
-        /* Inputs */
         .card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid #2c2c2e; }
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .input-box { background: #2c2c2e; padding: 10px; border-radius: 12px; border-bottom: 3px solid #444; }
@@ -39,14 +31,18 @@
         
         button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; font-size: 1rem; cursor: pointer; }
 
-        /* Stats Table */
-        .stat-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
-        .stat-table td { padding: 8px; border-bottom: 1px solid #333; }
-        .stat-table .val { text-align: right; font-weight: bold; }
+        /* Stats Tables */
+        .stat-table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 0.85rem; }
+        .stat-table td { padding: 10px 5px; border-bottom: 1px solid #2c2c2e; }
+        .stat-table tr:last-child td { border: none; }
+        .val { text-align: right; font-weight: bold; }
+        
+        .year-header { background: #2c2c2e; padding: 8px 12px; border-radius: 8px; margin-top: 15px; font-weight: bold; color: var(--accent); display: flex; justify-content: space-between; }
 
-        /* Archive */
         .archive-card { background: var(--card); padding: 15px; border-radius: 14px; margin-bottom: 12px; border: 1px solid #333; }
-        .archive-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 0.8rem; margin-top: 10px; }
+        .card-roi { background: #1c1c1e; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid #333; text-align: center; }
+        .roi-bar { background: #333; height: 12px; border-radius: 6px; margin: 12px 0; overflow: hidden; }
+        .roi-fill { background: var(--solar); height: 100%; width: 0%; transition: 1.5s ease-in-out; }
     </style>
 </head>
 <body>
@@ -58,12 +54,11 @@
         <button class="nav-btn" onclick="switchTab(event, 'postavke')">Postavke</button>
     </nav>
 
-    <!-- TAB: UNOS -->
+    <!-- UNOS -->
     <div id="unos" class="tab-content active">
-        <!-- Vremenska prognoza na vrhu -->
         <div class="weather-card">
-            <div class="w-icon">☀️</div>
-            <div class="w-text">PETRINJA: SUNČANO I TOPLO.<br>IDEALNO ZA PERILICU I KLIMU!</div>
+            <div style="font-size: 2.5rem;">☀️</div>
+            <div class="w-text">PETRINJA: SUNČANO.<br>POVEĆAJ POTROŠNJU DOK IMA SUNCA!</div>
         </div>
 
         <div class="card">
@@ -82,36 +77,40 @@
             </div>
             <button class="main-btn" onclick="saveData()">SPREMI DNEVNI UNOS</button>
         </div>
-        <div id="quickStatus" style="text-align:center; color:var(--green); font-size:0.8rem;"></div>
     </div>
 
-    <!-- TAB: ARHIVA -->
+    <!-- ARHIVA -->
     <div id="arhiva" class="tab-content">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3>Povijest unosa</h3>
+            <h3>Svi unosi</h3>
             <button onclick="deleteSelected()" style="background:var(--red); color:white; border:none; padding:8px 15px; border-radius:10px; font-weight:bold;">OBRIŠI</button>
         </div>
         <div id="archiveList"></div>
     </div>
 
-    <!-- TAB: STATISTIKA -->
+    <!-- STATISTIKA -->
     <div id="stat" class="tab-content">
-        <h3>Pregled kWh</h3>
+        <h3>Ukupni zbroj svih polja</h3>
         <div class="card">
             <table class="stat-table">
-                <tr><td style="color:var(--gray)">Danas Proizvedeno:</td><td class="val" id="sD" style="color:var(--solar)">0 kWh</td></tr>
-                <tr><td style="color:var(--gray)">Ovaj mjesec:</td><td class="val" id="sM">0 kWh</td></tr>
-                <tr style="border-top:2px solid #444"><td style="color:var(--solar)">UKUPNO SVE:</td><td class="val" id="sT" style="color:var(--solar)">0 kWh</td></tr>
+                <tr><td style="color:var(--red)">Ukupni Uvoz (VT+NT):</td><td class="val" id="totImp">0</td></tr>
+                <tr><td style="color:var(--green)">Ukupni Izvoz (VT+NT):</td><td class="val" id="totExp">0</td></tr>
+                <tr><td style="color:var(--solar)">Ukupno Proizvedeno:</td><td class="val" id="totProd">0</td></tr>
+                <tr><td style="color:#fff">Ukupno HEP Računi:</td><td class="val" id="totHep">0 €</td></tr>
             </table>
         </div>
-        <div class="card" style="height:280px; padding:10px;">
+
+        <h3>Zbroj po godinama</h3>
+        <div id="yearStatsContainer"></div>
+
+        <h3 style="margin-top:25px;">Zadnjih 7 dana (kWh)</h3>
+        <div class="card" style="height:250px; padding:10px;">
             <canvas id="statChart"></canvas>
         </div>
     </div>
 
-    <!-- TAB: POSTAVKE -->
+    <!-- POSTAVKE -->
     <div id="postavke" class="tab-content">
-        <!-- ROI je sada ovdje -->
         <div class="card-roi">
             <small style="color:var(--gray)">POVRAT INVESTICIJE</small>
             <div id="roiText" style="font-size: 2rem; font-weight: 900; color: var(--solar); margin: 5px 0;">0.00 €</div>
@@ -121,19 +120,19 @@
             </div>
         </div>
 
-        <h3>Postavke cijena</h3>
+        <h3>Cijene i Konfiguracija</h3>
         <div class="card">
-            <label>Ukupna Investicija (€)</label><input type="number" id="cfgInv" style="border-bottom:1px solid #444; margin-bottom:15px;">
-            <label>Cijena Kupnje VT (€/kWh)</label><input type="number" id="cfgVT" step="0.001" style="border-bottom:1px solid #444; margin-bottom:15px;">
-            <label>Cijena Kupnje NT (€/kWh)</label><input type="number" id="cfgNT" step="0.001" style="border-bottom:1px solid #444; margin-bottom:15px;">
-            <label style="color:var(--green)">Cijena Otkupa (HEP) (€/kWh)</label><input type="number" id="cfgSell" step="0.001" style="border-bottom:1px solid var(--green); margin-bottom:15px;">
-            <button class="main-btn" onclick="saveSettings()">SPREMI POSTAVKE</button>
+            <label>Investicija (€)</label><input type="number" id="cfgInv">
+            <label>Cijena Kupnje VT (€/kWh)</label><input type="number" id="cfgVT" step="0.001">
+            <label>Cijena Kupnje NT (€/kWh)</label><input type="number" id="cfgNT" step="0.001">
+            <label style="color:var(--green)">Cijena Otkupa HEP (€/kWh)</label><input type="number" id="cfgSell" step="0.001">
+            <button class="main-btn" style="margin-top:15px" onclick="saveSettings()">SPREMI POSTAVKE</button>
         </div>
     </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('solar_db_v9')) || [];
-    let cfg = JSON.parse(localStorage.getItem('solar_cfg_v9')) || { inv: 10700, vt: 0.14, nt: 0.07, sell: 0.04 };
+    let db = JSON.parse(localStorage.getItem('solar_db_v10')) || [];
+    let cfg = JSON.parse(localStorage.getItem('solar_cfg_v10')) || { inv: 10700, vt: 0.14, nt: 0.07, sell: 0.04 };
     let myChart = null;
 
     document.getElementById('date').valueAsDate = new Date();
@@ -147,8 +146,7 @@
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         evt.currentTarget.classList.add('active');
-        
-        if(id === 'stat') setTimeout(renderStats, 100);
+        if(id === 'stat') renderStats();
         if(id === 'arhiva') renderArchive();
         if(id === 'postavke') updateROI();
     }
@@ -165,20 +163,68 @@
             h: parseFloat(document.getElementById('hep').value) || 0
         };
         db.push(entry);
-        localStorage.setItem('solar_db_v9', JSON.stringify(db));
-        document.getElementById('quickStatus').innerText = "Podaci spremljeni! ✅";
-        setTimeout(() => document.getElementById('quickStatus').innerText = "", 2000);
+        localStorage.setItem('solar_db_v10', JSON.stringify(db));
+        alert("Spremljeno!");
+    }
+
+    function renderStats() {
+        let tI=0, tE=0, tP=0, tH=0;
+        let years = {};
+
+        db.forEach(r => {
+            const y = r.d.substring(0,4);
+            tI += (r.ivt + r.int);
+            tE += (r.evt + r.ent);
+            tP += r.p;
+            tH += r.h;
+
+            if(!years[y]) years[y] = { p:0, i:0, e:0, h:0 };
+            years[y].p += r.p;
+            years[y].i += (r.ivt + r.int);
+            years[y].e += (r.evt + r.ent);
+            years[y].h += r.h;
+        });
+
+        document.getElementById('totImp').innerText = tI.toFixed(1) + " kWh";
+        document.getElementById('totExp').innerText = tE.toFixed(1) + " kWh";
+        document.getElementById('totProd').innerText = tP.toFixed(1) + " kWh";
+        document.getElementById('totHep').innerText = tH.toFixed(2) + " €";
+
+        const container = document.getElementById('yearStatsContainer');
+        container.innerHTML = '';
+        Object.keys(years).sort().reverse().forEach(y => {
+            container.innerHTML += `
+                <div class="year-header">Godina ${y} <span>${years[y].p.toFixed(0)} kWh</span></div>
+                <div class="card" style="margin-bottom:5px; padding:10px;">
+                    <table class="stat-table">
+                        <tr><td>Proizvedeno:</td><td class="val">${years[y].p.toFixed(1)}</td></tr>
+                        <tr><td>Uvezeno:</td><td class="val">${years[y].i.toFixed(1)}</td></tr>
+                        <tr><td>Izvezeno:</td><td class="val">${years[y].e.toFixed(1)}</td></tr>
+                        <tr><td>HEP Računi:</td><td class="val">${years[y].h.toFixed(2)} €</td></tr>
+                    </table>
+                </div>`;
+        });
+
+        const ctx = document.getElementById('statChart').getContext('2d');
+        if(myChart) myChart.destroy();
+        const last7 = db.slice(-7);
+        myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: last7.map(x => x.d.substring(5)),
+                datasets: [{ label: 'kWh', data: last7.map(x => x.p), backgroundColor: '#FF9F0A' }]
+            },
+            options: { maintainAspectRatio: false, color: '#fff', scales: { y: { grid: { color: '#333' } } } }
+        });
     }
 
     function updateROI() {
-        const totalkWh = db.reduce((acc, r) => acc + r.p, 0);
-        const savedEur = totalkWh * cfg.vt;
-        const perc = (savedEur / cfg.inv * 100).toFixed(1);
-        
-        document.getElementById('roiText').innerText = savedEur.toFixed(2) + " €";
+        const totalSaved = db.reduce((acc, r) => acc + (r.p * cfg.vt), 0);
+        const perc = (totalSaved / cfg.inv * 100).toFixed(1);
+        document.getElementById('roiText').innerText = totalSaved.toFixed(2) + " €";
         document.getElementById('roiBar').style.width = Math.min(perc, 100) + "%";
         document.getElementById('roiPerc').innerText = perc + "%";
-        document.getElementById('roiLeft').innerText = "Preostalo: " + (cfg.inv - savedEur).toFixed(2) + " €";
+        document.getElementById('roiLeft').innerText = "Preostalo: " + (cfg.inv - totalSaved).toFixed(2) + " €";
     }
 
     function renderArchive() {
@@ -190,9 +236,9 @@
                     <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                         <input type="checkbox" class="checkbox" data-id="${r.id}" style="width:20px;height:20px;">
                         <strong style="color:var(--accent)">${r.d}</strong>
-                        <span style="color:var(--solar); font-weight:bold;">${r.p} kWh</span>
+                        <span style="color:var(--solar)">${r.p} kWh</span>
                     </div>
-                    <div class="archive-grid">
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:5px; font-size:0.75rem;">
                         <div style="color:var(--red)">U-VT: ${r.ivt}</div><div style="color:var(--red)">U-NT: ${r.int}</div><div style="color:#fff">HEP: ${r.h}€</div>
                         <div style="color:var(--green)">X-VT: ${r.evt}</div><div style="color:var(--green)">X-NT: ${r.ent}</div>
                     </div>
@@ -200,43 +246,12 @@
         });
     }
 
-    function renderStats() {
-        const now = new Date();
-        const todayStr = now.toISOString().split('T')[0];
-        const monthStr = todayStr.substring(0, 7);
-
-        let d=0, m=0, t=0;
-        db.forEach(r => {
-            if(r.d === todayStr) d += r.p;
-            if(r.d.startsWith(monthStr)) m += r.p;
-            t += r.p;
-        });
-
-        document.getElementById('sD').innerText = d.toFixed(1) + " kWh";
-        document.getElementById('sM').innerText = m.toFixed(1) + " kWh";
-        document.getElementById('sT').innerText = t.toFixed(0) + " kWh";
-
-        const ctx = document.getElementById('statChart');
-        if (myChart) myChart.destroy();
-        const last7 = db.slice(-7);
-        myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: last7.map(x => x.d.substring(5)),
-                datasets: [{ label: 'kWh', data: last7.map(x => x.p), backgroundColor: '#FF9F0A', borderRadius: 5 }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, color: '#fff', 
-                scales: { y: { grid: { color: '#333' }, ticks: { color: '#fff' } }, x: { ticks: { color: '#fff' } } }
-            }
-        });
-    }
-
     function deleteSelected() {
         const ids = Array.from(document.querySelectorAll('.checkbox:checked')).map(c => parseInt(c.dataset.id));
         if(ids.length === 0) return;
-        if(!confirm("Obrisati odabrane unose?")) return;
+        if(!confirm("Obrisati?")) return;
         db = db.filter(r => !ids.includes(r.id));
-        localStorage.setItem('solar_db_v9', JSON.stringify(db));
+        localStorage.setItem('solar_db_v10', JSON.stringify(db));
         renderArchive();
     }
 
@@ -245,9 +260,8 @@
         cfg.vt = parseFloat(document.getElementById('cfgVT').value);
         cfg.nt = parseFloat(document.getElementById('cfgNT').value);
         cfg.sell = parseFloat(document.getElementById('cfgSell').value);
-        localStorage.setItem('solar_cfg_v9', JSON.stringify(cfg));
-        alert("Postavke spremljene!");
-        updateROI();
+        localStorage.setItem('solar_cfg_v10', JSON.stringify(cfg));
+        alert("Spremljeno!");
     }
 </script>
 </body>
