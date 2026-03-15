@@ -36,8 +36,9 @@
         .del-btn-mini { background: #333; color: var(--red); border: none; padding: 5px 8px; border-radius: 4px; font-size: 0.6rem; font-weight: bold; cursor: pointer; }
 
         .stat-filter { display: flex; gap: 5px; margin-bottom: 15px; }
-        .f-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; background: #1c1c1e; color: #fff; font-size: 0.7rem; cursor: pointer; }
+        .f-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; background: #1c1c1e; color: #fff; font-size: 0.65rem; cursor: pointer; }
         .f-btn.active { background: var(--accent); border-color: var(--accent); }
+        
         .h-row { margin-bottom: 10px; }
         .h-label-row { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 3px; font-weight: bold; }
         .h-bar-bg { background: #111; height: 10px; border-radius: 5px; overflow: hidden; }
@@ -95,6 +96,7 @@
             <button class="f-btn active" onclick="rStat('dan', this)">DANI</button>
             <button class="f-btn" onclick="rStat('mjesec', this)">MJESECI</button>
             <button class="f-btn" onclick="rStat('godina', this)">GODINE</button>
+            <button class="f-btn" onclick="rStat('ukupno', this)">UKUPNO</button>
         </div>
         <div id="statOutput"></div>
     </div>
@@ -156,7 +158,8 @@
     function sData() {
         const e = { id:Date.now(), date:document.getElementById('date').value, ivt:parseFloat(document.getElementById('ivt').value)||0, int:parseFloat(document.getElementById('int').value)||0, evt:parseFloat(document.getElementById('evt').value)||0, ent:parseFloat(document.getElementById('ent').value)||0, prod:parseFloat(document.getElementById('prod').value)||0, hep:parseFloat(document.getElementById('hep').value)||0 };
         if(!e.date) return alert("Unesi datum!");
-        db.unshift(e); localStorage.setItem(K, JSON.stringify(db)); alert("Spremljeno!");
+        db.unshift(e); db.sort((a,b) => new Date(b.date) - new Date(a.date));
+        localStorage.setItem(K, JSON.stringify(db)); alert("Spremljeno!");
         ["ivt","int","evt","ent","prod","hep"].forEach(id => document.getElementById(id).value = "");
         lUpd();
     }
@@ -192,19 +195,21 @@
     function rStat(filter, btn) {
         document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
         const out = document.getElementById('statOutput'); out.innerHTML = "";
-        
+        if (db.length === 0) { out.innerHTML = "<p style='text-align:center;color:gray'>Nema unosa.</p>"; return; }
+
         let groups = {};
-        db.forEach(d => {
-            let key = d.date;
-            if(filter === 'mjesec') key = d.date.slice(0,7);
-            if(filter === 'godina') key = d.date.slice(0,4);
-            
-            if(!groups[key]) groups[key] = { ivt:0, int:0, evt:0, ent:0, prod:0, days: [] };
-            groups[key].ivt += d.ivt; groups[key].int += d.int;
-            groups[key].evt += d.evt; groups[key].ent += d.ent;
-            groups[key].prod += d.prod;
-            groups[key].days.push(d);
-        });
+        if (filter === 'ukupno') {
+            groups['SVEUKUPNO'] = db.reduce((a, c) => ({ ivt:a.ivt+c.ivt, int:a.int+c.int, evt:a.evt+c.evt, ent:a.ent+c.ent, prod:a.prod+c.prod, days:db }), {ivt:0,int:0,evt:0,ent:0,prod:0,days:[]});
+        } else {
+            db.forEach(d => {
+                let key = d.date;
+                if(filter === 'mjesec') key = d.date.slice(0,7);
+                if(filter === 'godina') key = d.date.slice(0,4);
+                if(!groups[key]) groups[key] = { ivt:0, int:0, evt:0, ent:0, prod:0, days: [] };
+                groups[key].ivt += d.ivt; groups[key].int += d.int; groups[key].evt += d.evt; groups[key].ent += d.ent; groups[key].prod += d.prod;
+                groups[key].days.push(d);
+            });
+        }
 
         Object.keys(groups).sort().reverse().forEach(key => {
             const s = groups[key];
@@ -220,7 +225,7 @@
             card.className = 'card';
             const detId = 'det-' + key.replace('-','');
             card.innerHTML = `
-                <button class="det-btn" onclick="document.getElementById('${detId}').classList.toggle('active')">DETALJI</button>
+                ${filter !== 'dan' ? `<button class="det-btn" onclick="document.getElementById('${detId}').classList.toggle('active')">DETALJI</button>` : ''}
                 <h4 style="margin:0 0 10px 0; color:var(--accent); font-size:0.8rem;">${displayTitle}</h4>
                 ${genHBar("U-VT", s.ivt, max, "var(--red)", s.ivt*(cfg.vt||0))}
                 ${genHBar("U-NT", s.int, max, "var(--red)", s.int*(cfg.nt||0), 0.6)}
@@ -228,17 +233,9 @@
                 ${genHBar("X-NT", s.ent, max, "var(--green)", s.ent*(cfg.xnt||0), 0.6)}
                 ${genHBar("SOLAR", s.prod, max, "var(--solar)", s.prod*(cfg.vt||0))}
                 <div id="${detId}" class="stat-details">
-                    <div style="font-weight:bold; margin-bottom:5px; color:#fff">Pojedinačni dani:</div>
-                    ${s.days.map(d => `
-                        <div class="detail-row">
-                            <span>${d.date.split('-').reverse().slice(0,2).join('.')}</span>
-                            <span style="color:var(--red)">U:${(d.ivt+d.int).toFixed(1)}</span>
-                            <span style="color:var(--green)">X:${(d.evt+d.ent).toFixed(1)}</span>
-                            <span style="color:var(--solar)">S:${d.prod.toFixed(1)}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
+                    <div style="font-weight:bold; margin-bottom:5px; color:#fff">Dani unutar razdoblja:</div>
+                    ${s.days.map(d => `<div class="detail-row"><span>${d.date.split('-').reverse().slice(0,2).join('.')}</span><span style="color:var(--red)">U:${(d.ivt+d.int).toFixed(1)}</span><span style="color:var(--green)">X:${(d.evt+d.ent).toFixed(1)}</span><span style="color:var(--solar)">S:${d.prod.toFixed(1)}</span></div>`).join('')}
+                </div>`;
             out.appendChild(card);
         });
     }
