@@ -62,7 +62,6 @@
         <button class="nav-btn" onclick="swTab('postavke', this)">Postavke</button>
     </nav>
 
-    <!-- UNOS -->
     <div id="unos" class="tab-content active">
         <div class="weather-box">☀️ <div class="w-text" style="color:var(--solar); font-weight:bold; margin-left:10px;">PETRINJA: SUNČANO. UKLJUČI TROŠILA!</div></div>
         <div class="card">
@@ -92,7 +91,6 @@
 
     <div id="arhiva" class="tab-content"><div id="archiveList"></div></div>
 
-    <!-- STATISTIKA -->
     <div id="stat" class="tab-content">
         <div class="stat-filter">
             <button class="f-btn active" onclick="rStat('dan', this)">DANI</button>
@@ -103,7 +101,6 @@
         <div id="statOutput"></div>
     </div>
 
-    <!-- POSTAVKE -->
     <div id="postavke" class="tab-content">
         <div class="card">
             <h4 style="color:var(--accent); margin-top:0">POVRAT INVESTICIJE</h4>
@@ -164,7 +161,7 @@
         db.unshift(e); db.sort((a,b) => new Date(b.date) - new Date(a.date));
         localStorage.setItem(K, JSON.stringify(db)); alert("Spremljeno!");
         ["ivt","int","evt","ent","prod","hep"].forEach(id => document.getElementById(id).value = "");
-        lUpd();
+        lUpd(); uROI();
     }
 
     function rArch() {
@@ -190,15 +187,17 @@
 
     function uROI() {
         const totalUstedjeno = db.reduce((s, x) => s + (x.prod * (cfg.vt||0)) + (x.evt * (cfg.xvt||0)) + (x.ent * (cfg.xnt||0)), 0);
-        document.getElementById('ROI_status').innerText = (totalUstedjeno || 0).toFixed(2) + " €";
-        const preostalo = (cfg.inv || 0) - totalUstedjeno;
-        document.getElementById('ROI_text').innerText = preostalo > 0 ? `Preostalo za otplatu: ${preostalo.toFixed(2)} €` : "Investicija se isplatila! 🎉";
+        const st = document.getElementById('ROI_status'); if(st) st.innerText = (totalUstedjeno || 0).toFixed(2) + " €";
+        const txt = document.getElementById('ROI_text'); if(txt) {
+            const preostalo = (cfg.inv || 0) - totalUstedjeno;
+            txt.innerText = preostalo > 0 ? `Preostalo za otplatu: ${preostalo.toFixed(2)} €` : "Investicija se isplatila! 🎉";
+        }
     }
 
     function rStat(filter, btn) {
         document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
         const out = document.getElementById('statOutput'); out.innerHTML = "";
-        if (db.length === 0) return;
+        if (db.length === 0) { out.innerHTML = "<p style='text-align:center;color:gray'>Nema podataka.</p>"; return; }
 
         let groups = {};
         if (filter === 'ukupno') {
@@ -235,7 +234,7 @@
                 ${genHBar("IZVOZ NT", s.ent, max, "var(--green)", s.ent*(cfg.xnt||0), 0.6)}
                 ${genHBar("SOLAR", s.prod, max, "var(--solar)", s.prod*(cfg.vt||0))}
                 <div id="${detId}" class="stat-details">
-                    <div style="font-weight:bold; margin-bottom:5px; color:#fff">Pojedinačni dani:</div>
+                    <div style="font-weight:bold; margin-bottom:5px; color:#fff">Dani unutar razdoblja:</div>
                     ${s.days.map(d => `<div class="detail-row"><span>${d.date.split('-').reverse().slice(0,2).join('.')}</span><span style="color:var(--red)">U:${(d.ivt+d.int).toFixed(1)}</span><span style="color:var(--green)">X:${(d.evt+d.ent).toFixed(1)}</span><span style="color:var(--solar)">S:${d.prod.toFixed(1)}</span></div>`).join('')}
                 </div>`;
             out.appendChild(card);
@@ -247,7 +246,7 @@
             <div class="h-bar-bg"><div class="h-bar-fill" style="width:${(val/max*100)}%; background:${col}; opacity:${op}"></div></div></div>`;
     }
 
-    function obrisiUnos(id) { if(confirm("Obriši?")) { db = db.filter(i => i.id !== id); localStorage.setItem(K, JSON.stringify(db)); rArch(); } }
+    function obrisiUnos(id) { if(confirm("Obriši?")) { db = db.filter(i => i.id !== id); localStorage.setItem(K, JSON.stringify(db)); rArch(); uROI(); } }
 
     function exportToExcel() {
         if(db.length === 0) return alert("Nema podataka za izvoz.");
