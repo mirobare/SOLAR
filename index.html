@@ -28,7 +28,7 @@
         .v-bar { flex: 1; border-radius: 4px 4px 0 0; min-height: 2px; position: relative; transition: height 0.3s; }
         .v-label { position: absolute; bottom: -18px; width: 100%; text-align: center; font-size: 0.5rem; color: var(--gray); font-weight: bold; }
 
-        /* Arhiva */
+        /* Arhiva - VRAĆENO NA TVOJE */
         .archive-line { display: flex; align-items: center; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 3px solid var(--solar); overflow: hidden; }
         .arch-date { font-size: 0.75rem; font-weight: bold; min-width: 65px; color: var(--accent); }
         .arch-scroll-area { display: flex; gap: 12px; overflow-x: auto; flex: 1; padding: 0 10px; scrollbar-width: none; }
@@ -42,15 +42,10 @@
         .stat-filter { display: flex; gap: 5px; margin-bottom: 15px; }
         .f-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; background: #1c1c1e; color: #fff; font-size: 0.65rem; cursor: pointer; }
         .f-btn.active { background: var(--accent); border-color: var(--accent); }
-        
         .h-row { margin-bottom: 10px; }
         .h-label-row { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 3px; font-weight: bold; }
         .h-bar-bg { background: #111; height: 12px; border-radius: 6px; overflow: hidden; }
         .h-bar-fill { height: 100%; transition: width 0.5s; width: 0%; }
-
-        .stat-details { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid #333; font-size: 0.65rem; color: var(--gray); }
-        .stat-details.active { display: block; }
-        .detail-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #222; }
 
         button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1rem; }
         .exp-btn { background: #2c2c2e; color: var(--green); border: 1px solid var(--green); padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
@@ -98,18 +93,14 @@
 
     <!-- STATISTIKA -->
     <div id="stat" class="tab-content">
-        <div class="stat-filter">
-            <button class="f-btn active">UKUPNI PREGLED</button>
-        </div>
-        <div id="statDisplay">
-            <!-- Ovdje JS crta barove prema tvom stilu -->
-        </div>
+        <div class="stat-filter"><button class="f-btn active">UKUPNO</button></div>
+        <div id="statRes"></div>
     </div>
 
     <!-- POSTAVKE -->
     <div id="postavke" class="tab-content">
-        <button class="exp-btn" onclick="exportCSV()">IZVEZI U EXCEL (CSV)</button>
-        <button class="exp-btn" style="color:var(--red); border-color:var(--red);" onclick="clearAll()">OBRIŠI SVE PODATKE</button>
+        <button class="exp-btn" onclick="exportCSV()">IZVEZI PODATKE (CSV)</button>
+        <button class="exp-btn" style="color:var(--red); border-color:var(--red);" onclick="clearDB()">OBRIŠI SVE</button>
     </div>
 
     <script>
@@ -125,6 +116,9 @@
             if(id === 'stat') rStat();
         }
 
+        // Cijene (prilagodi po potrebi)
+        const C_U = 0.16; const C_X = 0.04;
+
         function lUpd() {
             const v = {
                 ivt: parseFloat(document.getElementById('ivt').value) || 0,
@@ -133,6 +127,12 @@
                 ent: parseFloat(document.getElementById('ent').value) || 0,
                 prod: parseFloat(document.getElementById('prod').value) || 0
             };
+            document.getElementById('ivt_e').innerText = (v.ivt * C_U).toFixed(2) + " €";
+            document.getElementById('int_e').innerText = (v.int * C_U).toFixed(2) + " €";
+            document.getElementById('evt_e').innerText = (v.evt * C_X).toFixed(2) + " €";
+            document.getElementById('ent_e').innerText = (v.ent * C_X).toFixed(2) + " €";
+            document.getElementById('prod_e').innerText = (v.prod * 0.12).toFixed(2) + " €";
+
             const max = Math.max(v.ivt, v.int, v.evt, v.ent, v.prod, 1);
             ['ivt','int','evt','ent','prod'].forEach(k => {
                 document.getElementById('b-'+k).style.height = (v[k]/max * 100) + "px";
@@ -152,67 +152,48 @@
             };
             db.push(entry);
             localStorage.setItem('solarDB', JSON.stringify(db));
-            alert("Podaci spremljeni!");
-            swTab('arhiva', document.querySelectorAll('.nav-btn')[1]);
+            alert("Spremljeno!");
         }
 
         function rArchive() {
             const list = document.getElementById('archiveList');
-            list.innerHTML = db.slice().reverse().map(item => `
+            list.innerHTML = db.slice().reverse().map(i => `
                 <div class="archive-line">
-                    <div class="arch-date">${item.date}</div>
+                    <div class="arch-date">${i.date.split('-').reverse().slice(0,2).join('.')}</div>
                     <div class="arch-scroll-area">
-                        <div class="arch-data-block"><span class="arch-lbl">Uvoz</span><span class="arch-num">${item.ivt + item.int}</span></div>
-                        <div class="arch-data-block"><span class="arch-lbl">Izvoz</span><span class="arch-num">${item.evt + item.ent}</span></div>
-                        <div class="arch-data-block"><span class="arch-lbl">Solar</span><span class="arch-num">${item.prod}</span></div>
+                        <div class="arch-data-block"><span class="arch-lbl" style="color:var(--red)">Uvoz VT/NT</span><span class="arch-num">${i.ivt}/${i.int} kWh</span><span class="arch-lbl">${((i.ivt+i.int)*C_U).toFixed(2)}€</span></div>
+                        <div class="arch-data-block"><span class="arch-lbl" style="color:var(--green)">Izvoz VT/NT</span><span class="arch-num">${i.evt}/${i.ent} kWh</span><span class="arch-lbl">${((i.evt+i.ent)*C_X).toFixed(2)}€</span></div>
+                        <div class="arch-data-block"><span class="arch-lbl" style="color:var(--solar)">Solar</span><span class="arch-num">${i.prod} kWh</span><span class="arch-lbl">HEP: ${i.hep}€</span></div>
                     </div>
-                    <button class="del-btn-mini" onclick="delItem(${item.id})">X</button>
+                    <button class="del-btn-mini" onclick="delItem(${i.id})">X</button>
                 </div>
             `).join('');
         }
 
         function rStat() {
-            const sum = db.reduce((acc, c) => {
-                acc.u += (c.ivt + c.int);
-                acc.x += (c.evt + c.ent);
-                acc.s += c.prod;
-                return acc;
-            }, {u:0, x:0, s:0});
-
+            const sum = db.reduce((a, c) => { a.u += (c.ivt+c.int); a.x += (c.evt+c.ent); a.s += c.prod; return a; }, {u:0, x:0, s:0});
             const max = Math.max(sum.u, sum.x, sum.s, 1);
-            const display = document.getElementById('statDisplay');
-            
-            display.innerHTML = `
-                ${statRow('UKUPAN UVOZ', sum.u, max, 'var(--red)')}
-                ${statRow('UKUPAN IZVOZ', sum.x, max, 'var(--green)')}
-                ${statRow('PROIZVODNJA', sum.s, max, 'var(--solar)')}
+            document.getElementById('statRes').innerHTML = `
+                ${statBar('UKUPNI UVOZ', sum.u, max, 'var(--red)')}
+                ${statBar('UKUPNI IZVOZ', sum.x, max, 'var(--green)')}
+                ${statBar('PROIZVODNJA', sum.s, max, 'var(--solar)')}
             `;
         }
 
-        function statRow(label, val, max, col) {
-            return `
-                <div class="h-row">
-                    <div class="h-label-row"><span>${label}</span><span>${val.toFixed(1)} kWh</span></div>
-                    <div class="h-bar-bg"><div class="h-bar-fill" style="width:${(val/max*100)}%; background:${col}"></div></div>
-                </div>`;
+        function statBar(l, v, m, c) {
+            return `<div class="h-row">
+                <div class="h-label-row"><span>${l}</span><span>${v.toFixed(1)} kWh</span></div>
+                <div class="h-bar-bg"><div class="h-bar-fill" style="width:${(v/m*100)}%; background:${c}"></div></div>
+            </div>`;
         }
 
-        function delItem(id) {
-            db = db.filter(i => i.id !== id);
-            localStorage.setItem('solarDB', JSON.stringify(db));
-            rArchive();
-        }
-
-        function clearAll() { if(confirm("Obriši sve?")) { localStorage.clear(); db=[]; rArchive(); } }
-        
+        function delItem(id) { if(confirm("Obrisati?")) { db = db.filter(i => i.id !== id); localStorage.setItem('solarDB', JSON.stringify(db)); rArchive(); } }
+        function clearDB() { if(confirm("Obrisati sve?")) { localStorage.clear(); db=[]; rArchive(); } }
         function exportCSV() {
-            let csv = "Datum,Uvoz VT,Uvoz NT,Izvoz VT,Izvoz NT,Solar\n";
-            db.forEach(i => { csv += `${i.date},${i.ivt},${i.int},${i.evt},${i.ent},${i.prod}\n`; });
+            let csv = "Datum,Uvoz VT,Uvoz NT,Izvoz VT,Izvoz NT,Solar,HEP\n";
+            db.forEach(i => { csv += `${i.date},${i.ivt},${i.int},${i.evt},${i.ent},${i.prod},${i.hep}\n`; });
             const blob = new Blob([csv], {type:'text/csv'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'solar_data.csv';
-            a.click();
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'solar.csv'; a.click();
         }
     </script>
 </body>
