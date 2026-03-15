@@ -3,158 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solar Monitor Ultra 10700 - DARK</title>
+    <title>Solar Monitor Ultra 10700</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* PRISILNA CRNA POZADINA */
-        body { background-color: #000000 !important; color: #ffffff !important; }
-        .active-tab { border-top: 4px solid #3b82f6; color: #3b82f6; font-weight: 900; }
+        /* OSNOVNA CRNA TEMA */
+        body { background-color: #000000 !important; color: #e5e7eb; }
+        .active-tab { border-top: 4px solid #2563eb; color: #2563eb; font-weight: 900; }
         .hidden { display: none; }
-        .bar-fill { transition: height 0.8s ease-in-out; min-height: 4px; }
-        input { background: transparent; border: none; outline: none; color: white; text-align: center; width: 100%; font-weight: bold; }
+        .bar-fill { transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1); min-height: 4px; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         
-        /* NOVE KARTICE ZA TAMNI MOD */
-        .card-dark { background: #111111; border: 1px solid #222222; border-radius: 1.5rem; padding: 1.25rem; }
-        .inner-box { background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: 1rem; padding: 0.75rem; }
+        /* PRILAGODBA KARTICA DA BUDU VIDLJIVE NA CRNOM */
+        .bg-white { background-color: #111111 !important; border: 1px solid #222222 !important; }
+        .text-gray-800 { color: #f3f4f6 !important; }
+        .bg-blue-50 { background-color: rgba(37, 99, 235, 0.1) !important; border-color: rgba(37, 99, 235, 0.2) !important; }
+        .bg-green-50 { background-color: rgba(34, 197, 94, 0.1) !important; border-color: rgba(34, 197, 94, 0.2) !important; }
+        .bg-orange-50 { background-color: rgba(249, 115, 22, 0.1) !important; border-color: rgba(249, 115, 22, 0.2) !important; }
+        
+        /* NAVBAR FIX */
+        nav { background-color: #000000 !important; border-top: 1px solid #1f2937 !important; }
     </style>
 </head>
-<body class="pb-32 antialiased">
+<body class="pb-28 antialiased">
 
     <!-- HEADER -->
-    <div class="bg-blue-950 p-6 text-center border-b border-blue-900 sticky top-0 z-50">
-        <h1 class="text-xl font-black uppercase italic tracking-tighter text-blue-400">UNOS PODATAKA 📝</h1>
-        <p class="text-[10px] opacity-70 font-bold text-white" id="current-date"></p>
+    <div class="bg-blue-950 p-6 text-white text-center shadow-lg sticky top-0 z-40 border-b border-blue-900">
+        <h1 id="header-title" class="text-xl font-black uppercase italic tracking-tighter">UNOS PODATAKA 📝</h1>
+        <p class="text-[10px] opacity-70 font-bold" id="current-date"></p>
     </div>
 
     <div class="max-w-md mx-auto p-4 space-y-4">
         
         <!-- TAB 1: UNOS -->
-        <div id="tab-input" class="space-y-4">
-            <div id="forecast-card" class="bg-gradient-to-r from-blue-900 to-blue-700 p-4 rounded-3xl text-white shadow-lg border border-blue-800">
+        <div id="tab-input" class="space-y-4 text-center">
+            <div id="forecast-card" class="bg-gradient-to-r from-blue-900 to-blue-700 p-4 rounded-3xl text-white shadow-md text-left">
                 <div class="flex justify-between items-center">
                     <p class="text-[10px] font-black uppercase italic">Prognoza & Savjet ☀️</p>
-                    <button onclick="getForecast()" class="text-[9px] bg-white/10 px-2 py-1 rounded-lg">Ažuriraj</button>
+                    <button onclick="getForecast()" class="text-[9px] bg-white/20 px-2 py-1 rounded-lg">Ažuriraj</button>
                 </div>
-                <div id="forecast-data" class="mt-2 font-black text-lg italic italic">Klikni ažuriraj...</div>
+                <div id="forecast-data" class="mt-2 font-black text-lg italic italic">Učitavanje prognoze...</div>
             </div>
 
-            <div class="card-dark space-y-4">
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="inner-box">
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-200 space-y-4 text-center">
+                <div class="grid grid-cols-2 gap-3 text-white">
+                    <div class="bg-blue-50 p-3 rounded-2xl border border-blue-100">
                         <label class="block text-[9px] font-black text-blue-400 uppercase italic text-center">1.8.1 (VT)</label>
-                        <input type="number" id="in-vt" oninput="liveCalc()" placeholder="0">
-                        <div id="eur-in-vt" class="text-[10px] font-black text-blue-500 text-center">0.00 €</div>
+                        <input type="number" id="in-vt" oninput="liveCalc()" class="w-full bg-transparent font-bold text-lg outline-none text-center text-white" placeholder="0">
+                        <span id="eur-in-vt" class="text-[10px] font-black text-blue-500">0.00 €</span>
                     </div>
-                    <div class="inner-box">
-                        <label class="block text-[9px] font-black text-blue-300 uppercase italic text-center">1.8.2 (NT)</label>
-                        <input type="number" id="in-nt" oninput="liveCalc()" placeholder="0">
-                        <div id="eur-in-nt" class="text-[10px] font-black text-blue-400 text-center">0.00 €</div>
+                    <div class="bg-blue-50 p-3 rounded-2xl border border-blue-100">
+                        <label class="block text-[9px] font-black text-blue-400 uppercase italic text-center">1.8.2 (NT)</label>
+                        <input type="number" id="in-nt" oninput="liveCalc()" class="w-full bg-transparent font-bold text-lg outline-none text-center text-white" placeholder="0">
+                        <span id="eur-in-nt" class="text-[10px] font-black text-blue-400">0.00 €</span>
                     </div>
-                    <div class="inner-box !bg-green-900/10 !border-green-900/20">
+                    <div class="bg-green-50 p-3 rounded-2xl border border-green-100">
                         <label class="block text-[9px] font-black text-green-500 uppercase italic text-center">2.8.1 (VT)</label>
-                        <input type="number" id="out-vt" oninput="liveCalc()" placeholder="0">
-                        <div id="eur-out-vt" class="text-[10px] font-black text-green-500 text-center">0.00 €</div>
+                        <input type="number" id="out-vt" oninput="liveCalc()" class="w-full bg-transparent font-bold text-lg outline-none text-center text-white" placeholder="0">
+                        <span id="eur-out-vt" class="text-[10px] font-black text-green-600">0.00 €</span>
                     </div>
-                    <div class="inner-box !bg-green-900/10 !border-green-900/20">
+                    <div class="bg-green-50 p-3 rounded-2xl border border-green-100 text-center">
                         <label class="block text-[9px] font-black text-green-400 uppercase italic text-center">2.8.2 (NT)</label>
-                        <input type="number" id="out-nt" oninput="liveCalc()" placeholder="0">
-                        <div id="eur-out-nt" class="text-[10px] font-black text-green-400 text-center">0.00 €</div>
+                        <input type="number" id="out-nt" oninput="liveCalc()" class="w-full bg-transparent font-bold text-lg outline-none text-center text-white" placeholder="0">
+                        <span id="eur-out-nt" class="text-[10px] font-black text-green-500">0.00 €</span>
                     </div>
                 </div>
-                <div class="inner-box !bg-orange-950/20 !border-orange-900/40">
+                <div class="bg-orange-50 p-4 rounded-2xl border border-orange-200">
                     <label class="block text-[9px] font-black text-orange-500 uppercase italic text-center">Solar Inverter (kWh)</label>
-                    <input type="number" id="sol-gen" oninput="liveCalc()" class="text-2xl text-orange-500" placeholder="0.0">
+                    <input type="number" id="sol-gen" oninput="liveCalc()" class="w-full bg-transparent font-black text-2xl outline-none text-orange-500 text-center" placeholder="0.0">
                 </div>
-                <button onclick="processData()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-xl uppercase italic active:scale-95 transition-all">Spremi i Analiziraj</button>
+                <button onclick="processData()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-xl uppercase italic tracking-widest active:scale-95 transition-all">Spremi i Analiziraj</button>
             </div>
 
-            <!-- GRAFIKON -->
-            <div id="chart-section" class="hidden card-dark">
-                <div class="flex items-end justify-between h-32 px-2 border-b border-gray-800 mb-4 text-gray-500">
-                    <div class="flex flex-col items-center w-[18%] h-full justify-end"><div id="bar-1" class="bar-fill w-full bg-blue-600 rounded-t-md" style="height: 0%"></div><span class="text-[8px] mt-1">1.8.1</span></div>
-                    <div class="flex flex-col items-center w-[18%] h-full justify-end"><div id="bar-2" class="bar-fill w-full bg-blue-400 rounded-t-md" style="height: 0%"></div><span class="text-[8px] mt-1">1.8.2</span></div>
-                    <div class="flex flex-col items-center w-[18%] h-full justify-end"><div id="bar-3" class="bar-fill w-full bg-green-600 rounded-t-md" style="height: 0%"></div><span class="text-[8px] mt-1">2.8.1</span></div>
-                    <div class="flex flex-col items-center w-[18%] h-full justify-end"><div id="bar-4" class="bar-fill w-full bg-green-400 rounded-t-md" style="height: 0%"></div><span class="text-[8px] mt-1">2.8.2</span></div>
-                    <div class="flex flex-col items-center w-[18%] h-full justify-end"><div id="bar-5" class="bar-fill w-full bg-orange-500 rounded-t-md" style="height: 0%"></div><span class="text-[8px] mt-1 font-bold text-orange-500">SOL</span></div>
+            <div id="chart-section" class="hidden bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                <div class="flex items-end justify-between h-40 px-2 border-b-2 border-gray-800 mb-4">
+                    <div class="flex flex-col items-center w-[18%] h-full justify-end"><div id="bar-1" class="bar-fill w-full bg-blue-600 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-black mt-2">1.8.1</span></div>
+                    <div class="flex flex-col items-center w-[18%] h-full justify-end"><div id="bar-2" class="bar-fill w-full bg-blue-400 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-black mt-2">1.8.2</span></div>
+                    <div class="flex flex-col items-center w-[18%] h-full justify-end"><div id="bar-3" class="bar-fill w-full bg-green-600 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-black mt-2">2.8.1</span></div>
+                    <div class="flex flex-col items-center w-[18%] h-full justify-end"><div id="bar-4" class="bar-fill w-full bg-green-400 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-black mt-2">2.8.2</span></div>
+                    <div class="flex flex-col items-center w-[18%] h-full justify-end"><div id="bar-5" class="bar-fill w-full bg-orange-500 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-black mt-2 italic text-orange-600 uppercase">SOL</span></div>
                 </div>
                 <div id="final-summary" class="text-center text-xl font-black italic text-white"></div>
             </div>
         </div>
 
         <!-- TAB 2: ARHIVA -->
-        <div id="tab-archive" class="hidden space-y-3">
-            <h2 class="text-xs font-black uppercase text-gray-500 px-2">Povijest unosa</h2>
-            <div id="history-list" class="space-y-3"></div>
-            <button onclick="clearHistory()" class="w-full text-[10px] text-red-900 font-black mt-10">OBRIŠI SVE</button>
+        <div id="tab-archive" class="hidden space-y-3 pb-10 text-center">
+            <div id="history-list" class="space-y-3 text-center text-white"></div>
         </div>
 
         <!-- TAB 3: STATISTIKA -->
-        <div id="tab-stats" class="hidden space-y-4">
-            <div class="card-dark border-t-4 border-blue-500">
-                <p class="text-[10px] font-black text-gray-500 uppercase italic mb-4 text-center">Ukupna Bilanca</p>
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center bg-gray-900/50 p-3 rounded-xl border border-gray-800">
-                        <span class="text-[10px] font-bold text-blue-300 uppercase">Kupljeno</span>
-                        <span id="stat-total-in" class="text-lg font-black text-blue-400">0.0 kWh</span>
-                    </div>
-                    <div class="flex justify-between items-center bg-gray-900/50 p-3 rounded-xl border border-gray-800">
-                        <span class="text-[10px] font-bold text-green-300 uppercase">Prodano</span>
-                        <span id="stat-total-out" class="text-lg font-black text-green-400">0.0 kWh</span>
-                    </div>
-                    <div class="flex justify-between items-center bg-gray-900/50 p-3 rounded-xl border border-gray-800">
-                        <span class="text-[10px] font-bold text-orange-300 uppercase">Solar</span>
-                        <span id="stat-total-solar" class="text-lg font-black text-orange-500">0.0 kWh</span>
-                    </div>
-                    <div class="pt-3 border-t border-gray-800 flex justify-between items-center">
-                        <span class="text-xs font-black text-gray-500 uppercase">Neto:</span>
-                        <span id="roi-stats" class="text-xl font-black text-white italic">0.00 kWh</span>
-                    </div>
-                </div>
+        <div id="tab-stats" class="hidden space-y-6">
+            <div id="roi-card" class="bg-white p-5 rounded-3xl shadow-sm border-l-8 border-orange-500 text-left">
+                <p class="text-[10px] font-black text-gray-500 uppercase italic mb-1">Ukupna Bilanca</p>
+                <div id="roi-stats" class="flex justify-between items-end text-white font-bold">Učitavanje...</div>
             </div>
+            <div id="stats-current" class="space-y-4 text-left text-white"></div>
+            <div id="stats-history" class="space-y-4 text-left text-white"></div>
         </div>
 
         <!-- TAB 4: POSTAVKE -->
-        <div id="tab-settings" class="hidden">
-            <div class="card-dark text-center py-10">
-                <p class="text-[10px] font-black uppercase text-gray-600 italic tracking-widest">Solar Monitor Ultra - Dark Edition</p>
-            </div>
+        <div id="tab-settings" class="hidden space-y-4 text-center">
+            <div class="bg-white p-10 text-gray-500 italic uppercase text-[10px] font-black">Postavke Solar Monitora</div>
         </div>
 
     </div>
 
     <!-- NAVBAR -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-900 pb-8 pt-2 px-6 flex justify-between items-center z-50">
+    <nav class="fixed bottom-0 left-0 right-0 bg-black pb-8 pt-2 px-6 flex justify-between items-center z-50">
         <button onclick="switchTab('input')" id="btn-input" class="flex flex-col items-center gap-1 active-tab">
             <span class="text-xl">📝</span>
             <span class="text-[10px] uppercase font-black italic">Unos</span>
         </button>
-        <button onclick="switchTab('archive')" id="btn-archive" class="flex flex-col items-center gap-1 text-gray-600">
+        <button onclick="switchTab('archive')" id="btn-archive" class="flex flex-col items-center gap-1 text-gray-500">
             <span class="text-xl">📂</span>
             <span class="text-[10px] uppercase font-black italic">Arhiva</span>
         </button>
-        <button onclick="switchTab('stats')" id="btn-stats" class="flex flex-col items-center gap-1 text-gray-600">
+        <button onclick="switchTab('stats')" id="btn-stats" class="flex flex-col items-center gap-1 text-gray-500">
             <span class="text-xl">📊</span>
             <span class="text-[10px] uppercase font-black italic">Stats</span>
         </button>
-        <button onclick="switchTab('settings')" id="btn-settings" class="flex flex-col items-center gap-1 text-gray-600">
+        <button onclick="switchTab('settings')" id="btn-settings" class="flex flex-col items-center gap-1 text-gray-500">
             <span class="text-xl">⚙️</span>
             <span class="text-[10px] uppercase font-black italic">Set</span>
         </button>
     </nav>
 
     <script>
+        // TVOJ ORIGINALNI JS KOD
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('hr-HR');
-        let history = JSON.parse(localStorage.getItem('solar_history')) || [];
+        let solarHistory = JSON.parse(localStorage.getItem('solar_history')) || [];
 
         function switchTab(tab) {
             document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
             document.getElementById('tab-' + tab).classList.remove('hidden');
             document.querySelectorAll('nav button').forEach(btn => {
                 btn.classList.remove('active-tab');
-                btn.classList.add('text-gray-600');
+                btn.classList.add('text-gray-500');
             });
             document.getElementById('btn-' + tab).classList.add('active-tab');
-            document.getElementById('btn-' + tab).classList.remove('text-gray-600');
+            document.getElementById('btn-' + tab).classList.remove('text-gray-500');
             if(tab === 'archive') renderArchive();
             if(tab === 'stats') renderStats();
         }
@@ -181,45 +168,42 @@
 
         function processData() {
             const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
-            const data = {
-                date: new Date().toLocaleDateString('hr-HR') + " " + new Date().toLocaleTimeString('hr-HR', {hour:'2.digit', minute:'2.digit'}),
+            const entry = {
+                date: new Date().toLocaleString('hr-HR'),
                 inVT: getVal('in-vt'), inNT: getVal('in-nt'), outVT: getVal('out-vt'), outNT: getVal('out-nt'), solar: getVal('sol-gen')
             };
-            history.push(data);
-            localStorage.setItem('solar_history', JSON.stringify(history));
+            solarHistory.push(entry);
+            localStorage.setItem('solar_history', JSON.stringify(solarHistory));
             alert("Podaci spremljeni!");
             switchTab('archive');
         }
 
         function renderArchive() {
             const list = document.getElementById('history-list');
-            list.innerHTML = history.length ? '' : '<p class="text-center text-gray-700 py-10 italic">Nema unosa</p>';
-            history.slice().reverse().forEach(item => {
+            list.innerHTML = solarHistory.length ? '' : '<p class="py-10 text-gray-600">Nema unosa.</p>';
+            solarHistory.slice().reverse().forEach(item => {
                 list.innerHTML += `
-                    <div class="card-dark flex justify-between items-center border-l-4 border-blue-500">
-                        <div>
-                            <p class="text-[9px] font-bold text-gray-500">${item.date}</p>
-                            <p class="text-xs font-black italic">In: <span class="text-blue-400">${(item.inVT+item.inNT).toFixed(1)} kWh</span></p>
+                    <div class="bg-white p-4 rounded-3xl flex justify-between items-center border-l-4 border-blue-500">
+                        <div class="text-left">
+                            <p class="text-[9px] text-gray-500 font-bold">${item.date}</p>
+                            <p class="text-sm font-black italic">In: ${(item.inVT+item.inNT).toFixed(1)} kWh</p>
                         </div>
                         <div class="text-right">
-                            <p class="text-[9px] font-bold text-gray-500">SOLAR</p>
-                            <p class="text-sm font-black italic text-orange-500">${item.solar.toFixed(1)} kWh</p>
+                            <p class="text-sm font-black italic text-orange-500">Sol: ${item.solar.toFixed(1)} kWh</p>
                         </div>
                     </div>`;
             });
         }
 
         function renderStats() {
-            let tIn = 0, tOut = 0, tSolar = 0;
-            history.forEach(i => { tIn += (i.inVT + i.inNT); tOut += (i.outVT + i.outNT); tSolar += i.solar; });
-            document.getElementById('stat-total-in').innerText = tIn.toFixed(1) + " kWh";
-            document.getElementById('stat-total-out').innerText = tOut.toFixed(1) + " kWh";
-            document.getElementById('stat-total-solar').innerText = tSolar.toFixed(1) + " kWh";
-            document.getElementById('roi-stats').innerText = (tOut - tIn).toFixed(2) + " kWh";
+            let tIn = 0, tOut = 0, tSol = 0;
+            solarHistory.forEach(i => { tIn += (i.inVT + i.inNT); tOut += (i.outVT + i.outNT); tSol += i.solar; });
+            document.getElementById('roi-stats').innerText = (tOut - tIn).toFixed(1) + " kWh (Neto)";
         }
 
-        function clearHistory() { if(confirm("Obrisati sve?")) { localStorage.clear(); history = []; renderArchive(); } }
-        function getForecast() { document.getElementById('forecast-data').innerText = "Vrijeme: Vedro ☀️ Iskoristi Sunce!"; }
+        function getForecast() {
+            document.getElementById('forecast-data').innerText = "Vrijeme: Vedro ☀️ Iskoristi Sunce!";
+        }
     </script>
 </body>
 </html>
