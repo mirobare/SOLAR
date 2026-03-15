@@ -36,17 +36,17 @@
         .del-btn-mini { background: #333; color: var(--red); border: none; padding: 5px 8px; border-radius: 4px; font-size: 0.6rem; font-weight: bold; cursor: pointer; }
 
         .stat-filter { display: flex; gap: 5px; margin-bottom: 15px; }
-        .f-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; background: #1c1c1e; color: #fff; font-size: 0.65rem; cursor: pointer; }
+        .f-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; background: #1c1c1e; color: #fff; font-size: 0.6rem; cursor: pointer; }
         .f-btn.active { background: var(--accent); border-color: var(--accent); }
         
         .h-row { margin-bottom: 10px; }
-        .h-label-row { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 3px; font-weight: bold; }
+        .h-label-row { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 3px; font-weight: bold; }
         .h-bar-bg { background: #111; height: 12px; border-radius: 6px; overflow: hidden; }
         .h-bar-fill { height: 100%; transition: width 0.5s; }
 
         .stat-details { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid #333; font-size: 0.65rem; color: var(--gray); }
         .stat-details.active { display: block; }
-        .detail-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #222; }
+        .detail-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #222; }
 
         button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1rem; }
         .exp-btn { background: #2c2c2e; color: var(--green); border: 1px solid var(--green); padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
@@ -187,11 +187,9 @@
 
     function uROI() {
         const totalUstedjeno = db.reduce((s, x) => s + (x.prod * (cfg.vt||0)) + (x.evt * (cfg.xvt||0)) + (x.ent * (cfg.xnt||0)), 0);
-        const st = document.getElementById('ROI_status'); if(st) st.innerText = (totalUstedjeno || 0).toFixed(2) + " €";
-        const txt = document.getElementById('ROI_text'); if(txt) {
-            const preostalo = (cfg.inv || 0) - totalUstedjeno;
-            txt.innerText = preostalo > 0 ? `Preostalo za otplatu: ${preostalo.toFixed(2)} €` : "Investicija se isplatila! 🎉";
-        }
+        document.getElementById('ROI_status').innerText = (totalUstedjeno || 0).toFixed(2) + " €";
+        const preostalo = (cfg.inv || 0) - totalUstedjeno;
+        document.getElementById('ROI_text').innerText = preostalo > 0 ? `Preostalo za otplatu: ${preostalo.toFixed(2)} €` : "Investicija se isplatila! 🎉";
     }
 
     function rStat(filter, btn) {
@@ -213,21 +211,23 @@
             });
         }
 
+        const mjeseciImena = ["Sij", "Velj", "Ožu", "Tra", "Svi", "Lip", "Srp", "Kol", "Ruj", "Lis", "Stu", "Pro"];
+
         Object.keys(groups).sort().reverse().forEach(key => {
             const s = groups[key];
             const max = Math.max(s.ivt, s.int, s.evt, s.ent, s.prod, 1);
             let displayTitle = key;
-            if(filter === 'mjesec') {
-                const parts = key.split('-');
-                const imena = ["Sij", "Velj", "Ožu", "Tra", "Svi", "Lip", "Srp", "Kol", "Ruj", "Lis", "Stu", "Pro"];
-                displayTitle = imena[parseInt(parts[1])-1] + " " + parts[0];
+            
+            if(filter === 'mjesec' && key !== 'SVEUKUPNO') {
+                const p = key.split('-');
+                displayTitle = mjeseciImena[parseInt(p[1]) - 1] + " " + p[0];
             }
 
             const card = document.createElement('div'); card.className = 'card';
             const detId = 'det-' + key.toString().replace(/[^a-zA-Z0-9]/g, "");
             card.innerHTML = `
                 ${filter !== 'dan' ? `<button class="det-btn" onclick="document.getElementById('${detId}').classList.toggle('active')">DETALJI</button>` : ''}
-                <h4 style="margin:0 0 15px 0; color:var(--accent); font-size:0.8rem;">${displayTitle}</h4>
+                <h4 style="margin:0 0 10px 0; color:var(--accent); font-size:0.8rem;">${displayTitle}</h4>
                 ${genHBar("UVOZ VT", s.ivt, max, "var(--red)", s.ivt*(cfg.vt||0))}
                 ${genHBar("UVOZ NT", s.int, max, "var(--red)", s.int*(cfg.nt||0), 0.6)}
                 ${genHBar("IZVOZ VT", s.evt, max, "var(--green)", s.evt*(cfg.xvt||0))}
@@ -242,7 +242,7 @@
     }
 
     function genHBar(lbl, val, max, col, eur, op=1) {
-        return `<div class="h-row"><div class="h-label-row"><span>${lbl}</span><span style="color:${col}">${val.toFixed(1)} kWh <span style="font-size:0.7rem">(${eur.toFixed(2)} €)</span></span></div>
+        return `<div class="h-row"><div class="h-label-row"><span>${lbl}</span><span style="color:${col}">${val.toFixed(1)} kWh <span style="font-size:0.6rem">(${eur.toFixed(2)} €)</span></span></div>
             <div class="h-bar-bg"><div class="h-bar-fill" style="width:${(val/max*100)}%; background:${col}; opacity:${op}"></div></div></div>`;
     }
 
