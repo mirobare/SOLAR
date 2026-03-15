@@ -3,23 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solar Pro Petrinja v8</title>
-    <!-- Provjeri imaš li internet vezu za ovu skriptu -->
+    <title>Solar Pro Petrinja v9</title>
     <script src="https://cdn.jsdelivr.net"></script>
     <style>
         :root { --bg: #000; --card: #1c1c1e; --accent: #0A84FF; --solar: #FF9F0A; --green: #32D74B; --red: #FF453A; --text: #fff; --gray: #8e8e93; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 50px; }
         
         .nav-tabs { display: flex; background: #1c1c1e; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #333; }
-        .nav-btn { flex: 1; padding: 15px 5px; border: none; background: none; color: var(--gray); font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        .nav-btn { flex: 1; padding: 15px 5px; border: none; background: none; color: var(--gray); font-size: 0.7rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
         .nav-btn.active { color: var(--accent); border-bottom: 3px solid var(--accent); }
 
         .tab-content { display: none; padding: 15px; max-width: 800px; margin: auto; }
         .tab-content.active { display: block; }
 
-        /* ROI */
+        /* Weather Box (New top of Unos) */
+        .weather-card { background: #1c1c1e; border: 1px solid var(--solar); padding: 15px; border-radius: 16px; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; }
+        .w-icon { font-size: 2.5rem; }
+        .w-text { font-weight: bold; color: var(--solar); font-size: 0.9rem; line-height: 1.3; }
+
+        /* ROI Card (Now in Settings) */
         .card-roi { background: #1c1c1e; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid #333; text-align: center; }
-        .roi-bar { background: #333; height: 12px; border-radius: 6px; margin: 12px 0; overflow: hidden; position: relative; }
+        .roi-bar { background: #333; height: 12px; border-radius: 6px; margin: 12px 0; overflow: hidden; }
         .roi-fill { background: var(--solar); height: 100%; width: 0%; transition: 1.5s ease-in-out; }
 
         /* Inputs */
@@ -35,15 +39,14 @@
         
         button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; font-size: 1rem; cursor: pointer; }
 
-        /* Arhiva Card */
-        .archive-card { background: var(--card); padding: 15px; border-radius: 14px; margin-bottom: 12px; border: 1px solid #333; }
-        .archive-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 0.8rem; margin-top: 10px; }
-        
         /* Stats Table */
         .stat-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
         .stat-table td { padding: 8px; border-bottom: 1px solid #333; }
-        .stat-table .label { color: var(--gray); }
         .stat-table .val { text-align: right; font-weight: bold; }
+
+        /* Archive */
+        .archive-card { background: var(--card); padding: 15px; border-radius: 14px; margin-bottom: 12px; border: 1px solid #333; }
+        .archive-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 0.8rem; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -55,19 +58,16 @@
         <button class="nav-btn" onclick="switchTab(event, 'postavke')">Postavke</button>
     </nav>
 
-    <!-- UNOS -->
+    <!-- TAB: UNOS -->
     <div id="unos" class="tab-content active">
-        <div class="card-roi">
-            <small style="color:var(--gray)">POVRAT INVESTICIJE</small>
-            <div id="roiText" style="font-size: 2rem; font-weight: 900; color: var(--solar); margin: 5px 0;">0.00 €</div>
-            <div class="roi-bar"><div id="roiBar" class="roi-fill"></div></div>
-            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--gray)">
-                <span id="roiPerc">0%</span><span id="roiLeft">Preostalo: 10.700 €</span>
-            </div>
+        <!-- Vremenska prognoza na vrhu -->
+        <div class="weather-card">
+            <div class="w-icon">☀️</div>
+            <div class="w-text">PETRINJA: SUNČANO I TOPLO.<br>IDEALNO ZA PERILICU I KLIMU!</div>
         </div>
 
         <div class="card">
-            <div class="input-row" style="grid-template-columns: 1fr;"><div class="input-box" style="border-color:var(--accent)"><label>Datum</label><input type="date" id="date"></div></div>
+            <div class="input-row" style="grid-template-columns: 1fr;"><div class="input-box" style="border-color:var(--accent)"><label>Datum očitanja</label><input type="date" id="date"></div></div>
             <div class="input-row">
                 <div class="input-box box-import"><label>Uvoz VT (1.8.1)</label><input type="number" id="iVT"></div>
                 <div class="input-box box-import"><label>Uvoz NT (1.8.2)</label><input type="number" id="iNT"></div>
@@ -82,50 +82,58 @@
             </div>
             <button class="main-btn" onclick="saveData()">SPREMI DNEVNI UNOS</button>
         </div>
-        <div id="quickInfo" style="text-align:center; color:var(--green); font-size:0.8rem;"></div>
+        <div id="quickStatus" style="text-align:center; color:var(--green); font-size:0.8rem;"></div>
     </div>
 
-    <!-- ARHIVA -->
+    <!-- TAB: ARHIVA -->
     <div id="arhiva" class="tab-content">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3>Svi unosi</h3>
+            <h3>Povijest unosa</h3>
             <button onclick="deleteSelected()" style="background:var(--red); color:white; border:none; padding:8px 15px; border-radius:10px; font-weight:bold;">OBRIŠI</button>
         </div>
         <div id="archiveList"></div>
     </div>
 
-    <!-- STATISTIKA -->
+    <!-- TAB: STATISTIKA -->
     <div id="stat" class="tab-content">
-        <h3>Pregled po razdobljima</h3>
+        <h3>Pregled kWh</h3>
         <div class="card">
             <table class="stat-table">
-                <tr><td class="label">Danas Proizvedeno:</td><td class="val" id="sD" style="color:var(--solar)">0 kWh</td></tr>
-                <tr><td class="label">Ovaj mjesec:</td><td class="val" id="sM">0 kWh</td></tr>
-                <tr><td class="label">Ova godina:</td><td class="val"> <span id="sY">0</span> kWh</td></tr>
-                <tr style="border-top:2px solid #444"><td class="label" style="color:var(--solar)">UKUPNO SVE:</td><td class="val" id="sT" style="color:var(--solar)">0 kWh</td></tr>
+                <tr><td style="color:var(--gray)">Danas Proizvedeno:</td><td class="val" id="sD" style="color:var(--solar)">0 kWh</td></tr>
+                <tr><td style="color:var(--gray)">Ovaj mjesec:</td><td class="val" id="sM">0 kWh</td></tr>
+                <tr style="border-top:2px solid #444"><td style="color:var(--solar)">UKUPNO SVE:</td><td class="val" id="sT" style="color:var(--solar)">0 kWh</td></tr>
             </table>
         </div>
-        
-        <div class="card" style="height:300px; padding:10px;">
+        <div class="card" style="height:280px; padding:10px;">
             <canvas id="statChart"></canvas>
         </div>
     </div>
 
-    <!-- POSTAVKE -->
+    <!-- TAB: POSTAVKE -->
     <div id="postavke" class="tab-content">
-        <h3>Postavke sustava</h3>
+        <!-- ROI je sada ovdje -->
+        <div class="card-roi">
+            <small style="color:var(--gray)">POVRAT INVESTICIJE</small>
+            <div id="roiText" style="font-size: 2rem; font-weight: 900; color: var(--solar); margin: 5px 0;">0.00 €</div>
+            <div class="roi-bar"><div id="roiBar" class="roi-fill"></div></div>
+            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--gray)">
+                <span id="roiPerc">0%</span><span id="roiLeft">Preostalo: 10.700 €</span>
+            </div>
+        </div>
+
+        <h3>Postavke cijena</h3>
         <div class="card">
             <label>Ukupna Investicija (€)</label><input type="number" id="cfgInv" style="border-bottom:1px solid #444; margin-bottom:15px;">
             <label>Cijena Kupnje VT (€/kWh)</label><input type="number" id="cfgVT" step="0.001" style="border-bottom:1px solid #444; margin-bottom:15px;">
             <label>Cijena Kupnje NT (€/kWh)</label><input type="number" id="cfgNT" step="0.001" style="border-bottom:1px solid #444; margin-bottom:15px;">
-            <label style="color:var(--green)">Cijena Prodaje (Otkup) (€/kWh)</label><input type="number" id="cfgSell" step="0.001" style="border-bottom:1px solid var(--green); margin-bottom:15px;">
+            <label style="color:var(--green)">Cijena Otkupa (HEP) (€/kWh)</label><input type="number" id="cfgSell" step="0.001" style="border-bottom:1px solid var(--green); margin-bottom:15px;">
             <button class="main-btn" onclick="saveSettings()">SPREMI POSTAVKE</button>
         </div>
     </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('solar_db_v8')) || [];
-    let cfg = JSON.parse(localStorage.getItem('solar_cfg_v8')) || { inv: 10700, vt: 0.14, nt: 0.07, sell: 0.04 };
+    let db = JSON.parse(localStorage.getItem('solar_db_v9')) || [];
+    let cfg = JSON.parse(localStorage.getItem('solar_cfg_v9')) || { inv: 10700, vt: 0.14, nt: 0.07, sell: 0.04 };
     let myChart = null;
 
     document.getElementById('date').valueAsDate = new Date();
@@ -140,11 +148,9 @@
         document.getElementById(id).classList.add('active');
         evt.currentTarget.classList.add('active');
         
-        if(id === 'stat') {
-            setTimeout(renderStats, 100); // Mala odgoda da se canvas učita
-        }
+        if(id === 'stat') setTimeout(renderStats, 100);
         if(id === 'arhiva') renderArchive();
-        updateROI();
+        if(id === 'postavke') updateROI();
     }
 
     function saveData() {
@@ -159,10 +165,9 @@
             h: parseFloat(document.getElementById('hep').value) || 0
         };
         db.push(entry);
-        localStorage.setItem('solar_db_v8', JSON.stringify(db));
-        document.getElementById('quickInfo').innerText = "Unos spremljen! ✅";
-        setTimeout(() => document.getElementById('quickInfo').innerText = "", 2000);
-        updateROI();
+        localStorage.setItem('solar_db_v9', JSON.stringify(db));
+        document.getElementById('quickStatus').innerText = "Podaci spremljeni! ✅";
+        setTimeout(() => document.getElementById('quickStatus').innerText = "", 2000);
     }
 
     function updateROI() {
@@ -199,45 +204,29 @@
         const now = new Date();
         const todayStr = now.toISOString().split('T')[0];
         const monthStr = todayStr.substring(0, 7);
-        const yearStr = todayStr.substring(0, 4);
 
-        let d=0, m=0, y=0, t=0;
+        let d=0, m=0, t=0;
         db.forEach(r => {
             if(r.d === todayStr) d += r.p;
             if(r.d.startsWith(monthStr)) m += r.p;
-            if(r.d.startsWith(yearStr)) y += r.p;
             t += r.p;
         });
 
         document.getElementById('sD').innerText = d.toFixed(1) + " kWh";
         document.getElementById('sM').innerText = m.toFixed(1) + " kWh";
-        document.getElementById('sY').innerText = y.toFixed(1);
         document.getElementById('sT').innerText = t.toFixed(0) + " kWh";
 
-        // GRAFIKON FIX
         const ctx = document.getElementById('statChart');
         if (myChart) myChart.destroy();
-        
         const last7 = db.slice(-7);
         myChart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: last7.map(x => x.d.substring(5)),
-                datasets: [{
-                    label: 'Proizvodnja (kWh)',
-                    data: last7.map(x => x.p),
-                    backgroundColor: '#FF9F0A',
-                    borderRadius: 5
-                }]
+                datasets: [{ label: 'kWh', data: last7.map(x => x.p), backgroundColor: '#FF9F0A', borderRadius: 5 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: { beginAtZero: true, grid: { color: '#333' }, ticks: { color: '#fff' } },
-                    x: { grid: { display: false }, ticks: { color: '#fff' } }
-                },
-                plugins: { legend: { display: false } }
+            options: { responsive: true, maintainAspectRatio: false, color: '#fff', 
+                scales: { y: { grid: { color: '#333' }, ticks: { color: '#fff' } }, x: { ticks: { color: '#fff' } } }
             }
         });
     }
@@ -247,7 +236,7 @@
         if(ids.length === 0) return;
         if(!confirm("Obrisati odabrane unose?")) return;
         db = db.filter(r => !ids.includes(r.id));
-        localStorage.setItem('solar_db_v8', JSON.stringify(db));
+        localStorage.setItem('solar_db_v9', JSON.stringify(db));
         renderArchive();
     }
 
@@ -256,13 +245,10 @@
         cfg.vt = parseFloat(document.getElementById('cfgVT').value);
         cfg.nt = parseFloat(document.getElementById('cfgNT').value);
         cfg.sell = parseFloat(document.getElementById('cfgSell').value);
-        localStorage.setItem('solar_cfg_v8', JSON.stringify(cfg));
+        localStorage.setItem('solar_cfg_v9', JSON.stringify(cfg));
         alert("Postavke spremljene!");
         updateROI();
     }
-
-    // Pokretanje
-    updateROI();
 </script>
 </body>
 </html>
