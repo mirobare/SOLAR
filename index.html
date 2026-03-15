@@ -8,14 +8,12 @@
         :root { --bg: #000; --card: #1c1c1e; --accent: #0A84FF; --solar: #FF9F0A; --green: #32D74B; --red: #FF453A; --text: #fff; --gray: #8e8e93; }
         body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 70px; }
         
-        /* Navigacija */
         .nav-tabs { display: flex; background: #1c1c1e; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #333; }
         .nav-btn { flex: 1; padding: 15px 5px; border: none; background: none; color: var(--gray); font-size: 0.7rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
         .nav-btn.active { color: var(--accent); border-bottom: 3px solid var(--accent); }
         .tab-content { display: none; padding: 15px; max-width: 800px; margin: auto; }
         .tab-content.active { display: block; }
 
-        /* Kartice i Unos */
         .weather-box { background: #1c1c1e; border: 1px solid var(--solar); padding: 12px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
         .card { background: var(--card); border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid #2c2c2e; }
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
@@ -24,12 +22,10 @@
         input { background: transparent; border: none; color: #fff; font-size: 1.1rem; width: 100%; outline: none; font-weight: bold; }
         .euro-hint { font-size: 0.7rem; color: var(--gray); border-top: 1px solid #333; margin-top: 5px; padding-top: 3px; display: block; }
         
-        /* Grafika Unos (Vertikalna) */
         .live-graph { display: flex; align-items: flex-end; gap: 8px; height: 100px; background: #111; padding: 15px 10px; border-radius: 12px; border: 1px solid #333; margin-top: 15px; }
         .v-bar { flex: 1; border-radius: 4px 4px 0 0; min-height: 2px; position: relative; transition: height 0.3s; }
         .v-label { position: absolute; bottom: -18px; width: 100%; text-align: center; font-size: 0.5rem; color: var(--gray); font-weight: bold; }
 
-        /* Arhiva - Jednoredni */
         .archive-line { display: flex; align-items: center; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 3px solid var(--solar); overflow: hidden; }
         .arch-date { font-size: 0.75rem; font-weight: bold; min-width: 65px; color: var(--accent); }
         .arch-scroll-area { display: flex; gap: 12px; overflow-x: auto; flex: 1; padding: 0 10px; scrollbar-width: none; }
@@ -39,7 +35,6 @@
         .arch-num { font-size: 0.75rem; font-weight: bold; }
         .del-btn-mini { background: #333; color: var(--red); border: none; padding: 5px 8px; border-radius: 4px; font-size: 0.6rem; font-weight: bold; cursor: pointer; }
 
-        /* Statistika (Horizontalna) */
         .stat-filter { display: flex; gap: 5px; margin-bottom: 15px; }
         .f-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; background: #1c1c1e; color: #fff; font-size: 0.7rem; cursor: pointer; }
         .f-btn.active { background: var(--accent); border-color: var(--accent); }
@@ -49,6 +44,7 @@
         .h-bar-fill { height: 100%; transition: width 0.5s; }
 
         button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .exp-btn { background: #2c2c2e; color: var(--green); border: 1px solid var(--green); padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -60,7 +56,6 @@
         <button class="nav-btn" onclick="swTab('postavke', this)">Postavke</button>
     </nav>
 
-    <!-- UNOS -->
     <div id="unos" class="tab-content active">
         <div class="weather-box">☀️ <div class="w-text" style="color:var(--solar); font-weight:bold; margin-left:10px;">PETRINJA: SUNČANO. UKLJUČI TROŠILA!</div></div>
         <div class="card">
@@ -88,10 +83,8 @@
         </div>
     </div>
 
-    <!-- ARHIVA -->
     <div id="arhiva" class="tab-content"><div id="archiveList"></div></div>
 
-    <!-- STATISTIKA -->
     <div id="stat" class="tab-content">
         <div class="stat-filter">
             <button class="f-btn active" onclick="rStat('dan', this)">DAN</button>
@@ -102,13 +95,12 @@
         <div id="statOutput"></div>
     </div>
 
-    <!-- POSTAVKE -->
     <div id="postavke" class="tab-content">
         <div class="card">
             <h4 style="color:var(--accent); margin-top:0">POVRAT INVESTICIJE</h4>
             <div class="input-row">
                 <div class="input-box"><label>Cijena elektrane (€)</label><input type="number" id="cfgInv" oninput="sCfg()"></div>
-                <div class="input-box" style="background:#111; border-color:var(--green)"><label>Otplaćeno do sad</label><strong id="ROI_status" style="font-size:1.1rem">0 €</strong></div>
+                <div class="input-box" style="background:#111; border-color:var(--green)"><label>Otplaćeno do sad</label><strong id="ROI_status" style="font-size:1.1rem">0.00 €</strong></div>
             </div>
             <p id="ROI_text" style="font-size:0.7rem; color:var(--gray); margin:0"></p>
         </div>
@@ -122,6 +114,7 @@
                 <div class="input-box" style="border-color:var(--green)"><label>Otkup VT</label><input type="number" id="cfgXVT" step="0.001" oninput="sCfg()"></div>
                 <div class="input-box" style="border-color:var(--green)"><label>Otkup NT</label><input type="number" id="cfgXNT" step="0.001" oninput="sCfg()"></div>
             </div>
+            <button class="exp-btn" onclick="exportToExcel()">📊 IZVOZ U EXCEL (.CSV)</button>
         </div>
     </div>
 
@@ -131,7 +124,10 @@
     let cfg = JSON.parse(localStorage.getItem('SOLAR_CFG')) || { vt:0.15, nt:0.08, xvt:0.04, xnt:0.04, inv: 5000 };
 
     document.getElementById('date').valueAsDate = new Date();
-    ['VT','NT','XVT','XNT','Inv'].forEach(f => document.getElementById('cfg'+f).value = cfg[f.toLowerCase()]);
+    ['VT','NT','XVT','XNT','Inv'].forEach(f => {
+        const el = document.getElementById('cfg'+f);
+        if(el) el.value = cfg[f.toLowerCase()] || 0;
+    });
 
     function swTab(id, btn) {
         document.querySelectorAll('.tab-content, .nav-btn').forEach(el => el.classList.remove('active'));
@@ -144,19 +140,13 @@
     function lUpd() {
         const val = id => parseFloat(document.getElementById(id).value) || 0;
         const v = { ivt: val('ivt'), int: val('int'), evt: val('evt'), ent: val('ent'), prod: val('prod') };
-        
-        document.getElementById('ivt_e').innerText = (v.ivt*cfg.vt).toFixed(2)+" €";
-        document.getElementById('int_e').innerText = (v.int*cfg.nt).toFixed(2)+" €";
-        document.getElementById('evt_e').innerText = (v.evt*cfg.xvt).toFixed(2)+" €";
-        document.getElementById('ent_e').innerText = (v.ent*cfg.xnt).toFixed(2)+" €";
-        document.getElementById('prod_e').innerText = (v.prod*cfg.vt).toFixed(2)+" €";
-
+        document.getElementById('ivt_e').innerText = (v.ivt*(cfg.vt||0)).toFixed(2)+" €";
+        document.getElementById('int_e').innerText = (v.int*(cfg.nt||0)).toFixed(2)+" €";
+        document.getElementById('evt_e').innerText = (v.evt*(cfg.xvt||0)).toFixed(2)+" €";
+        document.getElementById('ent_e').innerText = (v.ent*(cfg.xnt||0)).toFixed(2)+" €";
+        document.getElementById('prod_e').innerText = (v.prod*(cfg.vt||0)).toFixed(2)+" €";
         const max = Math.max(v.ivt, v.int, v.evt, v.ent, v.prod, 1);
-        document.getElementById('b-ivt').style.height = (v.ivt/max*100) + "px";
-        document.getElementById('b-int').style.height = (v.int/max*100) + "px";
-        document.getElementById('b-evt').style.height = (v.evt/max*100) + "px";
-        document.getElementById('b-ent').style.height = (v.ent/max*100) + "px";
-        document.getElementById('b-prod').style.height = (v.prod/max*100) + "px";
+        ['ivt','int','evt','ent','prod'].forEach(id => document.getElementById('b-'+id).style.height = (v[id]/max*100) + "px");
     }
 
     function sData() {
@@ -173,9 +163,9 @@
             const div = document.createElement('div'); div.className = 'archive-line';
             div.innerHTML = `<div class="arch-date">${item.date.split('-').reverse().slice(0,2).join('.')}</div>
                 <div class="arch-scroll-area">
-                    ${genBlock("U-VT", item.ivt, item.ivt*cfg.vt, "var(--red)")} ${genBlock("U-NT", item.int, item.int*cfg.nt, "var(--red)")}
-                    ${genBlock("X-VT", item.evt, item.evt*cfg.xvt, "var(--green)")} ${genBlock("X-NT", item.ent, item.ent*cfg.xnt, "var(--green)")}
-                    ${genBlock("SOLAR", item.prod, item.prod*cfg.vt, "var(--solar)")}
+                    ${genBlock("U-VT", item.ivt, item.ivt*(cfg.vt||0), "var(--red)")} ${genBlock("U-NT", item.int, item.int*(cfg.nt||0), "var(--red)")}
+                    ${genBlock("X-VT", item.evt, item.evt*(cfg.xvt||0), "var(--green)")} ${genBlock("X-NT", item.ent, item.ent*(cfg.xnt||0), "var(--green)")}
+                    ${genBlock("SOLAR", item.prod, item.prod*(cfg.vt||0), "var(--solar)")}
                 </div><button class="del-btn-mini" onclick="obrisiUnos(${item.id})">X</button>`;
             list.appendChild(div);
         });
@@ -189,9 +179,9 @@
     }
 
     function uROI() {
-        const totalUstedjeno = db.reduce((s, x) => s + (x.prod * cfg.vt) + (x.evt * cfg.xvt) + (x.ent * cfg.xnt), 0);
-        document.getElementById('ROI_status').innerText = totalUstedjeno.toFixed(2) + " €";
-        const preostalo = cfg.inv - totalUstedjeno;
+        const totalUstedjeno = db.reduce((s, x) => s + (x.prod * (cfg.vt||0)) + (x.evt * (cfg.xvt||0)) + (x.ent * (cfg.xnt||0)), 0);
+        document.getElementById('ROI_status').innerText = (totalUstedjeno || 0).toFixed(2) + " €";
+        const preostalo = (cfg.inv || 0) - totalUstedjeno;
         document.getElementById('ROI_text').innerText = preostalo > 0 ? `Preostalo za otplatu: ${preostalo.toFixed(2)} €` : "Investicija se isplatila! 🎉";
     }
 
@@ -208,11 +198,11 @@
         const s = filtered.reduce((a, c) => ({ ivt:a.ivt+c.ivt, int:a.int+c.int, evt:a.evt+c.evt, ent:a.ent+c.ent, prod:a.prod+c.prod, hep:a.hep+c.hep }), {ivt:0,int:0,evt:0,ent:0,prod:0,hep:0});
         const max = Math.max(s.ivt, s.int, s.evt, s.ent, s.prod, 1);
         document.getElementById('statOutput').innerHTML = `<div class="card">
-            ${genHBar("UVOZ VT", s.ivt, max, "var(--red)", s.ivt*cfg.vt)}
-            ${genHBar("UVOZ NT", s.int, max, "var(--red)", s.int*cfg.nt, 0.6)}
-            ${genHBar("IZVOZ VT", s.evt, max, "var(--green)", s.evt*cfg.xvt)}
-            ${genHBar("IZVOZ NT", s.ent, max, "var(--green)", s.ent*cfg.xnt, 0.6)}
-            ${genHBar("SOLAR", s.prod, max, "var(--solar)", s.prod*cfg.vt)}
+            ${genHBar("UVOZ VT", s.ivt, max, "var(--red)", s.ivt*(cfg.vt||0))}
+            ${genHBar("UVOZ NT", s.int, max, "var(--red)", s.int*(cfg.nt||0), 0.6)}
+            ${genHBar("IZVOZ VT", s.evt, max, "var(--green)", s.evt*(cfg.xvt||0))}
+            ${genHBar("IZVOZ NT", s.ent, max, "var(--green)", s.ent*(cfg.xnt||0), 0.6)}
+            ${genHBar("SOLAR", s.prod, max, "var(--solar)", s.prod*(cfg.vt||0))}
         </div>`;
     }
 
@@ -222,6 +212,17 @@
     }
 
     function obrisiUnos(id) { if(confirm("Obriši?")) { db = db.filter(i => i.id !== id); localStorage.setItem(K, JSON.stringify(db)); rArch(); } }
+
+    function exportToExcel() {
+        if(db.length === 0) return alert("Nema podataka za izvoz.");
+        let csv = "Datum,Uvoz VT,Uvoz NT,Izvoz VT,Izvoz NT,Solar kWh,HEP Euro\n";
+        db.forEach(d => { csv += `${d.date},${d.ivt},${d.int},${d.evt},${d.ent},${d.prod},${d.hep}\n`; });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `solar_pro_export_${new Date().toISOString().slice(0,10)}.csv`;
+        link.click();
+    }
 </script>
 </body>
 </html>
