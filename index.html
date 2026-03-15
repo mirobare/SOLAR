@@ -3,35 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solar Monitor Pro - Dark</title>
+    <title>Solar Monitor Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* PRISILNA CRNA TEMA - Ne mijenja tvoj HTML, samo ga prebojava */
+        /* OVO SU JEDINE IZMJENE - SAMO BOJE */
         body { background-color: #000000 !important; color: #ffffff !important; }
+        .bg-gray-50 { background-color: #000000 !important; }
+        .bg-white { background-color: #111111 !important; border-color: #333333 !important; color: #ffffff !important; }
+        .text-gray-800, .text-gray-700, .text-gray-500, .text-gray-400 { color: #e5e7eb !important; }
+        
+        /* INPUTI I POLJA */
+        input { background: transparent !important; color: #ffffff !important; border-color: #444 !important; }
+        .bg-blue-50 { background-color: rgba(37, 99, 235, 0.2) !important; }
+        .bg-green-50 { background-color: rgba(34, 197, 94, 0.2) !important; }
+        .bg-orange-50 { background-color: rgba(249, 115, 22, 0.2) !important; }
+        
+        /* NAVIGACIJA */
+        nav { background-color: #0a0a0a !important; border-top: 1px solid #222 !important; }
         .active-tab { border-top: 4px solid #2563eb; color: #3b82f6 !important; font-weight: 900; }
+        
+        /* OSTALO */
         .hidden { display: none; }
         .bar-fill { transition: height 0.8s ease-out; min-height: 2px; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-
-        /* PRILAGODBA TVOJIH KLASA ZA CRNU POZADINU */
-        .bg-white { background-color: #111111 !important; border-color: #222222 !important; color: white !important; }
-        .bg-gray-50 { background-color: #000000 !important; }
-        .text-gray-800, .text-gray-700, .text-gray-500 { color: #e5e7eb !important; }
-        
-        /* OBOJENI OKVIRI (1.8.1, 2.8.1 itd.) */
-        .bg-blue-50 { background-color: rgba(30, 58, 138, 0.3) !important; border: 1px solid #1e40af !important; }
-        .bg-green-50 { background-color: rgba(20, 83, 45, 0.3) !important; border: 1px solid #166534 !important; }
-        .bg-orange-50 { background-color: rgba(124, 45, 18, 0.3) !important; border: 1px solid #9a3412 !important; }
-        
-        /* INPUT POLJA */
-        input { color: white !important; background: transparent !important; }
-        input::placeholder { color: #4b5563 !important; }
-        
-        /* DONJA NAVIGACIJA */
-        nav.bg-white { background-color: #0a0a0a !important; border-top: 1px solid #1f2937 !important; }
-        
-        /* GRAFIKON LINIJE */
-        .border-b-2 { border-color: #374151 !important; }
     </style>
 </head>
 <body class="bg-gray-50 pb-24 text-gray-800">
@@ -54,7 +48,7 @@
                         <span id="eur-in-vt" class="text-[10px] font-bold text-blue-400">0.00 €</span>
                     </div>
                     <div class="bg-blue-50 p-3 rounded-2xl">
-                        <label class="block text-[9px] font-black text-blue-300 uppercase">1.8.2 (NT)</label>
+                        <label class="block text-[9px] font-black text-blue-400 uppercase">1.8.2 (NT)</label>
                         <input type="number" id="in-nt" oninput="liveCalc()" class="w-full bg-transparent font-bold text-lg outline-none" placeholder="0">
                         <span id="eur-in-nt" class="text-[10px] font-bold text-blue-300">0.00 €</span>
                     </div>
@@ -70,7 +64,7 @@
                     </div>
                 </div>
                 <div class="bg-orange-50 p-4 rounded-2xl border border-orange-200">
-                    <label class="block text-[9px] font-black text-orange-400 uppercase italic text-center">Solar Inverter (kWh)</label>
+                    <label class="block text-[9px] font-black text-orange-500 uppercase italic text-center">Solar Inverter (kWh)</label>
                     <input type="number" id="sol-gen" oninput="liveCalc()" class="w-full bg-transparent font-black text-2xl outline-none text-orange-500 text-center" placeholder="0.0">
                 </div>
                 <button onclick="processData()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-xl uppercase italic tracking-widest active:scale-95 transition-all">Spremi i Analiziraj</button>
@@ -78,10 +72,10 @@
 
             <div id="chart-section" class="hidden bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                 <div class="flex items-end justify-between h-40 px-2 border-b-2 border-gray-100 mb-4">
-                    <div class="flex flex-col items-center w-1/5 h-full justify-end"><div id="bar-1" class="bar-fill w-8 bg-blue-600 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-bold mt-2">1.8.1</span></div>
-                    <div class="flex flex-col items-center w-1/5 h-full justify-end"><div id="bar-2" class="bar-fill w-8 bg-blue-400 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-bold mt-2">1.8.2</span></div>
-                    <div class="flex flex-col items-center w-1/5 h-full justify-end"><div id="bar-3" class="bar-fill w-8 bg-green-600 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-bold mt-2">2.8.1</span></div>
-                    <div class="flex flex-col items-center w-1/5 h-full justify-end"><div id="bar-4" class="bar-fill w-8 bg-green-400 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-bold mt-2">2.8.2</span></div>
+                    <div class="flex flex-col items-center w-1/5 h-full justify-end"><div id="bar-1" class="bar-fill w-8 bg-blue-600 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-bold mt-2 text-white">1.8.1</span></div>
+                    <div class="flex flex-col items-center w-1/5 h-full justify-end"><div id="bar-2" class="bar-fill w-8 bg-blue-400 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-bold mt-2 text-white">1.8.2</span></div>
+                    <div class="flex flex-col items-center w-1/5 h-full justify-end"><div id="bar-3" class="bar-fill w-8 bg-green-600 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-bold mt-2 text-white">2.8.1</span></div>
+                    <div class="flex flex-col items-center w-1/5 h-full justify-end"><div id="bar-4" class="bar-fill w-8 bg-green-400 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-bold mt-2 text-white">2.8.2</span></div>
                     <div class="flex flex-col items-center w-1/5 h-full justify-end"><div id="bar-5" class="bar-fill w-8 bg-orange-500 rounded-t-md" style="height: 0%"></div><span class="text-[8px] font-bold mt-2 italic text-orange-500">SOL</span></div>
                 </div>
                 <div id="final-summary" class="text-center text-xl font-black italic text-white"></div>
@@ -96,22 +90,22 @@
         <!-- EKRAN 3: POSTAVKE -->
         <div id="tab-settings" class="hidden space-y-4">
             <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm">
-                <h2 class="font-black text-white uppercase text-xs border-b border-gray-800 pb-2 mb-6 italic">Postavke Tarifa (€/kWh)</h2>
+                <h2 class="font-black text-white uppercase text-xs border-b pb-2 mb-6 italic border-gray-700">Postavke Tarifa (€/kWh)</h2>
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
                         <label class="text-xs font-bold text-gray-400">VT Kupnja (1.8.1)</label>
-                        <input type="number" id="p-vt" step="0.001" class="border-b border-blue-900 w-24 text-right font-black p-1 outline-none" value="0.16">
+                        <input type="number" id="p-vt" step="0.001" class="border-b-2 border-blue-900 w-24 text-right font-black p-1 outline-none" value="0.16">
                     </div>
                     <div class="flex justify-between items-center">
                         <label class="text-xs font-bold text-gray-400">NT Kupnja (1.8.2)</label>
-                        <input type="number" id="p-nt" step="0.001" class="border-b border-blue-900 w-24 text-right font-black p-1 outline-none" value="0.08">
+                        <input type="number" id="p-nt" step="0.001" class="border-b-2 border-blue-900 w-24 text-right font-black p-1 outline-none" value="0.08">
                     </div>
                     <div class="flex justify-between items-center">
                         <label class="text-xs font-bold text-green-500">Otkup viška (2.8.x)</label>
-                        <input type="number" id="p-out" step="0.001" class="border-b border-green-900 w-24 text-right font-black p-1 outline-none text-green-500" value="0.07">
+                        <input type="number" id="p-out" step="0.001" class="border-b-2 border-green-900 w-24 text-right font-black p-1 outline-none text-green-500" value="0.07">
                     </div>
                 </div>
-                <button onclick="saveSettings()" class="w-full bg-blue-700 text-white py-4 rounded-2xl font-black mt-8 uppercase tracking-widest">Spremi cijene</button>
+                <button onclick="saveSettings()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black mt-8 uppercase tracking-widest">Spremi cijene</button>
             </div>
         </div>
     </div>
@@ -124,9 +118,7 @@
     </nav>
 
     <script>
-        // Ovdje nastavi sa svojim originalnim skriptama (showTab, liveCalc, processData, saveSettings)
-        // Sve će raditi jer su ID-ovi ostali identični.
-        
+        // TVOJ ORIGINALNI JAVASCRIPT KOJI JE RADIO - NEMOJ GA MIJENJATI
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('hr-HR', { weekday: 'long', day: 'numeric', month: 'long' });
 
         function showTab(tab) {
@@ -140,8 +132,8 @@
             document.getElementById('btn-settings').classList.remove('active-tab');
             document.getElementById('btn-' + tab).classList.add('active-tab');
         }
-
-        // Dodaj ostatak svoje logike ovdje...
+        
+        // Ovdje zalijepi ostatak svojih funkcija: liveCalc(), processData(), saveSettings()...
     </script>
 </body>
 </html>
