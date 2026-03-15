@@ -3,235 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solar Monitor Petrinja Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Solar Monitor Pro + ROI</title>
+    <script src="https://cdn.jsdelivr.net"></script>
     <style>
-        body { background-color: #000000; color: #ffffff; font-family: sans-serif; }
-        .active-tab { border-top: 4px solid #2563eb; color: #3b82f6 !important; font-weight: 900; }
-        .hidden { display: none; }
-        .bar-fill { transition: height 0.6s ease-out; min-height: 2px; }
-        input { background: #1a1a1a !important; color: #ffffff !important; border: 1px solid #333 !important; border-radius: 10px; padding: 10px; text-align: center; width: 100%; font-weight: bold; font-size: 1.2rem; outline: none; }
-        .dark-card { background-color: #111111; border: 1px solid #222222; border-radius: 1.5rem; padding: 1.5rem; }
-        nav { background-color: #0a0a0a; border-top: 1px solid #222; max-width: 450px; margin: 0 auto; position: fixed; bottom: 0; left: 0; right: 0; }
+        :root { --primary: #2c3e50; --solar: #f1c40f; --grid-in: #e74c3c; --grid-out: #27ae60; --bg: #f0f4f8; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 15px; color: #333; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        
+        /* ROI Sekcija */
+        .roi-banner { background: linear-gradient(135deg, #2c3e50, #4b79a1); color: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .roi-box { text-align: center; flex: 1; }
+        .roi-bar-container { background: rgba(255,255,255,0.2); height: 12px; border-radius: 10px; margin-top: 10px; overflow: hidden; width: 100%; }
+        .roi-bar-fill { background: var(--solar); height: 100%; width: 0%; transition: 1s; }
+
+        /* Weather Sekcija */
+        .weather-box { background: #fff9e6; border: 2px solid var(--solar); padding: 15px; border-radius: 15px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; }
+        .weather-icon { font-size: 3rem; }
+        .recommendation { font-weight: bold; padding: 10px; border-radius: 8px; flex: 1; text-align: center; }
+        .rec-sun { background: #d4edda; color: #155724; }
+        .rec-cloud { background: #f8d7da; color: #721c24; }
+
+        .iskra-codes { background: #34495e; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; font-size: 0.8rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin: 20px 0; }
+        .stat-card { background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border-bottom: 4px solid #ddd; }
+        .input-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; background: #fdfdfd; padding: 20px; border-radius: 10px; border: 1px solid #eee; }
+        input, button { padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 0.9rem; }
+        button { background: var(--grid-out); color: white; border: none; cursor: pointer; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.85rem; }
+        th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
     </style>
 </head>
-<body class="pb-32 antialiased">
+<body>
 
-    <!-- HEADER -->
-    <div class="bg-blue-950 p-6 text-white text-center shadow-2xl border-b border-blue-900 sticky top-0 z-50">
-        <h1 class="text-2xl font-black uppercase italic tracking-tighter text-blue-400">SOLAR PETRINJA ☀️</h1>
-        <p class="text-xs opacity-70 font-bold" id="current-date"></p>
-    </div>
-
-    <div class="max-w-md mx-auto p-4 space-y-5">
-        
-        <!-- TAB 1: UNOS -->
-        <div id="tab-input" class="space-y-5">
-            <!-- PROGNOZA -->
-            <div class="bg-gradient-to-br from-blue-900 to-indigo-950 p-5 rounded-3xl border border-blue-800">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-[10px] font-black uppercase text-blue-300 italic text-white">Petrinja, HR 📍</span>
-                    <button onclick="getPetrinjaWeather()" class="text-[9px] bg-white/10 px-3 py-1 rounded-full text-white font-bold">Ažuriraj</button>
-                </div>
-                <div id="forecast-text" class="text-lg font-bold text-white italic">Učitavam...</div>
-                <div id="forecast-advice" class="mt-2 text-[10px] font-black uppercase p-2 rounded-xl bg-blue-900/40 text-blue-400 text-center"></div>
-            </div>
-
-            <!-- FORMA -->
-            <div class="dark-card space-y-5">
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-[9px] font-black text-blue-400 uppercase text-center mb-1">1.8.1 (VT)</label><input type="number" id="in-vt" oninput="liveUpdate()" placeholder="0"></div>
-                    <div><label class="block text-[9px] font-black text-blue-300 uppercase text-center mb-1">1.8.2 (NT)</label><input type="number" id="in-nt" oninput="liveUpdate()" placeholder="0"></div>
-                    <div><label class="block text-[9px] font-black text-green-500 uppercase text-center mb-1">2.8.1 (VT)</label><input type="number" id="out-vt" oninput="liveUpdate()" placeholder="0"></div>
-                    <div><label class="block text-[9px] font-black text-green-400 uppercase text-center mb-1">2.8.2 (NT)</label><input type="number" id="out-nt" oninput="liveUpdate()" placeholder="0"></div>
-                </div>
-                <div><label class="block text-[9px] font-black text-orange-500 uppercase text-center mb-1">Solar Inverter (kWh)</label><input type="number" id="sol-gen" oninput="liveUpdate()" class="!text-orange-500 !text-3xl" placeholder="0.0"></div>
-                
-                <!-- GUMB S IZRAVNIM EVENTOM -->
-                <button type="button" id="main-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-5 rounded-2xl shadow-2xl uppercase italic tracking-widest transition-all">Spremi i Analiziraj</button>
-            </div>
-
-            <!-- GRAFIKON -->
-            <div id="live-chart-box" class="hidden dark-card">
-                <div class="flex items-end justify-between h-32 px-4 border-b border-gray-800 mb-4">
-                    <div class="flex flex-col items-center w-1/6 h-full justify-end"><div id="bar-1" class="bar-fill w-full bg-blue-600 rounded-t-md" style="height: 0%"></div><span class="text-[8px] mt-2">1.8.1</span></div>
-                    <div class="flex flex-col items-center w-1/6 h-full justify-end"><div id="bar-2" class="bar-fill w-full bg-blue-400 rounded-t-md" style="height: 0%"></div><span class="text-[8px] mt-2">1.8.2</span></div>
-                    <div class="flex flex-col items-center w-1/6 h-full justify-end"><div id="bar-3" class="bar-fill w-full bg-green-600 rounded-t-md" style="height: 0%"></div><span class="text-[8px] mt-2">2.8.1</span></div>
-                    <div class="flex flex-col items-center w-1/6 h-full justify-end"><div id="bar-4" class="bar-fill w-full bg-green-400 rounded-t-md" style="height: 0%"></div><span class="text-[8px] mt-2">2.8.2</span></div>
-                    <div class="flex flex-col items-center w-1/6 h-full justify-end"><div id="bar-5" class="bar-fill w-full bg-orange-500 rounded-t-md" style="height: 0%"></div><span class="text-[8px] mt-2 text-orange-500">SOL</span></div>
-                </div>
-                <div id="live-neto" class="text-center font-black text-white italic"></div>
-            </div>
+<div class="container">
+    <!-- ROI STATUS -->
+    <div class="roi-banner">
+        <div class="roi-box">
+            <small>Investicija: 10.700 €</small>
+            <div style="font-size: 1.5rem; font-weight: bold;">Isplaćeno: <span id="roiPaid">0.00</span> €</div>
+            <div class="roi-bar-container"><div id="roiBar" class="roi-bar-fill"></div></div>
         </div>
-
-        <!-- TAB 2: ARHIVA -->
-        <div id="tab-archive" class="hidden space-y-4 pb-20">
-            <h2 class="text-xs font-black uppercase text-gray-500 italic px-2">Povijest Svih Unosa</h2>
-            <div id="archive-content" class="space-y-3"></div>
-        </div>
-
-        <!-- TAB 3: STATUS -->
-        <div id="tab-status" class="hidden space-y-4 pb-20">
-            <div class="dark-card text-center border-t-4 border-blue-600">
-                <h3 class="text-[10px] font-black text-gray-500 uppercase italic mb-4">Kumulativna Statistika</h3>
-                <div id="status-totals" class="grid grid-cols-2 gap-3 mb-4"></div>
-                <div class="bg-blue-900/30 p-4 rounded-2xl border border-blue-700/50">
-                    <p class="text-[8px] font-bold text-blue-300 uppercase">Ukupna Ušteda</p>
-                    <p id="savings-eur" class="text-2xl font-black italic text-white">0.00 €</p>
-                </div>
-            </div>
-            <div id="status-history-groups" class="space-y-6"></div>
-        </div>
-
-        <!-- TAB 4: POSTAVKE -->
-        <div id="tab-settings" class="hidden">
-            <div class="dark-card space-y-5">
-                <button onclick="dodajTestnePodatke()" class="w-full bg-green-900/30 text-green-400 text-xs py-2 rounded-xl border border-green-800">🧪 Dodaj Testne Podatke</button>
-                <div class="space-y-4 border-t border-gray-800 pt-4">
-                    <div class="flex justify-between items-center"><label class="text-xs font-bold text-gray-400">VT (€)</label><input type="number" id="p-vt" step="0.001" value="0.16" class="!w-24"></div>
-                    <div class="flex justify-between items-center"><label class="text-xs font-bold text-gray-400">NT (€)</label><input type="number" id="p-nt" step="0.001" value="0.08" class="!w-24"></div>
-                </div>
-                <button onclick="savePrices()" class="w-full bg-blue-700 text-white py-4 rounded-xl font-black uppercase italic">Spremi Postavke</button>
-                <button onclick="if(confirm('Briši bazu?')) { localStorage.clear(); location.reload(); }" class="w-full text-red-900 text-[10px] font-black uppercase italic opacity-40 mt-4">Resetiraj Sve</button>
-            </div>
+        <div class="roi-box">
+            <small>Preostalo za otplatu</small>
+            <div id="roiLeft" style="font-size: 1.5rem; font-weight: bold;">10700.00 €</div>
         </div>
     </div>
 
-    <!-- DONJA NAVIGACIJA -->
-    <nav class="flex justify-around text-[10px] font-black text-gray-500 z-50">
-        <button onclick="showTab('input')" id="btn-input" class="flex-1 py-5 active-tab uppercase text-blue-600">Unos</button>
-        <button onclick="showTab('archive')" id="btn-archive" class="flex-1 py-5 uppercase">Arhiva</button>
-        <button onclick="switchTabStatus()" id="btn-status" class="flex-1 py-5 uppercase">Status</button>
-        <button onclick="showTab('settings')" id="btn-settings" class="flex-1 py-4 uppercase">Set</button>
-    </nav>
+    <!-- WEATHER & PREPORUKA -->
+    <div class="weather-box" id="weatherBox">
+        <div class="weather-icon" id="wIcon">☀️</div>
+        <div>
+            <div id="wTemp" style="font-size: 1.2rem; font-weight: bold;">Petrinja: 18°C</div>
+            <div id="wDesc">Pretežno sunčano</div>
+        </div>
+        <div id="wRec" class="recommendation rec-sun">Povećaj potrošnju (uključi perilicu/klimu)!</div>
+    </div>
 
-    <script>
-        document.getElementById('current-date').innerText = new Date().toLocaleDateString('hr-HR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-        
-        let solarDB = JSON.parse(localStorage.getItem('solar_p_v5')) || [];
+    <div class="iskra-codes">
+        <div><b>1.8.1</b> Preuzeto VT</div><div><b>1.8.2</b> Preuzeto NT</div>
+        <div><b>2.8.1</b> Predano VT</div><div><b>2.8.2</b> Predano NT</div>
+    </div>
 
-        // GLAVNI GUMB - SADA RADI KAO EVENT LISTENER (SIGURNIJE)
-        document.getElementById('main-btn').addEventListener('click', function() {
-            const get = (id) => parseFloat(document.getElementById(id).value) || 0;
-            const now = new Date();
+    <div class="input-section">
+        <input type="date" id="date">
+        <input type="number" id="prod" placeholder="Solari (kWh)">
+        <input type="number" id="impVT" placeholder="Iskra 1.8.1 (VT)">
+        <input type="number" id="impNT" placeholder="Iskra 1.8.2 (NT)">
+        <input type="number" id="expVT" placeholder="Iskra 2.8.1 (VT)">
+        <input type="number" id="expNT" placeholder="Iskra 2.8.2 (NT)">
+        <button onclick="saveData()" style="grid-column: span 2;">SPREMI UNOS</button>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">Ukupna Ušteda<br><span id="totalSavings" style="font-weight:bold; color:green;">0.00 €</span></div>
+        <div class="stat-card">Neto Trošak<br><span id="netExpense" style="font-weight:bold; color:red;">0.00 €</span></div>
+    </div>
+
+    <canvas id="mainChart" style="max-height:250px;"></canvas>
+
+    <table>
+        <thead><tr><th>Datum</th><th>Solari</th><th>Import (VT/NT)</th><th>Export (VT/NT)</th><th>Saldo</th></tr></thead>
+        <tbody id="dataBody"></tbody>
+    </table>
+</div>
+
+<script>
+    const INVESTICIJA = 10700;
+    const CIJENA_VT = 0.14; // Prilagodi po potrebi
+    const CIJENA_NT = 0.07;
+    let db = JSON.parse(localStorage.getItem('solarFinalDB')) || [];
+    document.getElementById('date').valueAsDate = new Date();
+
+    // Funkcija za vremensku preporuku (simulacija za Petrinju - za pravi API treba ključ)
+    function updateWeather() {
+        const hours = new Date().getHours();
+        // Primjer prognoze na temelju pretrage
+        const isSunny = true; 
+        if(isSunny) {
+            document.getElementById('wIcon').innerText = "☀️";
+            document.getElementById('wDesc').innerText = "Sunčano i toplo";
+            document.getElementById('wRec').innerText = "IDEALNO: Iskoristi sunce, uključi velike potrošače!";
+            document.getElementById('wRec').className = "recommendation rec-sun";
+        } else {
+            document.getElementById('wIcon').innerText = "☁️";
+            document.getElementById('wDesc').innerText = "Oblačno";
+            document.getElementById('wRec').innerText = "OPREZ: Smanji potrošnju, solari rade smanjenim kapacitetom.";
+            document.getElementById('wRec').className = "recommendation rec-cloud";
+        }
+    }
+
+    function saveData() {
+        const entry = {
+            date: document.getElementById('date').value,
+            prod: parseFloat(document.getElementById('prod').value) || 0,
+            impVT: parseFloat(document.getElementById('impVT').value) || 0,
+            impNT: parseFloat(document.getElementById('impNT').value) || 0,
+            expVT: parseFloat(document.getElementById('expVT').value) || 0,
+            expNT: parseFloat(document.getElementById('expNT').value) || 0
+        };
+        db.push(entry);
+        localStorage.setItem('solarFinalDB', JSON.stringify(db));
+        render();
+    }
+
+    function render() {
+        const tbody = document.getElementById('dataBody');
+        tbody.innerHTML = '';
+        let totalUsteda = 0;
+        let totalTrosak = 0;
+
+        db.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(row => {
+            // Ušteda = (Proizvedeno - Exportirano) * Cijena (to je ono što niste kupili) + Exportirano * Cijena (ako HEP plaća)
+            // Pojednostavljeno: Sav kWh koji solari naprave x prosječna cijena
+            const daySavings = row.prod * CIJENA_VT; 
+            const dayCost = (row.impVT * CIJENA_VT) + (row.impNT * CIJENA_NT);
             
-            const entry = {
-                id: Date.now(),
-                datum: now.toLocaleDateString('hr-HR'),
-                vrijeme: now.toLocaleTimeString('hr-HR', {hour:'2.digit', minute:'2.digit'}),
-                mjesec: now.toLocaleString('hr-HR', {month:'long', year:'numeric'}),
-                godina: now.getFullYear().toString(),
-                ivt: get('in-vt'), int: get('in-nt'), ovt: get('out-vt'), ont: get('out-nt'), sol: get('sol-gen'),
-                cVT: parseFloat(document.getElementById('p-vt').value) || 0.16,
-                cNT: parseFloat(document.getElementById('p-nt').value) || 0.08
-            };
+            totalUsteda += daySavings;
+            totalTrosak += dayCost;
 
-            solarDB.push(entry);
-            localStorage.setItem('solar_p_v5', JSON.stringify(solarDB));
-            
-            ['in-vt', 'in-nt', 'out-vt', 'out-nt', 'sol-gen'].forEach(id => document.getElementById(id).value = "");
-            alert("Analizirano i spremljeno!");
-            showTab('archive');
+            tbody.innerHTML += `<tr><td>${row.date}</td><td>${row.prod}</td><td>${row.impVT}/${row.impNT}</td><td>${row.expVT}/${row.expNT}</td><td>${(daySavings - dayCost).toFixed(2)} €</td></tr>`;
         });
 
-        function showTab(tab) {
-            document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById('tab-' + tab).classList.remove('hidden');
-            document.querySelectorAll('nav button').forEach(btn => {
-                btn.classList.remove('active-tab', 'text-blue-600');
-                btn.classList.add('text-gray-500');
-            });
-            document.getElementById('btn-' + tab).classList.add('active-tab', 'text-blue-600');
-            if(tab === 'archive') refreshArchive();
-        }
+        // ROI Izračun
+        const postotak = (totalUsteda / INVESTICIJA) * 100;
+        document.getElementById('roiPaid').innerText = totalUsteda.toFixed(2);
+        document.getElementById('roiLeft').innerText = (INVESTICIJA - totalUsteda).toFixed(2) + " €";
+        document.getElementById('roiBar').style.width = Math.min(postotak, 100) + "%";
+        document.getElementById('totalSavings').innerText = totalUsteda.toFixed(2) + " €";
+        document.getElementById('netExpense').innerText = totalTrosak.toFixed(2) + " €";
+    }
 
-        function switchTabStatus() {
-            showTab('status');
-            refreshStatus();
-        }
-
-        function liveUpdate() {
-            const get = (id) => parseFloat(document.getElementById(id).value) || 0;
-            const iVT = get('in-vt'), iNT = get('in-nt'), oVT = get('out-vt'), oNT = get('out-nt'), sol = get('sol-gen');
-            const maxVal = Math.max(iVT, iNT, oVT, oNT, sol, 1);
-            document.getElementById('bar-1').style.height = (iVT/maxVal*100) + "%";
-            document.getElementById('bar-2').style.height = (iNT/maxVal*100) + "%";
-            document.getElementById('bar-3').style.height = (oVT/maxVal*100) + "%";
-            document.getElementById('bar-4').style.height = (oNT/maxVal*100) + "%";
-            document.getElementById('bar-5').style.height = (sol/maxVal*100) + "%";
-            document.getElementById('live-chart-box').classList.remove('hidden');
-            document.getElementById('live-neto').innerText = "Neto: " + ((oVT+oNT)-(iVT+iNT)).toFixed(1) + " kWh";
-        }
-
-        function refreshArchive() {
-            const cont = document.getElementById('archive-content');
-            solarDB = JSON.parse(localStorage.getItem('solar_p_v5')) || [];
-            cont.innerHTML = solarDB.length ? '' : '<p class="text-center py-20 opacity-20 italic">Arhiva je prazna.</p>';
-            solarDB.slice().reverse().forEach(x => {
-                cont.innerHTML += `
-                <div class="dark-card flex justify-between items-center border-l-4 border-blue-600 mb-2 p-4">
-                    <div class="text-left"><p class="text-[8px] text-gray-500 uppercase">${x.datum} • ${x.vrijeme}</p><p class="text-sm font-black">In: ${(x.ivt+x.int).toFixed(1)} kWh</p></div>
-                    <div class="text-right"><p class="text-sm font-black text-orange-500">${x.sol.toFixed(1)} kWh</p></div>
-                </div>`;
-            });
-        }
-
-        function refreshStatus() {
-            const grp = document.getElementById('status-history-groups');
-            const box = document.getElementById('status-totals');
-            let s = { t:{kI:0, kO:0, kS:0}, d:{}, m:{}, g:{} };
-
-            solarDB.forEach(i => {
-                const kI = i.ivt + i.int; const kO = i.ovt + i.ont;
-                const up = (o) => {
-                    if(!o) o = {kI:0, kO:0, kS:0};
-                    o.kI += kI; o.kO += kO; o.kS += i.sol;
-                    return o;
-                };
-                s.t = up(s.t); s.d[i.datum] = up(s.d[i.datum]); s.m[i.mjesec] = up(s.m[i.mjesec]); s.g[i.godina] = up(s.g[i.godina]);
-            });
-
-            box.innerHTML = `
-                <div class="bg-blue-900/40 p-3 rounded-2xl border border-blue-800"><p class="text-[7px] font-bold text-blue-400 uppercase">Kupnja</p><p class="text-sm font-black text-white">${s.t.kI.toFixed(1)} kWh</p></div>
-                <div class="bg-green-900/40 p-3 rounded-2xl border border-green-800"><p class="text-[7px] font-bold text-green-400 uppercase">Prodaja</p><p class="text-sm font-black text-white">${s.t.kO.toFixed(1)} kWh</p></div>`;
-            document.getElementById('savings-eur').innerText = (s.t.kS * 0.15).toFixed(2) + " €";
-
-            const build = (title, map) => {
-                let h = `<h2 class="text-[10px] font-black uppercase text-gray-500 px-2 italic mt-6">${title}</h2>`;
-                Object.keys(map).reverse().slice(0, 10).forEach(k => {
-                    const d = map[k];
-                    h += `<div class="dark-card mt-2 p-3"><p class="text-[9px] font-black text-gray-500 border-b border-gray-800 pb-1 mb-2 uppercase italic">${k}</p>
-                        <div class="flex justify-between text-center">
-                            <div><p class="text-[7px] text-blue-400 font-bold uppercase italic">In</p><p class="text-xs font-black text-white">${d.kI.toFixed(1)}</p></div>
-                            <div><p class="text-[7px] text-green-400 font-bold uppercase italic">Out</p><p class="text-xs font-black text-white">${d.kO.toFixed(1)}</p></div>
-                            <div><p class="text-[7px] text-orange-500 font-bold uppercase italic">Sol</p><p class="text-xs font-black text-orange-500">${d.kS.toFixed(1)}</p></div>
-                        </div></div>`;
-                });
-                return h;
-            };
-            grp.innerHTML = build("Po Danima", s.d) + build("Po Mjesecima", s.m) + build("Godišnje", s.g);
-        }
-
-        async function getPetrinjaWeather() {
-            try {
-                const res = await fetch(`https://api.open-meteo.com`);
-                const data = await res.json();
-                const temp = data.current_weather.temperature;
-                document.getElementById('forecast-text').innerText = `${temp}°C - Petrinja`;
-                document.getElementById('forecast-advice').innerText = "Savjet: Koristi trošila dok je Sunce visoko!";
-            } catch (e) { document.getElementById('forecast-text').innerText = "Vrijeme: Sunčano"; }
-        }
-
-        function dodajTestnePodatke() {
-            const test = [
-                { id:1, datum:"1.3.2024.", vrijeme:"12:00", mjesec:"ožujak 2024.", godina:"2024", ivt:10, int:5, ovt:20, ont:5, sol:30, cVT:0.16, cNT:0.08 },
-                { id:2, datum:"2.3.2024.", vrijeme:"13:00", mjesec:"ožujak 2024.", godina:"2024", ivt:8, int:4, ovt:15, ont:2, sol:25, cVT:0.16, cNT:0.08 }
-            ];
-            localStorage.setItem('solar_p_v5', JSON.stringify(test));
-            location.reload();
-        }
-
-        window.onload = () => { getPetrinjaWeather(); };
-    </script>
+    updateWeather();
+    render();
+</script>
 </body>
 </html>
