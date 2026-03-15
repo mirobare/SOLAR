@@ -29,18 +29,19 @@
 
     <div class="max-w-md mx-auto p-4 space-y-4">
         
-        <!-- PROGNOZA I SAVJET -->
-        <div id="forecast-card" class="bg-gradient-to-r from-blue-900 to-indigo-900 p-4 rounded-3xl border border-blue-800 shadow-xl">
-            <div class="flex justify-between items-center mb-1">
-                <span class="text-[10px] font-black uppercase text-blue-300 italic">Vremenska Prognoza</span>
-                <button onclick="updateForecast()" class="text-[9px] bg-white/10 px-2 py-1 rounded-full uppercase font-bold">Osvježi</button>
-            </div>
-            <div id="forecast-text" class="text-sm font-bold text-white leading-tight">Učitavanje prognoze...</div>
-            <div id="forecast-advice" class="mt-2 text-[10px] font-black uppercase p-2 rounded-xl bg-white/5 border border-white/10 text-orange-400 italic text-center"></div>
-        </div>
-
         <!-- TAB 1: UNOS -->
         <div id="tab-input" class="space-y-4">
+            
+            <!-- PROGNOZA SAMO NA UNOSU -->
+            <div id="forecast-card" class="bg-gradient-to-r from-blue-900 to-indigo-900 p-4 rounded-3xl border border-blue-800 shadow-xl mb-4">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-[10px] font-black uppercase text-blue-300 italic">Vremenska Prognoza</span>
+                    <button onclick="updateForecast()" class="text-[9px] bg-white/10 px-2 py-1 rounded-full uppercase font-bold text-white">Osvježi</button>
+                </div>
+                <div id="forecast-text" class="text-sm font-bold text-white leading-tight">Učitavanje...</div>
+                <div id="forecast-advice" class="mt-2 text-[10px] font-black uppercase p-2 rounded-xl bg-white/5 border border-white/10 text-orange-400 italic text-center"></div>
+            </div>
+
             <div class="bg-white p-5 rounded-3xl shadow-sm space-y-4 border border-gray-800">
                 <div class="grid grid-cols-2 gap-3 text-center">
                     <div class="bg-blue-50 p-3 rounded-2xl border border-blue-900/30">
@@ -72,7 +73,7 @@
             </div>
 
             <div id="chart-section" class="hidden bg-white p-6 rounded-3xl border border-gray-800">
-                <div class="flex items-end justify-between h-32 px-2 border-b border-gray-800 mb-4 text-gray-500 uppercase">
+                <div class="flex items-end justify-between h-32 px-2 border-b border-gray-800 mb-4 text-gray-500">
                     <div class="flex flex-col items-center w-1/5 h-full justify-end"><div id="bar-1" class="bar-fill w-full bg-blue-600 rounded-t-md" style="height: 0%"></div><span class="text-[7px] mt-1 text-white">1.8.1</span></div>
                     <div class="flex flex-col items-center w-1/5 h-full justify-end"><div id="bar-2" class="bar-fill w-full bg-blue-400 rounded-t-md" style="height: 0%"></div><span class="text-[7px] mt-1 text-white">1.8.2</span></div>
                     <div class="flex flex-col items-center w-1/5 h-full justify-end"><div id="bar-3" class="bar-fill w-full bg-green-600 rounded-t-md" style="height: 0%"></div><span class="text-[7px] mt-1 text-white">2.8.1</span></div>
@@ -108,15 +109,15 @@
                 <h2 class="font-black text-white uppercase text-xs border-b border-gray-800 pb-2 mb-6 italic">Postavke Tarifa (€/kWh)</h2>
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
-                        <label class="text-xs font-bold text-gray-400">VT Kupnja (1.8.1)</label>
+                        <label class="text-xs font-bold text-gray-400 italic">VT Kupnja (1.8.1)</label>
                         <input type="number" id="p-vt" step="0.001" class="w-24 text-right font-black" value="0.16">
                     </div>
                     <div class="flex justify-between items-center">
-                        <label class="text-xs font-bold text-gray-400">NT Kupnja (1.8.2)</label>
+                        <label class="text-xs font-bold text-gray-400 italic">NT Kupnja (1.8.2)</label>
                         <input type="number" id="p-nt" step="0.001" class="w-24 text-right font-black" value="0.08">
                     </div>
                     <div class="flex justify-between items-center">
-                        <label class="text-xs font-bold text-green-500 uppercase">Otkup viška</label>
+                        <label class="text-xs font-bold text-green-500 uppercase italic">Otkup viška</label>
                         <input type="number" id="p-out" step="0.001" class="w-24 text-right font-black text-green-500" value="0.07">
                     </div>
                 </div>
@@ -136,6 +137,7 @@
 
     <script>
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('hr-HR', { weekday: 'long', day: 'numeric', month: 'long' });
+        
         let logs = JSON.parse(localStorage.getItem('solar_logs')) || [];
 
         function switchTab(tab) {
@@ -178,14 +180,14 @@
                 year: now.getFullYear().toString(),
                 time: now.toLocaleTimeString('hr-HR', { hour: '2.digit', minute: '2.digit' }),
                 i1: getV('in-vt'), i2: getV('in-nt'), o1: getV('out-vt'), o2: getV('out-nt'), s: getV('sol-gen'),
-                pVT: parseFloat(document.getElementById('p-vt').value),
-                pNT: parseFloat(document.getElementById('p-nt').value),
-                pOut: parseFloat(document.getElementById('p-out').value)
+                pVT: parseFloat(document.getElementById('p-vt').value) || 0.16,
+                pNT: parseFloat(document.getElementById('p-nt').value) || 0.08,
+                pOut: parseFloat(document.getElementById('p-out').value) || 0.07
             };
             logs.push(entry);
             localStorage.setItem('solar_logs', JSON.stringify(logs));
             ['in-vt', 'in-nt', 'out-vt', 'out-nt', 'sol-gen'].forEach(id => document.getElementById(id).value = "");
-            alert("Spremljeno!");
+            alert("Podaci spremljeni!");
             switchTab('archive');
         }
 
@@ -194,7 +196,7 @@
             logs = JSON.parse(localStorage.getItem('solar_logs')) || [];
             list.innerHTML = logs.length ? '' : '<p class="text-center py-10 opacity-30 italic">Prazno</p>';
             logs.slice().reverse().forEach(item => {
-                list.innerHTML += `<div class="bg-white p-4 rounded-3xl flex justify-between items-center border-l-4 border-blue-600 mb-3"><div class="text-left"><p class="text-[8px] font-bold text-gray-500 uppercase">${item.day} • ${item.time}</p><p class="text-xs font-black italic">Mreža: <span class="text-blue-400">${(item.i1+item.i2).toFixed(1)} kWh</span></p></div><div class="text-right"><p class="text-[8px] font-bold text-orange-500 italic uppercase">Solar</p><p class="text-sm font-black italic text-orange-400">${item.s.toFixed(1)} kWh</p></div></div>`;
+                list.innerHTML += `<div class="bg-white p-4 rounded-3xl flex justify-between items-center border-l-4 border-blue-600 mb-3"><div class="text-left"><p class="text-[8px] font-bold text-gray-500 uppercase">${item.day} • ${item.time}</p><p class="text-xs font-black italic">Mreža: <span class="text-blue-400">${(item.i1+item.i2).toFixed(1)} kWh</span></p></div><div class="text-right"><p class="text-[8px] font-bold text-orange-500 italic uppercase text-orange-500">Solar</p><p class="text-sm font-black italic text-orange-500">${item.s.toFixed(1)} kWh</p></div></div>`;
             });
         }
 
@@ -221,25 +223,25 @@
                 stats.years[i.year] = update(stats.years[i.year]);
             });
 
-            totalContainer.innerHTML = `<div class="grid grid-cols-2 gap-2 text-center"><div class="bg-blue-950/40 p-2 rounded-xl border border-blue-800"><p class="text-[7px] font-bold uppercase">Kupljeno</p><p class="text-xs font-black">${stats.total.kIn.toFixed(1)} kWh</p></div><div class="bg-green-950/40 p-2 rounded-xl border border-green-800"><p class="text-[7px] font-bold uppercase">Prodano</p><p class="text-xs font-black">${stats.total.kOut.toFixed(1)} kWh</p></div></div>`;
-            document.getElementById('savings-value').innerText = (stats.total.kS * 0.14).toFixed(2) + " €";
+            totalContainer.innerHTML = `<div class="grid grid-cols-2 gap-2 text-center"><div class="bg-blue-950/40 p-2 rounded-xl border border-blue-800"><p class="text-[7px] font-bold uppercase">Ukupna Kupnja</p><p class="text-xs font-black">${stats.total.kIn.toFixed(1)} kWh</p></div><div class="bg-green-950/40 p-2 rounded-xl border border-green-800"><p class="text-[7px] font-bold uppercase">Ukupna Prodaja</p><p class="text-xs font-black">${stats.total.kOut.toFixed(1)} kWh</p></div></div>`;
+            document.getElementById('savings-value').innerText = (stats.total.kS * 0.15).toFixed(2) + " €";
 
             const buildHTML = (title, dataObj) => {
                 let html = `<h2 class="text-[10px] font-black uppercase text-gray-500 px-2 italic mt-4">${title}</h2>`;
-                Object.keys(dataObj).reverse().slice(0, 7).forEach(key => {
+                Object.keys(dataObj).reverse().slice(0, 10).forEach(key => {
                     const d = dataObj[key];
-                    html += `<div class="bg-white p-3 rounded-2xl border-l-4 border-gray-700 mb-2"><p class="text-[9px] font-black text-gray-500 border-b border-gray-800 pb-1 mb-2 uppercase">${key}</p><div class="flex justify-between text-center"><div><p class="text-[7px] text-blue-400 font-bold">KUPNJA</p><p class="text-[10px] font-black">${d.kIn.toFixed(1)}</p></div><div><p class="text-[7px] text-green-400 font-bold">PRODAJA</p><p class="text-[10px] font-black">${d.kOut.toFixed(1)}</p></div><div><p class="text-[7px] text-orange-500 font-bold">SOLAR</p><p class="text-[10px] font-black text-orange-500">${d.kS.toFixed(1)}</p></div></div></div>`;
+                    html += `<div class="bg-white p-3 rounded-2xl border-l-4 border-gray-700 mb-2"><p class="text-[9px] font-black text-gray-400 border-b border-gray-800 pb-1 mb-2 uppercase italic">${key}</p><div class="flex justify-between text-center"><div><p class="text-[7px] text-blue-400 font-bold">KUPNJA</p><p class="text-[10px] font-black">${d.kIn.toFixed(1)} kWh</p></div><div><p class="text-[7px] text-green-400 font-bold">PRODAJA</p><p class="text-[10px] font-black">${d.kOut.toFixed(1)} kWh</p></div><div><p class="text-[7px] text-orange-500 font-bold">SOLAR</p><p class="text-[10px] font-black text-orange-500">${d.kS.toFixed(1)} kWh</p></div></div></div>`;
                 });
                 return html;
             };
-            groupsContainer.innerHTML = buildHTML("Dnevno", stats.days) + buildHTML("Mjesečno", stats.months) + buildHTML("Godišnje", stats.years);
+            groupsContainer.innerHTML = buildHTML("Povijest po Danima", stats.days) + buildHTML("Povijest po Mjesecima", stats.months) + buildHTML("Povijest po Godinama", stats.years);
         }
 
         function updateForecast() {
             const forecasts = [
-                { t: "Vedro i sunčano ☀️", a: "SAVJET: Odličan dan! Uključi perilicu i klimu maksimalno!", s: true },
+                { t: "Vedro i sunčano ☀️", a: "SAVJET: Odličan dan! Uključi perilicu i klimu!", s: true },
                 { t: "Djelomično oblačno ⛅", a: "SAVJET: Umjerena proizvodnja. Koristi jača trošila oko podneva.", s: true },
-                { t: "Oblačno i kiša 🌧️", a: "SAVJET: Slaba proizvodnja. Smanji potrošnju struje danas!", s: false }
+                { t: "Oblačno i kiša 🌧️", a: "SAVJET: Slaba proizvodnja. Smanji potrošnju struje!", s: false }
             ];
             const f = forecasts[Math.floor(Math.random() * forecasts.length)];
             document.getElementById('forecast-text').innerText = f.t;
@@ -251,18 +253,18 @@
             localStorage.setItem('p_vt', document.getElementById('p-vt').value);
             localStorage.setItem('p_nt', document.getElementById('p-nt').value);
             localStorage.setItem('p_out', document.getElementById('p-out').value);
-            alert("Spremljeno!");
+            alert("Postavke spremljene!");
         }
 
         function clearAllData() {
-            if(confirm("Obriši sve?")) { localStorage.removeItem('solar_logs'); logs = []; switchTab('input'); }
+            if(confirm("Obriši sve podatke?")) { localStorage.removeItem('solar_logs'); logs = []; switchTab('input'); }
         }
 
         window.onload = () => {
             if(localStorage.getItem('p_vt')) {
                 document.getElementById('p-vt').value = localStorage.getItem('p_vt');
                 document.getElementById('p-nt').value = localStorage.getItem('p_nt');
-                document.getElementById('p-out').value = localStorage.getItem('p_out');
+                document.getElementById('p_out').value = localStorage.getItem('p_out');
             }
             updateForecast();
             renderArchive();
