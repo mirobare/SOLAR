@@ -32,12 +32,13 @@
         .archive-line { display: flex; align-items: center; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 3px solid var(--solar); overflow: hidden; }
         .arch-date { font-size: 0.75rem; font-weight: bold; min-width: 65px; color: var(--accent); }
         .arch-scroll-area { display: flex; gap: 12px; overflow-x: auto; flex: 1; padding: 0 10px; scrollbar-width: none; }
+        .arch-scroll-area::-webkit-scrollbar { display: none; }
         .arch-data-block { display: flex; flex-direction: column; white-space: nowrap; }
         .arch-lbl { font-size: 0.55rem; color: var(--gray); text-transform: uppercase; }
         .arch-num { font-size: 0.75rem; font-weight: bold; }
         .del-btn-mini { background: #333; color: var(--red); border: none; padding: 5px 8px; border-radius: 4px; font-size: 0.6rem; font-weight: bold; cursor: pointer; }
 
-        /* Statistika - TVOJ ORIGINALNI IZGLED */
+        /* Statistika */
         .stat-filter { display: flex; gap: 5px; margin-bottom: 15px; }
         .f-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; background: #1c1c1e; color: #fff; font-size: 0.65rem; cursor: pointer; }
         .f-btn.active { background: var(--accent); border-color: var(--accent); }
@@ -53,7 +54,6 @@
 
         button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1rem; }
         .exp-btn { background: #2c2c2e; color: var(--green); border: 1px solid var(--green); padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .det-btn { background: none; border: 1px solid var(--accent); color: var(--accent); padding: 4px 8px; border-radius: 6px; font-size: 0.6rem; cursor: pointer; float: right; }
     </style>
 </head>
 <body>
@@ -96,35 +96,33 @@
     <!-- ARHIVA -->
     <div id="arhiva" class="tab-content"><div id="archiveList"></div></div>
 
-    <!-- STATISTIKA (Dorađen izgled) -->
+    <!-- STATISTIKA -->
     <div id="stat" class="tab-content">
         <div class="stat-filter">
-            <button class="f-btn active" id="f-dan">UKUPNO</button>
-            <button class="f-btn">MJESECI</button>
+            <button class="f-btn active">UKUPNI PREGLED</button>
         </div>
-        
-        <div id="statContainer">
-            <!-- Dinamički se puni iz JS-a -->
+        <div id="statDisplay">
+            <!-- Ovdje JS crta barove prema tvom stilu -->
         </div>
     </div>
 
     <!-- POSTAVKE -->
     <div id="postavke" class="tab-content">
-        <button class="exp-btn" onclick="exportCSV()">IZVEZI PODATKE (CSV)</button>
-        <button class="exp-btn" style="color:var(--red); border-color:var(--red); margin-top:20px;" onclick="obrisiSve()">OBRIŠI CIJELU BAZU</button>
+        <button class="exp-btn" onclick="exportCSV()">IZVEZI U EXCEL (CSV)</button>
+        <button class="exp-btn" style="color:var(--red); border-color:var(--red);" onclick="clearAll()">OBRIŠI SVE PODATKE</button>
     </div>
 
     <script>
         let db = JSON.parse(localStorage.getItem('solarDB')) || [];
         document.getElementById('date').valueAsDate = new Date();
 
-        function swTab(tabId, btn) {
+        function swTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+            document.getElementById(id).classList.add('active');
             btn.classList.add('active');
-            if(tabId === 'arhiva') rArchive();
-            if(tabId === 'stat') rStat();
+            if(id === 'arhiva') rArchive();
+            if(id === 'stat') rStat();
         }
 
         function lUpd() {
@@ -135,8 +133,6 @@
                 ent: parseFloat(document.getElementById('ent').value) || 0,
                 prod: parseFloat(document.getElementById('prod').value) || 0
             };
-            document.getElementById('ivt_e').innerText = (v.ivt * 0.16).toFixed(2) + " €";
-            document.getElementById('evt_e').innerText = (v.evt * 0.04).toFixed(2) + " €";
             const max = Math.max(v.ivt, v.int, v.evt, v.ent, v.prod, 1);
             ['ivt','int','evt','ent','prod'].forEach(k => {
                 document.getElementById('b-'+k).style.height = (v[k]/max * 100) + "px";
@@ -156,8 +152,8 @@
             };
             db.push(entry);
             localStorage.setItem('solarDB', JSON.stringify(db));
-            alert("Spremljeno!");
-            rArchive();
+            alert("Podaci spremljeni!");
+            swTab('arhiva', document.querySelectorAll('.nav-btn')[1]);
         }
 
         function rArchive() {
@@ -166,8 +162,8 @@
                 <div class="archive-line">
                     <div class="arch-date">${item.date}</div>
                     <div class="arch-scroll-area">
-                        <div class="arch-data-block"><span class="arch-lbl">Uvoz</span><span class="arch-num">${item.ivt}/${item.int}</span></div>
-                        <div class="arch-data-block"><span class="arch-lbl">Izvoz</span><span class="arch-num">${item.evt}/${item.ent}</span></div>
+                        <div class="arch-data-block"><span class="arch-lbl">Uvoz</span><span class="arch-num">${item.ivt + item.int}</span></div>
+                        <div class="arch-data-block"><span class="arch-lbl">Izvoz</span><span class="arch-num">${item.evt + item.ent}</span></div>
                         <div class="arch-data-block"><span class="arch-lbl">Solar</span><span class="arch-num">${item.prod}</span></div>
                     </div>
                     <button class="del-btn-mini" onclick="delItem(${item.id})">X</button>
@@ -176,29 +172,28 @@
         }
 
         function rStat() {
-            const totals = db.reduce((acc, c) => {
+            const sum = db.reduce((acc, c) => {
                 acc.u += (c.ivt + c.int);
                 acc.x += (c.evt + c.ent);
                 acc.s += c.prod;
                 return acc;
             }, {u:0, x:0, s:0});
 
-            const max = Math.max(totals.u, totals.x, totals.s, 1);
-            const container = document.getElementById('statContainer');
+            const max = Math.max(sum.u, sum.x, sum.s, 1);
+            const display = document.getElementById('statDisplay');
             
-            container.innerHTML = `
-                ${statBar('UVOZ MREŽA', totals.u, max, 'var(--red)')}
-                ${statBar('IZVOZ MREŽA', totals.x, max, 'var(--green)')}
-                ${statBar('PROIZVODNJA', totals.s, max, 'var(--solar)')}
+            display.innerHTML = `
+                ${statRow('UKUPAN UVOZ', sum.u, max, 'var(--red)')}
+                ${statRow('UKUPAN IZVOZ', sum.x, max, 'var(--green)')}
+                ${statRow('PROIZVODNJA', sum.s, max, 'var(--solar)')}
             `;
         }
 
-        function statBar(label, val, max, col) {
-            let perc = (val/max * 100).toFixed(0);
+        function statRow(label, val, max, col) {
             return `
                 <div class="h-row">
                     <div class="h-label-row"><span>${label}</span><span>${val.toFixed(1)} kWh</span></div>
-                    <div class="h-bar-bg"><div class="h-bar-fill" style="width:${perc}%; background:${col}"></div></div>
+                    <div class="h-bar-bg"><div class="h-bar-fill" style="width:${(val/max*100)}%; background:${col}"></div></div>
                 </div>`;
         }
 
@@ -208,23 +203,16 @@
             rArchive();
         }
 
+        function clearAll() { if(confirm("Obriši sve?")) { localStorage.clear(); db=[]; rArchive(); } }
+        
         function exportCSV() {
             let csv = "Datum,Uvoz VT,Uvoz NT,Izvoz VT,Izvoz NT,Solar\n";
             db.forEach(i => { csv += `${i.date},${i.ivt},${i.int},${i.evt},${i.ent},${i.prod}\n`; });
             const blob = new Blob([csv], {type:'text/csv'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = 'solar_izvoz.csv';
+            a.download = 'solar_data.csv';
             a.click();
-        }
-
-        function obrisiSve() {
-            if(confirm("Jeste li sigurni da želite obrisati CIJELU bazu?")) {
-                localStorage.removeItem('solarDB');
-                db = [];
-                rArchive();
-                rStat();
-            }
         }
     </script>
 </body>
