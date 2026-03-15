@@ -3,93 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Solar Go</title>
-    <script src="https://cdn.jsdelivr.net"></script>
+    <title>Solar Pro Mobile</title>
     <style>
-        :root { --bg: #000000; --card: #1c1c1e; --accent: #0A84FF; --solar: #FFD60A; --green: #32D74B; --red: #FF453A; --text: #FFFFFF; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; padding-bottom: 50px; }
+        :root { --bg: #000; --card: #1c1c1e; --accent: #0A84FF; --solar: #FFD60A; --green: #32D74B; --red: #FF453A; --text: #fff; --gray: #8e8e93; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
+        .container { max-width: 500px; margin: auto; }
         
-        /* Mobile Cards */
-        .card { background: var(--card); border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        h2 { font-size: 1.2rem; margin: 0 0 10px 0; color: var(--solar); text-align: center; }
-        
-        /* ROI Mini */
-        .roi-container { display: flex; flex-direction: column; gap: 5px; }
-        .roi-vals { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
-        .bar-bg { background: #3a3a3c; height: 10px; border-radius: 5px; overflow: hidden; }
-        .bar-fill { background: linear-gradient(90deg, var(--accent), var(--solar)); height: 100%; width: 0%; transition: 1s; }
-
-        /* Input Grid - Optimized for Thumb */
-        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .group { display: flex; flex-direction: column; background: #2c2c2e; padding: 8px; border-radius: 10px; }
-        label { font-size: 0.7rem; color: #8e8e93; margin-bottom: 4px; text-transform: uppercase; }
-        input { background: transparent; border: none; color: white; font-size: 1.1rem; outline: none; width: 100%; }
+        .section-title { font-size: 0.75rem; color: var(--gray); margin: 15px 0 5px 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .row-card { background: var(--card); border-radius: 14px; padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .full { grid-column: span 2; }
         
-        button { background: var(--accent); color: white; border: none; padding: 16px; border-radius: 12px; width: 100%; font-weight: bold; font-size: 1rem; margin-top: 10px; }
-        button:active { opacity: 0.7; transform: scale(0.98); }
+        .input-box { background: #2c2c2e; padding: 10px; border-radius: 10px; display: flex; flex-direction: column; }
+        .code { font-size: 0.65rem; color: var(--accent); font-weight: bold; margin-bottom: 2px; }
+        label { font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; }
+        input { background: transparent; border: none; color: #fff; font-size: 1.2rem; font-weight: bold; outline: none; width: 100%; }
+        .euro-hint { font-size: 0.75rem; color: var(--gray); margin-top: 4px; border-top: 1px solid #3a3a3c; padding-top: 4px; }
+        
+        button { background: var(--green); color: #000; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: 800; font-size: 1.1rem; margin-top: 10px; box-shadow: 0 4px 15px rgba(50, 215, 75, 0.3); }
+        
+        /* ROI Header */
+        .roi-header { background: linear-gradient(145deg, #1c1c1e, #2c2c2e); padding: 20px; border-radius: 16px; margin-bottom: 20px; text-align: center; border: 1px solid #333; }
+        .roi-bar { background: #333; height: 8px; border-radius: 4px; margin: 15px 0; overflow: hidden; }
+        .roi-fill { background: var(--solar); height: 100%; width: 0%; transition: 1s; }
 
-        /* Weather Badge */
-        .weather { display: flex; align-items: center; gap: 10px; background: #2c2c2e; padding: 10px; border-radius: 12px; font-size: 0.85rem; border-left: 4px solid var(--solar); }
-
-        /* Table Slim */
-        .log-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #38383a; }
-        .log-date { font-size: 0.8rem; color: #8e8e93; }
-        .log-val { font-weight: bold; }
-        .val-prod { color: var(--solar); }
-        .val-bal { color: var(--green); }
+        .date-input { background: var(--accent); color: white; border: none; padding: 8px; border-radius: 6px; font-weight: bold; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>⚡ SOLAR GO PETRINJA</h2>
-
-        <!-- ROI -->
-        <div class="card roi-container">
-            <div class="roi-vals">
-                <span>Otplata: <span id="roiPaid">0</span> €</span>
-                <span style="color:#8e8e93">Cilj: 10.700 €</span>
-            </div>
-            <div class="bar-bg"><div id="roiBar" class="bar-fill"></div></div>
-        </div>
-
-        <!-- Weather -->
-        <div class="card weather">
-            <span style="font-size: 1.8rem;">☀️</span>
-            <div id="recText">SUNČANO: Upali perilicu i klimu sada!</div>
-        </div>
-
-        <!-- Inputs -->
-        <div class="card input-grid">
-            <div class="group full"><label>Datum</label><input type="date" id="date"></div>
-            <div class="group"><label>☀️ Proizvedeno</label><input type="number" id="prod" placeholder="kWh"></div>
-            <div class="group"><label>🧾 HEP Račun (€)</label><input type="number" id="hep" placeholder="Opcija"></div>
-            <div class="group"><label>📥 Import VT (1.8.1)</label><input type="number" id="iVT"></div>
-            <div class="group"><label>📥 Import NT (1.8.2)</label><input type="number" id="iNT"></div>
-            <div class="group"><label>📤 Export VT (2.8.1)</label><input type="number" id="eVT"></div>
-            <div class="group"><label>📤 Export NT (2.8.2)</label><input type="number" id="eNT"></div>
-            <button onclick="save()" class="full">SPREMI PODATKE</button>
-        </div>
-
-        <!-- Graph -->
-        <div class="card" style="padding: 10px;">
-            <canvas id="chart" height="150"></canvas>
-        </div>
-
-        <!-- Logs -->
-        <div class="card" id="logs">
-            <div style="font-size: 0.8rem; color: #8e8e93; margin-bottom: 10px;">POVIJEST UNOSA</div>
-            <div id="logList"></div>
+<div class="container">
+    <!-- ROI STATUS -->
+    <div class="roi-header">
+        <div style="font-size: 0.8rem; color: var(--gray);">OTPLATA INVESTICIJE</div>
+        <div style="font-size: 2rem; font-weight: 900; color: var(--solar);" id="roiText">0.00 €</div>
+        <div class="roi-bar"><div id="roiBar" class="roi-fill"></div></div>
+        <div style="display:flex; justify-content: space-between; font-size: 0.7rem; color: var(--gray);">
+            <span>0 €</span><span>CILJ: 10.700 €</span>
         </div>
     </div>
 
+    <!-- RED 1: DATUM I IMPORT -->
+    <div class="section-title">Red 1: Vrijeme i Uvoz (Mreža)</div>
+    <div class="row-card">
+        <div class="input-box full">
+            <label>Datum očitanja</label>
+            <input type="date" id="date" class="date-input">
+        </div>
+        <div class="input-box">
+            <span class="code">1.8.1 (VT)</span>
+            <label>Uvoz VT</label>
+            <input type="number" id="iVT" placeholder="kWh" oninput="calc(this, 0.14)">
+            <div class="euro-hint"><span id="iVT_e">0.00</span> €</div>
+        </div>
+        <div class="input-box">
+            <span class="code">1.8.2 (NT)</span>
+            <label>Uvoz NT</label>
+            <input type="number" id="iNT" placeholder="kWh" oninput="calc(this, 0.07)">
+            <div class="euro-hint"><span id="iNT_e">0.00</span> €</div>
+        </div>
+    </div>
+
+    <!-- RED 2: EXPORT -->
+    <div class="section-title">Red 2: Izvoz (Višak u mrežu)</div>
+    <div class="row-card">
+        <div class="input-box">
+            <span class="code">2.8.1 (VT)</span>
+            <label>Izvoz VT</label>
+            <input type="number" id="eVT" placeholder="kWh" oninput="calc(this, 0.14)">
+            <div class="euro-hint"><span id="eVT_e">0.00</span> €</div>
+        </div>
+        <div class="input-box">
+            <span class="code">2.8.2 (NT)</span>
+            <label>Izvoz NT</label>
+            <input type="number" id="eNT" placeholder="kWh" oninput="calc(this, 0.07)">
+            <div class="euro-hint"><span id="eNT_e">0.00</span> €</div>
+        </div>
+    </div>
+
+    <!-- RED 3: SOLAR I HEP -->
+    <div class="section-title">Red 3: Proizvodnja i Trošak</div>
+    <div class="row-card">
+        <div class="input-box">
+            <span class="code">ECU-R</span>
+            <label>Solari</label>
+            <input type="number" id="prod" placeholder="kWh" oninput="calc(this, 0.14)">
+            <div class="euro-hint"><span id="prod_e">0.00</span> €</div>
+        </div>
+        <div class="input-box">
+            <span class="code">RAČUN</span>
+            <label>HEP Plaćeno</label>
+            <input type="number" id="hep" placeholder="Iznos €">
+            <div class="euro-hint">Mjesečni trošak</div>
+        </div>
+    </div>
+
+    <button onclick="save()">SPREMI DNEVNI UNOS</button>
+    <div id="status" style="text-align:center; margin-top:10px; font-size:0.8rem; color:var(--green)"></div>
+</div>
+
 <script>
     const INV = 10700;
-    const C_VT = 0.14; 
-    let db = JSON.parse(localStorage.getItem('solarMobileDB')) || [];
+    let db = JSON.parse(localStorage.getItem('solarFinalMobileDB')) || [];
     document.getElementById('date').valueAsDate = new Date();
+
+    // Funkcija koja računa eure dok tipkaš
+    function calc(el, price) {
+        const val = parseFloat(el.value) || 0;
+        document.getElementById(el.id + '_e').innerText = (val * price).toFixed(2);
+    }
 
     function save() {
         const entry = {
@@ -101,58 +122,23 @@
             ent: parseFloat(document.getElementById('eNT').value) || 0,
             hep: parseFloat(document.getElementById('hep').value) || 0
         };
-        db.unshift(entry); // Najnoviji na vrh
-        localStorage.setItem('solarMobileDB', JSON.stringify(db));
-        render();
-        // Clear inputs
-        ['prod','hep','iVT','iNT','eVT','eNT'].forEach(id => document.getElementById(id).value = '');
+        db.push(entry);
+        localStorage.setItem('solarFinalMobileDB', JSON.stringify(db));
+        
+        document.getElementById('status').innerText = "Podaci spremljeni! 🎉";
+        setTimeout(() => document.getElementById('status').innerText = "", 3000);
+        updateROI();
     }
 
-    function render() {
-        const list = document.getElementById('logList');
-        list.innerHTML = '';
-        let totalUsteda = 0;
-
-        db.forEach((r, i) => {
-            const usteda = r.p * C_VT;
-            totalUsteda += usteda;
-            if(i < 5) { // Prikaži zadnjih 5 unosa
-                list.innerHTML += `
-                <div class="log-item">
-                    <div>
-                        <div class="log-date">${r.d}</div>
-                        <div class="val-prod">Solari: ${r.p} kWh</div>
-                    </div>
-                    <div class="log-val val-bal">+${usteda.toFixed(2)} €</div>
-                </div>`;
-            }
-        });
-
-        // ROI Update
-        document.getElementById('roiPaid').innerText = totalUsteda.toFixed(0);
-        document.getElementById('roiBar').style.width = Math.min((totalUsteda/INV*100), 100) + "%";
-        updateChart();
+    function updateROI() {
+        // Ušteda je ukupno proizvedena energija x cijena VT (kao prosjek)
+        let totalSavings = db.reduce((sum, r) => sum + (r.p * 0.14), 0);
+        document.getElementById('roiText').innerText = totalSavings.toFixed(2) + " €";
+        document.getElementById('roiBar').style.width = Math.min((totalSavings/INV*100), 100) + "%";
     }
 
-    let myChart;
-    function updateChart() {
-        const ctx = document.getElementById('chart').getContext('2d');
-        const view = [...db].reverse().slice(-7);
-        if(myChart) myChart.destroy();
-        myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: view.map(x => x.d.split('-')[2]), // Samo dan u mjesecu
-                datasets: [{ label: 'Proizvodnja', data: view.map(x => x.p), borderColor: '#FFD60A', tension: 0.4 }]
-            },
-            options: { 
-                plugins: { legend: { display: false } },
-                scales: { x: { grid: { display: false }, ticks: { color: '#8e8e93' } }, y: { grid: { color: '#333' }, ticks: { color: '#8e8e93' } } }
-            }
-        });
-    }
-
-    render();
+    updateROI();
 </script>
+
 </body>
 </html>
