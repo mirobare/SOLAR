@@ -14,30 +14,38 @@
         .tab-content { display: none; padding: 15px; max-width: 800px; margin: auto; }
         .tab-content.active { display: block; }
 
-        /* UNOS & ARHIVA */
+        /* UNOS */
+        .weather-box { background: #1c1c1e; border: 1px solid var(--solar); padding: 12px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
         .card { background: var(--card); border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid #2c2c2e; position: relative; }
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .input-box { background: #2c2c2e; padding: 10px; border-radius: 12px; border-bottom: 3px solid #444; }
-        label { font-size: 0.65rem; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 5px; }
+        label { font-size: 0.65rem; font-weight: bold; text-transform: uppercase; display: block; }
         input { background: transparent; border: none; color: #fff; font-size: 1.1rem; width: 100%; outline: none; font-weight: bold; }
+        .euro-hint { font-size: 0.7rem; color: var(--gray); border-top: 1px solid #333; margin-top: 5px; padding-top: 3px; display: block; }
         
-        .archive-line { display: flex; align-items: center; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 3px solid var(--solar); }
+        .live-graph { display: flex; align-items: flex-end; gap: 8px; height: 100px; background: #111; padding: 15px 10px; border-radius: 12px; border: 1px solid #333; margin-top: 15px; }
+        .v-bar { flex: 1; border-radius: 4px 4px 0 0; min-height: 2px; position: relative; transition: height 0.3s; }
+        .v-label { position: absolute; bottom: -18px; width: 100%; text-align: center; font-size: 0.5rem; color: var(--gray); font-weight: bold; }
+
+        /* ARHIVA */
+        .archive-line { display: flex; align-items: center; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 3px solid var(--solar); overflow: hidden; }
+        .arch-date { font-size: 0.75rem; font-weight: bold; min-width: 65px; color: var(--accent); }
         .arch-scroll-area { display: flex; gap: 12px; overflow-x: auto; flex: 1; padding: 0 10px; scrollbar-width: none; }
         .arch-data-block { display: flex; flex-direction: column; white-space: nowrap; }
         .arch-lbl { font-size: 0.55rem; color: var(--gray); text-transform: uppercase; }
         .arch-num { font-size: 0.75rem; font-weight: bold; }
+        .del-btn-mini { background: #333; color: var(--red); border: none; padding: 5px 8px; border-radius: 4px; font-size: 0.6rem; font-weight: bold; cursor: pointer; }
 
-        /* ANALIZA */
-        .energy-bar-container { display: flex; height: 35px; background: #111; border-radius: 8px; overflow: hidden; margin: 10px 0; border: 1px solid #333; }
-        .energy-segment { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: bold; color: #000; }
+        /* STATISTIKA - HORIZONTALNI GRAF */
+        .energy-bar-container { display: flex; height: 35px; background: #111; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #333; }
+        .energy-segment { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: bold; color: #fff; overflow: hidden; }
 
         /* POSTAVKE */
-        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .set-box { background: #1c1c1e; padding: 10px; border-radius: 10px; border: 1px solid #333; }
-        .set-box input { font-size: 0.9rem; border-bottom: 1px solid var(--accent); width: 80%; }
-        
-        button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; cursor: pointer; }
-        .exp-btn { background: #2c2c2e; color: var(--green); border: 1px solid var(--green); padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+        .set-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: #2c2c2e; border-radius: 8px; }
+        .set-row input { width: 80px; text-align: right; border-bottom: 1px solid var(--accent); font-size: 0.9rem; }
+
+        button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .exp-btn { background: #2c2c2e; color: var(--green); border: 1px solid var(--green); padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -45,34 +53,42 @@
     <nav class="nav-tabs">
         <button class="nav-btn active" onclick="swTab('unos', this)">Unos</button>
         <button class="nav-btn" onclick="swTab('arhiva', this)">Arhiva</button>
-        <button class="nav-btn" onclick="swTab('stat', this)">Analiza</button>
+        <button class="nav-btn" onclick="swTab('stat', this)">Statistika</button>
         <button class="nav-btn" onclick="swTab('postavke', this)">Postavke</button>
     </nav>
 
     <!-- UNOS -->
     <div id="unos" class="tab-content active">
+        <div class="weather-box">☀️ <div class="w-text" style="color:var(--solar); font-weight:bold; margin-left:10px;">PETRINJA: SUNČANO</div></div>
         <div class="card">
-            <div class="input-row" style="grid-template-columns: 1fr;"><div class="input-box"><label>Datum</label><input type="date" id="date"></div></div>
+            <div class="input-row" style="grid-template-columns: 1fr;"><div class="input-box" style="border-color:var(--accent)"><label>Datum</label><input type="date" id="date"></div></div>
             <div class="input-row">
-                <div class="input-box"><label>Uvoz VT</label><input type="number" id="ivt"></div>
-                <div class="input-box"><label>Uvoz NT</label><input type="number" id="int"></div>
+                <div class="input-box" style="border-color:var(--red)"><label>Uvoz VT</label><input type="number" id="ivt" oninput="lUpd()"></div>
+                <div class="input-box" style="border-color:var(--red)"><label>Uvoz NT</label><input type="number" id="int" oninput="lUpd()"></div>
             </div>
             <div class="input-row">
-                <div class="input-box"><label>Izvoz VT</label><input type="number" id="evt"></div>
-                <div class="input-box"><label>Izvoz NT</label><input type="number" id="ent"></div>
+                <div class="input-box" style="border-color:var(--green)"><label>Izvoz VT</label><input type="number" id="evt" oninput="lUpd()"></div>
+                <div class="input-box" style="border-color:var(--green)"><label>Izvoz NT</label><input type="number" id="ent" oninput="lUpd()"></div>
             </div>
             <div class="input-row">
-                <div class="input-box"><label>Solari (kWh)</label><input type="number" id="prod"></div>
-                <div class="input-box"><label>HEP (€)</label><input type="number" id="hep"></div>
+                <div class="input-box" style="border-color:var(--solar)"><label>Solari (kWh)</label><input type="number" id="prod" oninput="lUpd()"></div>
+                <div class="input-box" style="border-color:#fff"><label>HEP (€)</label><input type="number" id="hep"></div>
             </div>
             <button class="main-btn" onclick="sData()">SPREMI UNOS</button>
+        </div>
+        <div class="live-graph">
+            <div class="v-bar" id="b-ivt" style="background:var(--red)"><span class="v-label">U-VT</span></div>
+            <div class="v-bar" id="b-int" style="background:var(--red); opacity:0.7"><span class="v-label">U-NT</span></div>
+            <div class="v-bar" id="b-evt" style="background:var(--green)"><span class="v-label">X-VT</span></div>
+            <div class="v-bar" id="b-ent" style="background:var(--green); opacity:0.7"><span class="v-label">X-NT</span></div>
+            <div class="v-bar" id="b-prod" style="background:var(--solar)"><span class="v-label">SOLAR</span></div>
         </div>
     </div>
 
     <!-- ARHIVA -->
     <div id="arhiva" class="tab-content"><div id="archiveList"></div></div>
 
-    <!-- ANALIZA -->
+    <!-- STATISTIKA -->
     <div id="stat" class="tab-content">
         <div style="display:flex; gap:5px; margin-bottom:15px;">
             <button class="nav-btn" style="border:1px solid #333; border-radius:8px;" onclick="rStat('dan')">DAN</button>
@@ -85,47 +101,22 @@
     <!-- POSTAVKE -->
     <div id="postavke" class="tab-content">
         <div class="card">
-            <div style="color:var(--accent); font-weight:bold; margin-bottom:15px;">POSTAVKE CIJENA (€/kWh)</div>
-            <div class="settings-grid">
-                <div class="set-box"><label>Uvoz VT</label><input type="number" step="0.001" id="p_ivt" onchange="sSet()"></div>
-                <div class="set-box"><label>Uvoz NT</label><input type="number" step="0.001" id="p_int" onchange="sSet()"></div>
-                <div class="set-box"><label>Izvoz VT</label><input type="number" step="0.001" id="p_evt" onchange="sSet()"></div>
-                <div class="set-box"><label>Izvoz NT</label><input type="number" step="0.001" id="p_ent" onchange="sSet()"></div>
-            </div>
-            <div class="set-box" style="width:100%; box-sizing:border-box;"><label>Ukupna investicija (€)</label><input type="number" id="p_inv" onchange="sSet()"></div>
+            <label style="color:var(--accent); margin-bottom:10px; display:block;">CIJENE (€/kWh)</label>
+            <div class="set-row"><span>Uvoz VT</span><input type="number" step="0.001" id="c_ivt" onchange="saveSet()"></div>
+            <div class="set-row"><span>Uvoz NT</span><input type="number" step="0.001" id="c_int" onchange="saveSet()"></div>
+            <div class="set-row"><span>Izvoz VT</span><input type="number" step="0.001" id="c_evt" onchange="saveSet()"></div>
+            <div class="set-row"><span>Izvoz NT</span><input type="number" step="0.001" id="c_ent" onchange="saveSet()"></div>
+            <div class="set-row"><span>Investicija (€)</span><input type="number" id="c_inv" onchange="saveSet()"></div>
         </div>
-
-        <div id="roiBox"></div>
-
-        <button class="exp-btn" onclick="exportCSV()">IZVEZI CSV (EXCEL)</button>
-        <button class="exp-btn" style="color:var(--accent); border-color:var(--accent);" onclick="exportXML()">IZVEZI XML</button>
-        <button class="exp-btn" style="color:var(--red); border-color:var(--red); margin-top:20px;" onclick="clearDB()">OBRIŠI SVE PODATKE</button>
+        <div id="isplativostOutput"></div>
+        <button class="exp-btn" onclick="exportXML()">IZVEZI XML</button>
+        <button class="exp-btn" style="color:var(--red); border-color:var(--red);" onclick="clearDB()">OBRIŠI SVE</button>
     </div>
 
     <script>
         let db = JSON.parse(localStorage.getItem('solarDB')) || [];
-        let set = JSON.parse(localStorage.getItem('solarSet')) || {ivt:0.16, int:0.08, evt:0.04, ent:0.04, inv:0};
+        let set = JSON.parse(localStorage.getItem('solarSet')) || { ivt: 0.16, int: 0.08, evt: 0.04, ent: 0.04, inv: 5000 };
         document.getElementById('date').valueAsDate = new Date();
-
-        function sSet() {
-            set = {
-                ivt: parseFloat(document.getElementById('p_ivt').value) || 0,
-                int: parseFloat(document.getElementById('p_int').value) || 0,
-                evt: parseFloat(document.getElementById('p_evt').value) || 0,
-                ent: parseFloat(document.getElementById('p_ent').value) || 0,
-                inv: parseFloat(document.getElementById('p_inv').value) || 0
-            };
-            localStorage.setItem('solarSet', JSON.stringify(set));
-            rROI();
-        }
-
-        function loadSet() {
-            document.getElementById('p_ivt').value = set.ivt;
-            document.getElementById('p_int').value = set.int;
-            document.getElementById('p_evt').value = set.evt;
-            document.getElementById('p_ent').value = set.ent;
-            document.getElementById('p_inv').value = set.inv;
-        }
 
         function swTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -134,7 +125,34 @@
             btn.classList.add('active');
             if(id === 'arhiva') rArchive();
             if(id === 'stat') rStat('mjesec');
-            if(id === 'postavke') { loadSet(); rROI(); }
+            if(id === 'postavke') loadSettings();
+        }
+
+        function loadSettings() {
+            document.getElementById('c_ivt').value = set.ivt;
+            document.getElementById('c_int').value = set.int;
+            document.getElementById('c_evt').value = set.evt;
+            document.getElementById('c_ent').value = set.ent;
+            document.getElementById('c_inv').value = set.inv;
+            calcROI();
+        }
+
+        function saveSet() {
+            set = {
+                ivt: parseFloat(document.getElementById('c_ivt').value) || 0,
+                int: parseFloat(document.getElementById('c_int').value) || 0,
+                evt: parseFloat(document.getElementById('c_evt').value) || 0,
+                ent: parseFloat(document.getElementById('c_ent').value) || 0,
+                inv: parseFloat(document.getElementById('c_inv').value) || 0
+            };
+            localStorage.setItem('solarSet', JSON.stringify(set));
+            calcROI();
+        }
+
+        function lUpd() {
+            const v = { ivt: parseFloat(document.getElementById('ivt').value) || 0, int: parseFloat(document.getElementById('int').value) || 0, evt: parseFloat(document.getElementById('evt').value) || 0, ent: parseFloat(document.getElementById('ent').value) || 0, prod: parseFloat(document.getElementById('prod').value) || 0 };
+            const max = Math.max(v.ivt, v.int, v.evt, v.ent, v.prod, 1);
+            ['ivt','int','evt','ent','prod'].forEach(k => document.getElementById('b-'+k).style.height = (v[k]/max * 100) + "px");
         }
 
         function sData() {
@@ -146,52 +164,78 @@
 
         function rArchive() {
             const list = document.getElementById('archiveList');
-            list.innerHTML = db.slice().reverse().map(i => `<div class="archive-line"><div style="font-weight:bold; color:var(--accent); min-width:60px;">${i.date.split('-').reverse().slice(0,2).join('.')}</div><div class="arch-scroll-area"><div class="arch-data-block"><span class="arch-lbl">Uvoz</span><span class="arch-num">${(i.ivt+i.int).toFixed(1)}</span></div><div class="arch-data-block"><span class="arch-lbl">Izvoz</span><span class="arch-num">${(i.evt+i.ent).toFixed(1)}</span></div><div class="arch-data-block"><span class="arch-lbl">Solar</span><span class="arch-num">${i.prod}</span></div></div><button style="color:var(--red); border:none; background:none;" onclick="delItem(${i.id})">X</button></div>`).join('');
+            list.innerHTML = db.slice().reverse().map(i => `
+                <div class="archive-line">
+                    <div class="arch-date">${i.date.split('-').reverse().slice(0,2).join('.')}</div>
+                    <div class="arch-scroll-area">
+                        <div class="arch-data-block"><span class="arch-lbl">Uvoz</span><span class="arch-num">${(i.ivt+i.int).toFixed(1)}</span></div>
+                        <div class="arch-data-block"><span class="arch-lbl">Izvoz</span><span class="arch-num">${(i.evt+i.ent).toFixed(1)}</span></div>
+                        <div class="arch-data-block"><span class="arch-lbl">Solar</span><span class="arch-num">${i.prod}</span></div>
+                        <div class="arch-data-block"><span class="arch-lbl">HEP</span><span class="arch-num">${i.hep}€</span></div>
+                    </div>
+                    <button class="del-btn-mini" onclick="delItem(${i.id})">X</button>
+                </div>
+            `).join('');
         }
 
         function rStat(filter) {
-            let filtered = db; // Primjer skraćen za pregled
+            const now = new Date();
+            let filtered = db.filter(i => {
+                const d = new Date(i.date);
+                if(filter === 'dan') return d.toDateString() === now.toDateString();
+                if(filter === 'mjesec') return d.getMonth() === now.getMonth();
+                return true;
+            });
+
             const sum = filtered.reduce((a, c) => { a.ivt += c.ivt; a.int += c.int; a.evt += c.evt; a.ent += c.ent; a.prod += c.prod; a.hep += c.hep; return a; }, {ivt:0, int:0, evt:0, ent:0, prod:0, hep:0});
             const total = sum.ivt + sum.int + sum.evt + sum.ent + sum.prod || 1;
-            document.getElementById('statOutput').innerHTML = `<div class="card"><div class="energy-bar-container"><div class="energy-segment" style="width:${(sum.ivt/total*100)}%; background:var(--red);">${sum.ivt.toFixed(0)}</div><div class="energy-segment" style="width:${(sum.int/total*100)}%; background:var(--red); opacity:0.6;">${sum.int.toFixed(0)}</div><div class="energy-segment" style="width:${(sum.evt/total*100)}%; background:var(--green);">${sum.evt.toFixed(0)}</div><div class="energy-segment" style="width:${(sum.prod/total*100)}%; background:var(--solar);">${sum.prod.toFixed(0)}</div></div><div style="font-size:0.7rem; display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-top:10px;"><span>Uvoz: ${(sum.ivt*set.ivt + sum.int*set.int).toFixed(2)}€</span><span>Izvoz: ${(sum.evt*set.evt + sum.ent*set.ent).toFixed(2)}€</span><span style="color:var(--solar)">Proizvedeno: ${sum.prod} kWh</span></div></div>`;
+            const getP = (v) => (v / total * 100);
+
+            document.getElementById('statOutput').innerHTML = `
+                <div class="card">
+                    <div style="font-weight:bold; color:var(--accent); margin-bottom:10px;">PREGLED ${filter.toUpperCase()}</div>
+                    <div class="energy-bar-container">
+                        <div class="energy-segment" style="width:${getP(sum.ivt)}%; background:var(--red);">${sum.ivt.toFixed(0)}</div>
+                        <div class="energy-segment" style="width:${getP(sum.int)}%; background:var(--red); opacity:0.6;">${sum.int.toFixed(0)}</div>
+                        <div class="energy-segment" style="width:${getP(sum.evt)}%; background:var(--green);">${sum.evt.toFixed(0)}</div>
+                        <div class="energy-segment" style="width:${getP(sum.ent)}%; background:var(--green); opacity:0.6;">${sum.ent.toFixed(0)}</div>
+                        <div class="energy-segment" style="width:${getP(sum.prod)}%; background:var(--solar);">${sum.prod.toFixed(0)}</div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.7rem; margin-top:10px;">
+                        <div>Uvoz: ${(sum.ivt*set.ivt + sum.int*set.int).toFixed(2)}€</div>
+                        <div>Izvoz: ${(sum.evt*set.evt + sum.ent*set.ent).toFixed(2)}€</div>
+                        <div style="color:var(--solar)">Proizvodnja: ${sum.prod} kWh</div>
+                        <div style="color:var(--accent)">Ukupno HEP: ${sum.hep.toFixed(2)}€</div>
+                    </div>
+                </div>
+            `;
         }
 
-        function rROI() {
-            const totalEarnd = db.reduce((a, c) => a + (c.evt*set.evt + c.ent*set.ent), 0);
-            const totalSaved = db.reduce((a, c) => a + (c.prod - (c.evt+c.ent)) * set.ivt, 0); // Procjena uštede na vlastitoj potrošnji
-            const totalBenefit = totalEarnd + totalSaved;
-            const remaining = set.inv - totalBenefit;
-            const perc = set.inv > 0 ? (totalBenefit / set.inv * 100).toFixed(1) : 0;
-
-            document.getElementById('roiBox').innerHTML = `
+        function calcROI() {
+            const benefit = db.reduce((a, c) => a + (c.evt*set.evt + c.ent*set.ent) + (c.prod - (c.evt+c.ent))*set.ivt, 0);
+            const perc = set.inv > 0 ? (benefit / set.inv * 100).toFixed(1) : 0;
+            document.getElementById('isplativostOutput').innerHTML = `
                 <div class="card" style="border-color:var(--green)">
-                    <div style="color:var(--green); font-weight:bold; margin-bottom:10px;">ANALIZA ISPLATIVOSTI</div>
-                    <div style="font-size:0.8rem; margin-bottom:5px;">Ukupna korist (Ušteda + Izvoz): <b>${totalBenefit.toFixed(2)} €</b></div>
-                    <div style="font-size:0.8rem; margin-bottom:5px;">Preostalo za otplatu: <b>${remaining.toFixed(2)} €</b></div>
-                    <div style="background:#111; height:15px; border-radius:10px; margin-top:10px; overflow:hidden;">
-                        <div style="background:var(--green); width:${Math.min(perc, 100)}%; height:100%; transition:width 0.5s;"></div>
+                    <label style="color:var(--green)">ISPLATIVOST INVESTICIJE</label>
+                    <div style="font-size:1.2rem; font-weight:bold; margin-top:5px;">${benefit.toFixed(2)} € / ${set.inv} €</div>
+                    <div style="background:#111; height:12px; border-radius:6px; margin-top:10px; overflow:hidden;">
+                        <div style="background:var(--green); width:${Math.min(perc,100)}%; height:100%;"></div>
                     </div>
-                    <div style="text-align:right; font-size:0.65rem; margin-top:5px;">Otplaćeno: ${perc}%</div>
+                    <div style="text-align:right; font-size:0.6rem; margin-top:5px;">Otplaćeno: ${perc}%</div>
                 </div>
             `;
         }
 
         function exportXML() {
-            let xml = '<?xml version="1.0" encoding="UTF-8"?><solar_database>';
-            db.forEach(i => { xml += `<entry><id>${i.id}</id><date>${i.date}</date><ivt>${i.ivt}</ivt><int>${i.int}</int><evt>${i.evt}</evt><ent>${i.ent}</ent><prod>${i.prod}</prod><hep>${i.hep}</hep></entry>`; });
-            xml += '</solar_database>';
+            let xml = '<?xml version="1.0" encoding="UTF-8"?><solar>';
+            db.forEach(i => xml += `<entry><datum>${i.date}</datum><prod>${i.prod}</prod><hep>${i.hep}</hep></entry>`);
+            xml += '</solar>';
             const blob = new Blob([xml], {type:'application/xml'});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'solar_arhiva.xml'; a.click();
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'solar.xml'; a.click();
         }
 
-        function exportCSV() {
-            let csv = "Datum,Uvoz VT,Uvoz NT,Izvoz VT,Izvoz NT,Solar,HEP\n";
-            db.forEach(i => { csv += `${i.date},${i.ivt},${i.int},${i.evt},${i.ent},${i.prod},${i.hep}\n`; });
-            const blob = new Blob([csv], {type:'text/csv'});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'solar.csv'; a.click();
-        }
         function delItem(id) { if(confirm("Obrisati?")) { db = db.filter(i => i.id !== id); localStorage.setItem('solarDB', JSON.stringify(db)); rArchive(); } }
-        function clearDB() { if(confirm("Obriši sve?")) { localStorage.clear(); db=[]; location.reload(); } }
+        function clearDB() { if(confirm("Obrisati sve?")) { localStorage.clear(); db=[]; location.reload(); } }
     </script>
 </body>
 </html>
