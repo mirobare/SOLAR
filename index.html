@@ -15,30 +15,30 @@
         .tab-content.active { display: block; }
 
         /* UNOS */
-        .weather-box { background: #1c1c1e; border: 1px solid var(--solar); padding: 12px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
         .card { background: var(--card); border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid #2c2c2e; position: relative; }
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .input-box { background: #2c2c2e; padding: 10px; border-radius: 12px; border-bottom: 3px solid #444; }
         label { font-size: 0.65rem; font-weight: bold; text-transform: uppercase; display: block; }
         input { background: transparent; border: none; color: #fff; font-size: 1.1rem; width: 100%; outline: none; font-weight: bold; }
-        .euro-hint { font-size: 0.7rem; color: var(--gray); border-top: 1px solid #333; margin-top: 5px; padding-top: 3px; display: block; }
         
         .live-graph { display: flex; align-items: flex-end; gap: 8px; height: 100px; background: #111; padding: 15px 10px; border-radius: 12px; border: 1px solid #333; margin-top: 15px; }
         .v-bar { flex: 1; border-radius: 4px 4px 0 0; min-height: 2px; position: relative; transition: height 0.3s; }
         .v-label { position: absolute; bottom: -18px; width: 100%; text-align: center; font-size: 0.5rem; color: var(--gray); font-weight: bold; }
 
-        /* ARHIVA - ORIGINAL STIL */
-        .archive-line { display: flex; align-items: center; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 3px solid var(--solar); overflow: hidden; }
-        .arch-date { font-size: 0.75rem; font-weight: bold; min-width: 65px; color: var(--accent); }
-        .arch-scroll-area { display: flex; gap: 12px; overflow-x: auto; flex: 1; padding: 0 10px; scrollbar-width: none; }
-        .arch-data-block { display: flex; flex-direction: column; white-space: nowrap; }
-        .arch-lbl { font-size: 0.55rem; color: var(--gray); text-transform: uppercase; }
-        .arch-num { font-size: 0.75rem; font-weight: bold; }
-        .del-btn-mini { background: #333; color: var(--red); border: none; padding: 5px 8px; border-radius: 4px; font-size: 0.6rem; font-weight: bold; cursor: pointer; }
+        /* ARHIVA - DETALJAN PRIKAZ S BOJAMA */
+        .archive-line { display: flex; align-items: center; background: var(--card); padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid var(--solar); overflow: hidden; }
+        .arch-date { font-size: 0.8rem; font-weight: bold; min-width: 75px; color: var(--accent); }
+        .arch-scroll-area { display: flex; gap: 15px; overflow-x: auto; flex: 1; padding: 0 10px; scrollbar-width: none; }
+        .arch-scroll-area::-webkit-scrollbar { display: none; }
+        .arch-data-block { display: flex; flex-direction: column; white-space: nowrap; min-width: 60px; }
+        .arch-lbl { font-size: 0.55rem; color: var(--gray); text-transform: uppercase; margin-bottom: 2px; }
+        .arch-num { font-size: 0.85rem; font-weight: bold; }
+        .arch-sub { font-size: 0.65rem; opacity: 0.8; margin-top: 1px; }
+        .del-btn-mini { background: #333; color: var(--red); border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; cursor: pointer; margin-left: 5px; }
 
-        /* STATISTIKA - VODORAVNI GRAF */
+        /* STATISTIKA */
         .energy-bar-container { display: flex; height: 35px; background: #111; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #333; }
-        .energy-segment { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: bold; color: #fff; overflow: hidden; }
+        .energy-segment { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: bold; color: #fff; }
 
         /* POSTAVKE */
         .set-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: #2c2c2e; border-radius: 8px; }
@@ -59,7 +59,6 @@
 
     <!-- UNOS -->
     <div id="unos" class="tab-content active">
-        <div class="weather-box">☀️ <div class="w-text" style="color:var(--solar); font-weight:bold; margin-left:10px;">PETRINJA: SUNČANO</div></div>
         <div class="card">
             <div class="input-row" style="grid-template-columns: 1fr;"><div class="input-box" style="border-color:var(--accent)"><label>Datum</label><input type="date" id="date"></div></div>
             <div class="input-row">
@@ -91,10 +90,10 @@
     <!-- STATISTIKA -->
     <div id="stat" class="tab-content">
         <div style="display:flex; gap:5px; margin-bottom:15px;">
-            <button class="nav-btn active" id="btn-dan" onclick="rStat('dan', this)">DAN</button>
+            <button class="nav-btn" id="btn-dan" onclick="rStat('dan', this)">DAN</button>
             <button class="nav-btn" id="btn-mjesec" onclick="rStat('mjesec', this)">MJESEC</button>
             <button class="nav-btn" id="btn-godina" onclick="rStat('godina', this)">GODINA</button>
-            <button class="nav-btn" id="btn-ukupno" onclick="rStat('ukupno', this)">UKUPNO</button>
+            <button class="nav-btn active" id="btn-ukupno" onclick="rStat('ukupno', this)">UKUPNO</button>
         </div>
         <div id="statOutput"></div>
     </div>
@@ -116,7 +115,7 @@
 
     <script>
         let db = JSON.parse(localStorage.getItem('solarDB')) || [];
-        let set = JSON.parse(localStorage.getItem('solarSet')) || { ivt: 0.16, int: 0.08, evt: 0.04, ent: 0.04, inv: 5000 };
+        let set = JSON.parse(localStorage.getItem('solarSet')) || { ivt: 0.16, int: 0.08, evt: 0.04, ent: 0.04, inv: 0 };
         const mjNames = ["Siječanj", "Veljača", "Ožujak", "Travanj", "Svibanj", "Lipanj", "Srpanj", "Kolovoz", "Rujan", "Listopad", "Studeni", "Prosinac"];
         
         document.getElementById('date').valueAsDate = new Date();
@@ -127,7 +126,7 @@
             document.getElementById(id).classList.add('active');
             btn.classList.add('active');
             if(id === 'arhiva') rArchive();
-            if(id === 'stat') rStat('mjesec', document.getElementById('btn-mjesec'));
+            if(id === 'stat') rStat('ukupno', document.getElementById('btn-ukupno'));
             if(id === 'postavke') loadSettings();
         }
 
@@ -162,23 +161,43 @@
             const entry = { id: Date.now(), date: document.getElementById('date').value, ivt: parseFloat(document.getElementById('ivt').value) || 0, int: parseFloat(document.getElementById('int').value) || 0, evt: parseFloat(document.getElementById('evt').value) || 0, ent: parseFloat(document.getElementById('ent').value) || 0, prod: parseFloat(document.getElementById('prod').value) || 0, hep: parseFloat(document.getElementById('hep').value) || 0 };
             db.push(entry);
             localStorage.setItem('solarDB', JSON.stringify(db));
-            alert("Spremljeno!");
+            alert("Podaci spremljeni!");
         }
 
         function rArchive() {
             const list = document.getElementById('archiveList');
-            list.innerHTML = db.slice().reverse().map(i => `
+            list.innerHTML = db.slice().reverse().map(i => {
+                const u_total = i.ivt + i.int;
+                const x_total = i.evt + i.ent;
+                const u_euro = (i.ivt * set.ivt) + (i.int * set.int);
+                const x_euro = (i.evt * set.evt) + (i.ent * set.ent);
+                
+                return `
                 <div class="archive-line">
                     <div class="arch-date">${i.date.split('-').reverse().slice(0,2).join('.')}</div>
                     <div class="arch-scroll-area">
-                        <div class="arch-data-block"><span class="arch-lbl" style="color:var(--red)">Uvoz</span><span class="arch-num">${(i.ivt+i.int).toFixed(1)}</span></div>
-                        <div class="arch-data-block"><span class="arch-lbl" style="color:var(--green)">Izvoz</span><span class="arch-num">${(i.evt+i.ent).toFixed(1)}</span></div>
-                        <div class="arch-data-block"><span class="arch-lbl" style="color:var(--solar)">Solar</span><span class="arch-num">${i.prod}</span></div>
-                        <div class="arch-data-block"><span class="arch-lbl">HEP</span><span class="arch-num">${i.hep}€</span></div>
+                        <div class="arch-data-block">
+                            <span class="arch-lbl">Uvoz (VT/NT)</span>
+                            <span class="arch-num" style="color:var(--red)">${u_total.toFixed(1)} <small>kWh</small></span>
+                            <span class="arch-sub" style="color:var(--red)">${u_euro.toFixed(2)}€</span>
+                        </div>
+                        <div class="arch-data-block">
+                            <span class="arch-lbl">Izvoz (VT/NT)</span>
+                            <span class="arch-num" style="color:var(--green)">${x_total.toFixed(1)} <small>kWh</small></span>
+                            <span class="arch-sub" style="color:var(--green)">${x_euro.toFixed(2)}€</span>
+                        </div>
+                        <div class="arch-data-block">
+                            <span class="arch-lbl">Solar</span>
+                            <span class="arch-num" style="color:var(--solar)">${i.prod.toFixed(1)} <small>kWh</small></span>
+                        </div>
+                        <div class="arch-data-block">
+                            <span class="arch-lbl">HEP Račun</span>
+                            <span class="arch-num" style="color:#fff">${i.hep.toFixed(2)} <small>€</small></span>
+                        </div>
                     </div>
                     <button class="del-btn-mini" onclick="delItem(${i.id})">X</button>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
         }
 
         function rStat(filter, btn) {
@@ -230,21 +249,22 @@
                     <div style="background:#111; height:12px; border-radius:6px; margin-top:10px; overflow:hidden;">
                         <div style="background:var(--green); width:${Math.min(perc,100)}%; height:100%;"></div>
                     </div>
-                    <div style="text-align:right; font-size:0.6rem; margin-top:5px;">Otplaćeno: ${perc}%</div>
-                </div>
-            `;
+                    <div style="text-align:right; font-size:0.65rem; margin-top:5px;">Otplaćeno: ${perc}%</div>
+                </div>`;
         }
 
         function exportXML() {
-            let xml = '<?xml version="1.0" encoding="UTF-8"?><solar>';
-            db.forEach(i => xml += `<entry><datum>${i.date}</datum><ivt>${i.ivt}</ivt><int>${i.int}</int><evt>${i.evt}</evt><ent>${i.ent}</ent><prod>${i.prod}</prod><hep>${i.hep}</hep></entry>`);
-            xml += '</solar>';
+            let xml = '<?xml version="1.0" encoding="UTF-8"?><solar_arhiva>';
+            db.forEach(i => {
+                xml += `<unos><id>${i.id}</id><datum>${i.date}</datum><ivt>${i.ivt}</ivt><int>${i.int}</int><evt>${i.evt}</evt><ent>${i.ent}</ent><solar>${i.prod}</solar><hep>${i.hep}</hep></unos>`;
+            });
+            xml += '</solar_arhiva>';
             const blob = new Blob([xml], {type:'application/xml'});
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'solar_arhiva.xml'; a.click();
         }
 
-        function delItem(id) { if(confirm("Obrisati?")) { db = db.filter(i => i.id !== id); localStorage.setItem('solarDB', JSON.stringify(db)); rArchive(); } }
-        function clearDB() { if(confirm("Obrisati sve?")) { localStorage.clear(); db=[]; location.reload(); } }
+        function delItem(id) { if(confirm("Obrisati ovaj unos?")) { db = db.filter(i => i.id !== id); localStorage.setItem('solarDB', JSON.stringify(db)); rArchive(); } }
+        function clearDB() { if(confirm("Obrisati CIJELU bazu podataka?")) { localStorage.clear(); db=[]; location.reload(); } }
     </script>
 </body>
 </html>
