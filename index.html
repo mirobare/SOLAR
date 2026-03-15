@@ -3,142 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solar Pro Mobile</title>
+    <title>Solar Pro Petrinja</title>
+    <script src="https://cdn.jsdelivr.net"></script>
     <style>
         :root { --bg: #000; --card: #1c1c1e; --accent: #0A84FF; --solar: #FFD60A; --green: #32D74B; --red: #FF453A; --text: #fff; --gray: #8e8e93; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
-        .container { max-width: 500px; margin: auto; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; padding-bottom: 80px; }
         
-        .section-title { font-size: 0.75rem; color: var(--gray); margin: 15px 0 5px 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .row-card { background: var(--card); border-radius: 14px; padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .full { grid-column: span 2; }
-        
-        .input-box { background: #2c2c2e; padding: 10px; border-radius: 10px; display: flex; flex-direction: column; }
-        .code { font-size: 0.65rem; color: var(--accent); font-weight: bold; margin-bottom: 2px; }
-        label { font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; }
-        input { background: transparent; border: none; color: #fff; font-size: 1.2rem; font-weight: bold; outline: none; width: 100%; }
-        .euro-hint { font-size: 0.75rem; color: var(--gray); margin-top: 4px; border-top: 1px solid #3a3a3c; padding-top: 4px; }
-        
-        button { background: var(--green); color: #000; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: 800; font-size: 1.1rem; margin-top: 10px; box-shadow: 0 4px 15px rgba(50, 215, 75, 0.3); }
-        
-        /* ROI Header */
-        .roi-header { background: linear-gradient(145deg, #1c1c1e, #2c2c2e); padding: 20px; border-radius: 16px; margin-bottom: 20px; text-align: center; border: 1px solid #333; }
-        .roi-bar { background: #333; height: 8px; border-radius: 4px; margin: 15px 0; overflow: hidden; }
-        .roi-fill { background: var(--solar); height: 100%; width: 0%; transition: 1s; }
+        /* Tab sustav */
+        .tab-content { display: none; padding: 15px; }
+        .tab-content.active { display: block; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #161617; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #333; z-index: 100; }
+        .nav-item { color: var(--gray); text-decoration: none; font-size: 0.7rem; text-align: center; flex: 1; border: none; background: none; cursor: pointer; }
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { display: block; font-size: 1.2rem; margin-bottom: 3px; }
 
-        .date-input { background: var(--accent); color: white; border: none; padding: 8px; border-radius: 6px; font-weight: bold; text-align: center; }
+        /* Kartice i Unos */
+        .card { background: var(--card); border-radius: 16px; padding: 16px; margin-bottom: 15px; border: 1px solid #2c2c2e; }
+        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .input-box { background: #2c2c2e; padding: 10px; border-radius: 12px; }
+        .code { font-size: 0.6rem; color: var(--accent); font-weight: bold; }
+        input { background: transparent; border: none; color: #fff; font-size: 1.1rem; width: 100%; outline: none; margin-top: 4px; }
+        label { font-size: 0.8rem; color: var(--gray); }
+        
+        button.main-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; font-size: 1rem; }
+
+        /* Statistika */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-item { background: #2c2c2e; padding: 15px; border-radius: 12px; text-align: center; }
+        .stat-val { display: block; font-size: 1.2rem; font-weight: bold; color: var(--solar); }
+        .stat-label { font-size: 0.7rem; color: var(--gray); text-transform: uppercase; }
+
+        /* Arhiva */
+        .archive-item { display: flex; align-items: center; background: var(--card); padding: 12px; border-radius: 12px; margin-bottom: 8px; border-left: 4px solid var(--solar); }
+        .archive-info { flex: 1; margin-left: 10px; }
+        .checkbox { width: 20px; height: 20px; accent-color: var(--red); }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- ROI STATUS -->
-    <div class="roi-header">
-        <div style="font-size: 0.8rem; color: var(--gray);">OTPLATA INVESTICIJE</div>
-        <div style="font-size: 2rem; font-weight: 900; color: var(--solar);" id="roiText">0.00 €</div>
-        <div class="roi-bar"><div id="roiBar" class="roi-fill"></div></div>
-        <div style="display:flex; justify-content: space-between; font-size: 0.7rem; color: var(--gray);">
-            <span>0 €</span><span>CILJ: 10.700 €</span>
+    <!-- TAB 1: UNOS -->
+    <div id="tab-unos" class="tab-content active">
+        <h2 style="color: var(--solar); text-align: center;">⚡ NOVI UNOS</h2>
+        <div class="card" style="text-align: center; background: linear-gradient(145deg, #1c1c1e, #252525);">
+            <small style="color:var(--gray)">POVRAĆAJ INVESTICIJE (10.700 €)</small>
+            <div id="roiText" style="font-size: 1.8rem; font-weight: 900; margin: 5px 0;">0.00 €</div>
+            <div style="background:#333; height:6px; border-radius:3px;"><div id="roiBar" style="background:var(--solar); height:100%; width:0%; transition:1s;"></div></div>
+        </div>
+        
+        <div class="card">
+            <div class="input-row"><div class="input-box" style="grid-column: span 2;"><label>Datum</label><input type="date" id="date"></div></div>
+            <div class="input-row">
+                <div class="input-box"><span class="code">1.8.1 (VT)</span><br><label>Uvoz VT</label><input type="number" id="iVT"></div>
+                <div class="input-box"><span class="code">1.8.2 (NT)</span><br><label>Uvoz NT</label><input type="number" id="iNT"></div>
+            </div>
+            <div class="input-row">
+                <div class="input-box"><span class="code">2.8.1 (VT)</span><br><label>Izvoz VT</label><input type="number" id="eVT"></div>
+                <div class="input-box"><span class="code">2.8.2 (NT)</span><br><label>Izvoz NT</label><input type="number" id="eNT"></div>
+            </div>
+            <div class="input-row">
+                <div class="input-box"><span class="code">SOLAR</span><br><label>Proizvedeno</label><input type="number" id="prod"></div>
+                <div class="input-box"><span class="code">RAČUN</span><br><label>HEP €</label><input type="number" id="hep"></div>
+            </div>
+            <button class="main-btn" onclick="saveData()">SPREMI PODATKE</button>
+        </div>
+        <canvas id="miniChart" height="120"></canvas>
+    </div>
+
+    <!-- TAB 2: ARHIVA -->
+    <div id="tab-arhiva" class="tab-content">
+        <div style="display:flex; justify-content: space-between; align-items: center;">
+            <h2>📂 ARHIVA</h2>
+            <button onclick="deleteSelected()" style="background:var(--red); color:white; border:none; padding:8px 15px; border-radius:8px; font-size:0.7rem;">OBRIŠI OZNAČENO</button>
+        </div>
+        <div id="archiveList"></div>
+    </div>
+
+    <!-- TAB 3: STATISTIKA -->
+    <div id="tab-stat" class="tab-content">
+        <h2>📊 STATISTIKA</h2>
+        <div class="stat-grid">
+            <div class="stat-item"><span class="stat-label">Danas</span><span id="statDay" class="stat-val">0</span><small>kWh</small></div>
+            <div class="stat-item"><span class="stat-label">Ovaj Mjesec</span><span id="statMonth" class="stat-val">0</span><small>kWh</small></div>
+            <div class="stat-item"><span class="stat-label">Ova Godina</span><span id="statYear" class="stat-val">0</span><small>kWh</small></div>
+            <div class="stat-item"><span class="stat-label">Ukupno Solari</span><span id="statTotal" class="stat-val">0</span><small>kWh</small></div>
+        </div>
+        <div class="card"><canvas id="statChart" height="200"></canvas></div>
+    </div>
+
+    <!-- TAB 4: POSTAVKE -->
+    <div id="tab-settings" class="tab-content">
+        <h2>⚙️ CIJENE & POSTAVKE</h2>
+        <div class="card">
+            <label>Cijena Visoka Tarifa (VT) €/kWh</label>
+            <input type="number" id="cfgVT" step="0.001" style="border-bottom: 1px solid #333; margin-bottom: 20px;">
+            <label>Cijena Niska Tarifa (NT) €/kWh</label>
+            <input type="number" id="cfgNT" step="0.001" style="border-bottom: 1px solid #333; margin-bottom: 20px;">
+            <button class="main-btn" onclick="saveSettings()">SPREMI CIJENE</button>
         </div>
     </div>
 
-    <!-- RED 1: DATUM I IMPORT -->
-    <div class="section-title">Red 1: Vrijeme i Uvoz (Mreža)</div>
-    <div class="row-card">
-        <div class="input-box full">
-            <label>Datum očitanja</label>
-            <input type="date" id="date" class="date-input">
-        </div>
-        <div class="input-box">
-            <span class="code">1.8.1 (VT)</span>
-            <label>Uvoz VT</label>
-            <input type="number" id="iVT" placeholder="kWh" oninput="calc(this, 0.14)">
-            <div class="euro-hint"><span id="iVT_e">0.00</span> €</div>
-        </div>
-        <div class="input-box">
-            <span class="code">1.8.2 (NT)</span>
-            <label>Uvoz NT</label>
-            <input type="number" id="iNT" placeholder="kWh" oninput="calc(this, 0.07)">
-            <div class="euro-hint"><span id="iNT_e">0.00</span> €</div>
-        </div>
-    </div>
-
-    <!-- RED 2: EXPORT -->
-    <div class="section-title">Red 2: Izvoz (Višak u mrežu)</div>
-    <div class="row-card">
-        <div class="input-box">
-            <span class="code">2.8.1 (VT)</span>
-            <label>Izvoz VT</label>
-            <input type="number" id="eVT" placeholder="kWh" oninput="calc(this, 0.14)">
-            <div class="euro-hint"><span id="eVT_e">0.00</span> €</div>
-        </div>
-        <div class="input-box">
-            <span class="code">2.8.2 (NT)</span>
-            <label>Izvoz NT</label>
-            <input type="number" id="eNT" placeholder="kWh" oninput="calc(this, 0.07)">
-            <div class="euro-hint"><span id="eNT_e">0.00</span> €</div>
-        </div>
-    </div>
-
-    <!-- RED 3: SOLAR I HEP -->
-    <div class="section-title">Red 3: Proizvodnja i Trošak</div>
-    <div class="row-card">
-        <div class="input-box">
-            <span class="code">ECU-R</span>
-            <label>Solari</label>
-            <input type="number" id="prod" placeholder="kWh" oninput="calc(this, 0.14)">
-            <div class="euro-hint"><span id="prod_e">0.00</span> €</div>
-        </div>
-        <div class="input-box">
-            <span class="code">RAČUN</span>
-            <label>HEP Plaćeno</label>
-            <input type="number" id="hep" placeholder="Iznos €">
-            <div class="euro-hint">Mjesečni trošak</div>
-        </div>
-    </div>
-
-    <button onclick="save()">SPREMI DNEVNI UNOS</button>
-    <div id="status" style="text-align:center; margin-top:10px; font-size:0.8rem; color:var(--green)"></div>
-</div>
+    <!-- NAVIGACIJA -->
+    <nav class="nav-bar">
+        <button class="nav-item active" onclick="openTab('unos', this)"><span>📝</span><br>Unos</button>
+        <button class="nav-item" onclick="openTab('arhiva', this)"><span>📂</span><br>Arhiva</button>
+        <button class="nav-item" onclick="openTab('stat', this)"><span>📊</span><br>Stat</button>
+        <button class="nav-item" onclick="openTab('settings', this)"><span>⚙️</span><br>Cijene</button>
+    </nav>
 
 <script>
-    const INV = 10700;
-    let db = JSON.parse(localStorage.getItem('solarFinalMobileDB')) || [];
+    let db = JSON.parse(localStorage.getItem('solarMasterDB')) || [];
+    let cfg = JSON.parse(localStorage.getItem('solarCfg')) || { vt: 0.14, nt: 0.07 };
+    
     document.getElementById('date').valueAsDate = new Date();
+    document.getElementById('cfgVT').value = cfg.vt;
+    document.getElementById('cfgNT').value = cfg.nt;
 
-    // Funkcija koja računa eure dok tipkaš
-    function calc(el, price) {
-        const val = parseFloat(el.value) || 0;
-        document.getElementById(el.id + '_e').innerText = (val * price).toFixed(2);
+    function openTab(id, el) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('tab-' + id).classList.add('active');
+        el.classList.add('active');
+        if(id === 'stat') renderStats();
+        if(id === 'arhiva') renderArchive();
     }
 
-    function save() {
+    function saveData() {
         const entry = {
+            id: Date.now(),
             d: document.getElementById('date').value,
-            p: parseFloat(document.getElementById('prod').value) || 0,
             ivt: parseFloat(document.getElementById('iVT').value) || 0,
             int: parseFloat(document.getElementById('iNT').value) || 0,
             evt: parseFloat(document.getElementById('eVT').value) || 0,
             ent: parseFloat(document.getElementById('eNT').value) || 0,
-            hep: parseFloat(document.getElementById('hep').value) || 0
+            p: parseFloat(document.getElementById('prod').value) || 0,
+            h: parseFloat(document.getElementById('hep').value) || 0
         };
         db.push(entry);
-        localStorage.setItem('solarFinalMobileDB', JSON.stringify(db));
-        
-        document.getElementById('status').innerText = "Podaci spremljeni! 🎉";
-        setTimeout(() => document.getElementById('status').innerText = "", 3000);
-        updateROI();
+        localStorage.setItem('solarMasterDB', JSON.stringify(db));
+        alert("Spremljeno!");
+        location.reload();
     }
 
-    function updateROI() {
-        // Ušteda je ukupno proizvedena energija x cijena VT (kao prosjek)
-        let totalSavings = db.reduce((sum, r) => sum + (r.p * 0.14), 0);
-        document.getElementById('roiText').innerText = totalSavings.toFixed(2) + " €";
-        document.getElementById('roiBar').style.width = Math.min((totalSavings/INV*100), 100) + "%";
+    function renderArchive() {
+        const list = document.getElementById('archiveList');
+        list.innerHTML = '';
+        db.sort((a,b) => new Date(b.d) - new Date(a.d)).forEach(r => {
+            list.innerHTML += `
+                <div class="archive-item">
+                    <input type="checkbox" class="checkbox" data-id="${r.id}">
+                    <div class="archive-info">
+                        <div style="font-weight:bold">${r.d}</div>
+                        <small style="color:var(--solar)">Solari: ${r.p} kWh | HEP: ${r.h}€</small>
+                    </div>
+                </div>`;
+        });
     }
 
-    updateROI();
+    function deleteSelected() {
+        const checked = Array.from(document.querySelectorAll('.checkbox:checked')).map(c => parseInt(c.dataset.id));
+        db = db.filter(r => !checked.includes(r.id));
+        localStorage.setItem('solarMasterDB', JSON.stringify(db));
+        renderArchive();
+    }
+
+    function renderStats() {
+        const now = new Date();
+        const todayStr = now.toISOString().split('T')[0];
+        const monthStr = todayStr.substring(0, 7);
+        const yearStr = todayStr.substring(0, 4);
+
+        let d = 0, m = 0, y = 0, t = 0;
+        db.forEach(r => {
+            if(r.d === todayStr) d += r.p;
+            if(r.d.startsWith(monthStr)) m += r.p;
+            if(r.d.startsWith(yearStr)) y += r.p;
+            t += r.p;
+        });
+
+        document.getElementById('statDay').innerText = d.toFixed(1);
+        document.getElementById('statMonth').innerText = m.toFixed(1);
+        document.getElementById('statYear').innerText = y.toFixed(1);
+        document.getElementById('statTotal').innerText = t.toFixed(0);
+
+        const ctx = document.getElementById('statChart').getContext('2d');
+        const last7 = db.slice(-7);
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: last7.map(x => x.d.split('-')[2]),
+                datasets: [{ label: 'kWh', data: last7.map(x => x.p), backgroundColor: '#FFD60A' }]
+            },
+            options: { plugins: { legend: { display: false } } }
+        });
+    }
+
+    function saveSettings() {
+        cfg.vt = parseFloat(document.getElementById('cfgVT').value);
+        cfg.nt = parseFloat(document.getElementById('cfgNT').value);
+        localStorage.setItem('solarCfg', JSON.stringify(cfg));
+        alert("Cijene spremljene!");
+    }
+
+    // ROI update na početku
+    const totalS = db.reduce((s, r) => s + (r.p * cfg.vt), 0);
+    document.getElementById('roiText').innerText = totalS.toFixed(2) + " €";
+    document.getElementById('roiBar').style.width = Math.min((totalS/10700*100), 100) + "%";
+
 </script>
-
 </body>
 </html>
